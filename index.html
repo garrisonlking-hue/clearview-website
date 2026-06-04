@@ -117,7 +117,7 @@
   .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:22px;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
   .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(200,54,47,.2);}
-  .hero h1{font-size:clamp(44px,5vw,72px);font-weight:600;color:var(--navy);letter-spacing:-.025em;line-height:1.02;}
+  .hero h1{font-size:clamp(40px,4.2vw,60px);font-weight:600;color:var(--navy);letter-spacing:-.025em;line-height:1.04;}
   .hero h1 .ln{display:block;overflow:hidden;}
   .hero h1 .ln span{display:block;transform:translateY(110%);transition:transform 1s cubic-bezier(.2,.8,.2,1);}
   .hero.intro h1 .ln span{transform:translateY(0);}
@@ -126,7 +126,9 @@
   .hero h1 em{font-style:italic;font-weight:500;color:var(--red);}
   .hero-sub{font-size:clamp(16px,1.5vw,19px);color:var(--muted);max-width:42ch;margin:24px 0 32px;font-weight:400;opacity:0;transform:translateY(20px);transition:opacity .9s .4s,transform .9s .4s;}
   .hero.intro .hero-sub{opacity:1;transform:none;}
-  .hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px;opacity:0;transform:translateY(20px);transition:opacity .9s .55s,transform .9s .55s;}
+  .hero-btns{display:flex;gap:14px;flex-wrap:nowrap;margin-bottom:30px;opacity:0;transform:translateY(20px);transition:opacity .9s .55s,transform .9s .55s;}
+  @media(max-width:420px){.hero-btns{flex-wrap:wrap;}}
+  .hero-btns .btn{white-space:nowrap;}
   .hero.intro .hero-btns{opacity:1;transform:none;}
   .hero-proof{display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(20px);transition:opacity .9s .7s,transform .9s .7s;}
   .hero.intro .hero-proof{opacity:1;transform:none;}
@@ -144,10 +146,10 @@
   .hero-photo-bleed img{width:100%;height:100%;object-fit:cover;object-position:center;}
   .hero-photo-bleed::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--cream) 0%,rgba(245,240,230,.4) 8%,transparent 22%);}
   @media(max-width:980px){.hero-photo-bleed::before{background:linear-gradient(0deg,var(--cream),transparent 30%);}}
-  .hero-card{position:absolute;bottom:38px;left:-60px;z-index:2;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px 22px;width:280px;opacity:0;transition:opacity 1s .85s;}
+  .hero-card{position:absolute;top:50%;right:40px;transform:translateY(-50%);z-index:2;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px 22px;width:270px;opacity:0;transition:opacity 1s .85s;}
   .hero.intro .hero-card{opacity:1;}
-  @media(max-width:1180px){.hero-card{left:16px;width:250px;}}
-  @media(max-width:980px){.hero-card{position:static;width:auto;max-width:340px;margin:-50px auto 0;}}
+  @media(max-width:1180px){.hero-card{right:20px;width:248px;}}
+  @media(max-width:980px){.hero-card{position:static;transform:none;width:auto;max-width:340px;margin:-50px auto 0;}}
   .hero-card-row{display:flex;gap:12px;align-items:flex-start;padding:9px 0;}
   .hero-card-row:not(:last-child){border-bottom:1px solid var(--line);}
   .hero-card-row svg{width:22px;height:22px;color:var(--red);flex-shrink:0;margin-top:2px;}
@@ -460,11 +462,11 @@
     <div class="hero-left">
       <div class="hero-eyebrow"><span class="dot"></span>Locally Owned · Eastern Connecticut</div>
       <h1>
-        <span class="ln"><span>A Better</span></span>
-        <span class="ln"><span>View</span></span>
-        <span class="ln"><span><em>Starts Here.</em></span></span>
+        <span class="ln"><span>Windows So Clear</span></span>
+        <span class="ln"><span>You'll Forget</span></span>
+        <span class="ln"><span><em>They're There.</em></span></span>
       </h1>
-      <p class="hero-sub">Premium window cleaning &amp; pressure washing for Eastern Connecticut homes. Pure-water technology, fully insured, spotless results every time.</p>
+      <p class="hero-sub">Premium window cleaning for Eastern Connecticut homeowners. Pure-water technology. Fully insured. Spotless results every time.</p>
       <div class="hero-btns">
         <button class="btn btn-red btn-lg" onclick="openModal()">Get a Free Quote</button>
         <a href="#work" class="btn btn-ghost btn-lg">See Our Work</a>
@@ -492,10 +494,10 @@
 <!-- TRUST -->
 <section class="trust" id="trust">
   <div class="trust-in">
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="trust-t">Fully Insured</div><div class="trust-d">Your home protected on every job</div></div></div>
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2"/><circle cx="12" cy="12" r="3"/></svg></span><div><div class="trust-t">Streak-Free</div><div class="trust-d">Pure-water tech, spotless finish</div></div></div>
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span><div><div class="trust-t">Pure Water System</div><div class="trust-d">No chemicals, no residue</div></div></div>
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11l9-7 9 7M5 10v9h14v-9M9 19v-5h6v5"/></svg></span><div><div class="trust-t">Local & Trusted</div><div class="trust-d">5.0 rated by your neighbors</div></div></div>
+    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="trust-t">Fully Insured</div><div class="trust-d">Your home protected</div></div></div>
+    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l2.9 6.3 6.6.6-5 4.3 1.5 6.4L12 16.8 6 19.6l1.5-6.4-5-4.3 6.6-.6z"/></svg></span><div><div class="trust-t">5.0 Star Rating</div><div class="trust-d">Real Google reviews</div></div></div>
+    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span><div><div class="trust-t">Pure Water System</div><div class="trust-d">Spot-free results</div></div></div>
+    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11l9-7 9 7M5 10v9h14v-9M9 19v-5h6v5"/></svg></span><div><div class="trust-t">Local & Trusted</div><div class="trust-d">3+ years in CT</div></div></div>
   </div>
 </section>
 
@@ -513,6 +515,7 @@
         <div class="story-quote rv d1">"We treat every window like it's the only one that matters — because to the homeowner, it is."</div>
         <p class="rv d2">Clear View started with a bucket, a squeegee, and a simple promise: do careful, honest work for the homes in our community. Today we serve homeowners across Eastern Connecticut with a trained crew and professional pure-water equipment — and the standard hasn't changed.</p>
         <p class="rv d2">We still personally walk every property before we quote. When you hire Clear View, you're hiring people who live where they work, and who'll be back next year too.</p>
+        <div class="story-sign rv d2">— Garrison, Clear View Window Co.</div>
         <div class="rv d3" style="margin-top:24px;"><button class="btn btn-navy" onclick="openModal()">Book Your Free Walkthrough</button></div>
       </div>
     </div>
