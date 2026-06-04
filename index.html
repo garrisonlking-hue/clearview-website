@@ -109,11 +109,13 @@
 
   /* hero — TRUE full-bleed: photo fills right half top-to-bottom, no box, fades into cream on left */
   .hero{position:relative;background:var(--cream);overflow:hidden;}
-  .hero-grid{position:relative;max-width:1340px;margin:0 auto;padding:0 36px;display:grid;grid-template-columns:minmax(0,0.86fr) 1fr;gap:48px;align-items:center;min-height:88vh;padding-top:104px;}
+  .hero-grid{position:relative;max-width:1340px;margin:0 auto;padding:0 36px;display:grid;grid-template-columns:minmax(0,0.86fr) 1fr;gap:48px;align-items:center;min-height:72vh;padding-top:104px;}
   @media(max-width:1180px){.hero-grid{padding-left:28px;padding-right:28px;gap:36px;}}
   @media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:0;min-height:0;padding:96px 22px 0;}}
-  .hero-left{position:relative;z-index:3;padding:40px 0;}
+  .hero-left{position:relative;z-index:3;padding:32px 0;}
   @media(max-width:980px){.hero-left{padding:0 0 36px;}}
+  .hero-grid-spacer{display:block;}
+  @media(max-width:980px){.hero-grid-spacer{display:none;}.hero{display:flex;flex-direction:column;}.hero-grid{order:1;}.hero-right{order:2;}}
   .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:20px;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
   .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(200,54,47,.2);}
@@ -138,9 +140,9 @@
   .hero-proof-tx .stars{color:var(--red);font-size:15px;letter-spacing:1px;}
   .hero-proof-tx .rt{font-weight:600;font-size:14px;color:var(--navy);}
   .hero-proof-tx .sub{font-size:13px;color:var(--muted);}
-  /* full-bleed photo — absolutely fills entire right side, top to bottom, no border */
-  .hero-right{position:absolute;top:0;right:0;bottom:0;width:54%;z-index:1;}
-  @media(max-width:980px){.hero-right{position:relative;width:auto;margin:0 -22px;height:auto;}}
+  /* full-bleed photo — direct child of .hero, anchored to TRUE right viewport edge */
+  .hero-right{position:absolute;top:0;bottom:0;right:0;width:52%;z-index:1;}
+  @media(max-width:980px){.hero-right{position:relative;top:auto;bottom:auto;right:auto;width:auto;margin:0 -22px;height:auto;}}
   .hero-photo-bleed{position:absolute;inset:0;opacity:0;transition:opacity 1.2s .3s;}
   @media(max-width:980px){.hero-photo-bleed{position:relative;aspect-ratio:4/3;}}
   .hero.intro .hero-photo-bleed{opacity:1;}
@@ -460,6 +462,15 @@
 
 <!-- HERO -->
 <section class="hero">
+  <div class="hero-right">
+    <div class="hero-photo-bleed"><img src="hero-barn.jpg" alt="Clear View cleaning second-story windows on a Connecticut home with the pure-water pole system"></div>
+    <div class="hero-card">
+      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
+      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
+      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg><div><div class="t">Local CT Team</div><div class="d">Proudly local, always on time</div></div></div>
+      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
+    </div>
+  </div>
   <div class="hero-grid">
     <div class="hero-left">
       <div class="hero-eyebrow"><span class="dot"></span>Locally Owned · Eastern Connecticut</div>
@@ -481,15 +492,7 @@
         </div>
       </div>
     </div>
-    <div class="hero-right">
-      <div class="hero-photo-bleed"><img src="hero-barn.jpg" alt="Clear View cleaning second-story windows on a Connecticut home with the pure-water pole system"></div>
-      <div class="hero-card">
-        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
-        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
-        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg><div><div class="t">Local CT Team</div><div class="d">Proudly local, always on time</div></div></div>
-        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
-      </div>
-    </div>
+    <div class="hero-grid-spacer" aria-hidden="true"></div>
   </div>
 </section>
 
