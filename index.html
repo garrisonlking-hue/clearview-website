@@ -76,10 +76,10 @@
   .btn-lg{padding:17px 36px;font-size:16px;}
 
   /* announce + header */
-  .announce{background:var(--navy);color:rgba(255,255,255,.92);font-size:13.5px;text-align:center;padding:9px 20px;position:relative;z-index:60;}
+  .announce{background:var(--navy);color:rgba(255,255,255,.92);font-size:13.5px;text-align:center;padding:9px 20px;position:fixed;top:0;left:0;right:0;z-index:60;}
+  header.nav{position:fixed;top:38px;left:0;right:0;z-index:50;padding:18px 0;background:rgba(245,240,230,.92);backdrop-filter:blur(14px);transition:box-shadow .35s,padding .35s;}
   .announce strong{color:#fff;}
-  header.nav{position:fixed;top:0;left:0;right:0;z-index:50;padding:22px 0;transition:background .35s,box-shadow .35s,padding .35s;}
-  header.nav.solid{background:rgba(245,240,230,.92);backdrop-filter:blur(14px);box-shadow:var(--sh-sm);padding:13px 0;}
+  header.nav.solid{box-shadow:var(--sh-sm);padding:13px 0;}
   .nav-in{max-width:1240px;margin:0 auto;padding:0 36px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
   @media(max-width:760px){.nav-in{padding:0 22px;}}
   .brand{display:flex;align-items:center;gap:13px;}
@@ -87,8 +87,7 @@
   header.nav.solid .brand img{width:42px;height:42px;}
   .brand-tx{font-family:var(--head);font-weight:600;font-size:23px;color:var(--navy);letter-spacing:-.01em;line-height:.95;transition:color .35s;}
   .brand-sub{font-family:var(--body);font-weight:600;font-size:9.5px;letter-spacing:.32em;color:var(--red);text-transform:uppercase;margin-top:3px;}
-  header.nav:not(.solid) .brand-tx{color:#fff;}
-  header.nav:not(.solid) .nav-links a{color:rgba(255,255,255,.92);}
+  header.nav.solid .burger span{background:var(--navy);}
   .nav-links{display:flex;align-items:center;gap:32px;}
   .nav-links a{font-weight:500;font-size:15px;color:var(--navy);position:relative;transition:color .2s;}
   .nav-links a::after{content:"";position:absolute;left:0;bottom:-5px;height:2px;width:0;background:var(--red);transition:width .25s;}
@@ -97,7 +96,7 @@
   .nav-cta{display:flex;align-items:center;gap:16px;}
   @media(max-width:980px){.nav-links{display:none;}}
   .burger{display:none;flex-direction:column;gap:5px;padding:8px;}
-  .burger span{width:26px;height:2px;background:#fff;border-radius:2px;transition:background .35s;}
+  .burger span{width:26px;height:2px;background:var(--navy);border-radius:2px;transition:background .35s;}
   header.nav.solid .burger span{background:var(--navy);}
   @media(max-width:980px){.burger{display:flex;}.nav-cta .btn{display:none;}}
   .mobile-menu{position:fixed;inset:0;z-index:120;background:var(--navy);display:none;flex-direction:column;padding:28px;}
@@ -108,32 +107,48 @@
   .mobile-menu a{font-family:var(--head);font-size:30px;color:#fff;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.12);}
   .mobile-menu .btn{margin-top:26px;}
 
-  /* hero */
-  .hero{position:relative;min-height:100vh;display:flex;align-items:center;overflow:hidden;}
-  .hero-bg{position:absolute;inset:-10% 0 0 0;height:120%;z-index:0;will-change:transform;}
-  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 42%;}
-  .hero-scrim{position:absolute;inset:0;z-index:1;background:linear-gradient(100deg,rgba(20,32,58,.92) 0%,rgba(20,32,58,.72) 38%,rgba(27,42,74,.35) 68%,rgba(27,42,74,.12) 100%);}
-  .hero-scrim::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(27,42,74,.5),transparent 30%);}
-  .hero-in{position:relative;z-index:2;max-width:1240px;margin:0 auto;padding:0 36px;width:100%;color:#fff;}
-  @media(max-width:760px){.hero-in{padding:0 22px;}}
-  .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:12.5px;letter-spacing:.22em;text-transform:uppercase;color:#fff;margin-bottom:26px;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
+  /* hero — light split layout */
+  .hero{position:relative;background:var(--cream);padding-top:140px;overflow:hidden;}
+  .hero-grid{max-width:1300px;margin:0 auto;padding:48px 36px 0;display:grid;grid-template-columns:1fr 1.12fr;gap:54px;align-items:center;min-height:calc(100vh - 104px);}
+  @media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:32px;padding:32px 22px 0;min-height:0;}}
+  .hero-left{position:relative;z-index:2;}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:22px;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
-  .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(200,54,47,.25);}
-  .hero h1{font-size:clamp(46px,7.5vw,104px);font-weight:600;color:#fff;letter-spacing:-.03em;max-width:13ch;}
+  .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(200,54,47,.2);}
+  .hero h1{font-size:clamp(44px,5.4vw,76px);font-weight:600;color:var(--navy);letter-spacing:-.025em;line-height:1.02;}
   .hero h1 .ln{display:block;overflow:hidden;}
   .hero h1 .ln span{display:block;transform:translateY(110%);transition:transform 1s cubic-bezier(.2,.8,.2,1);}
   .hero.intro h1 .ln span{transform:translateY(0);}
-  .hero.intro h1 .ln:nth-child(2) span{transition-delay:.12s;}
-  .hero h1 em{font-style:italic;font-weight:500;color:#fff;}
-  .hero-sub{font-size:clamp(17px,1.7vw,21px);color:rgba(255,255,255,.9);max-width:46ch;margin:28px 0 36px;font-weight:300;opacity:0;transform:translateY(20px);transition:opacity .9s .45s,transform .9s .45s;}
+  .hero.intro h1 .ln:nth-child(2) span{transition-delay:.1s;}
+  .hero.intro h1 .ln:nth-child(3) span{transition-delay:.2s;}
+  .hero h1 em{font-style:italic;font-weight:500;color:var(--red);}
+  .hero-sub{font-size:clamp(16px,1.5vw,19px);color:var(--muted);max-width:42ch;margin:24px 0 32px;font-weight:400;opacity:0;transform:translateY(20px);transition:opacity .9s .4s,transform .9s .4s;}
   .hero.intro .hero-sub{opacity:1;transform:none;}
-  .hero-btns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;transform:translateY(20px);transition:opacity .9s .6s,transform .9s .6s;}
+  .hero-btns{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:30px;opacity:0;transform:translateY(20px);transition:opacity .9s .55s,transform .9s .55s;}
   .hero.intro .hero-btns{opacity:1;transform:none;}
-  .hero-scroll{position:absolute;bottom:34px;left:50%;transform:translateX(-50%);z-index:2;color:rgba(255,255,255,.8);font-size:11px;letter-spacing:.3em;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:10px;}
-  .hero-scroll .mouse{width:22px;height:36px;border:2px solid rgba(255,255,255,.6);border-radius:14px;position:relative;}
-  .hero-scroll .mouse::after{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:3px;height:7px;background:#fff;border-radius:2px;animation:scrollDot 1.6s infinite;}
-  @keyframes scrollDot{0%{opacity:0;top:7px;}40%{opacity:1;}80%{opacity:0;top:16px;}100%{opacity:0;}}
-  @media(max-width:760px){.hero-scroll{display:none;}}
+  .hero-proof{display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(20px);transition:opacity .9s .7s,transform .9s .7s;}
+  .hero.intro .hero-proof{opacity:1;transform:none;}
+  .hero-faces{display:flex;}
+  .hero-faces span{width:38px;height:38px;border-radius:50%;border:2px solid var(--cream);margin-left:-10px;background:var(--navy);color:#fff;font-family:var(--head);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;}
+  .hero-faces span:first-child{margin-left:0;}
+  .hero-proof-tx .stars{color:var(--red);font-size:15px;letter-spacing:1px;}
+  .hero-proof-tx .rt{font-weight:600;font-size:14px;color:var(--navy);}
+  .hero-proof-tx .sub{font-size:13px;color:var(--muted);}
+  /* hero photo panel */
+  .hero-right{position:relative;z-index:1;}
+  .hero-photo{position:relative;border-radius:22px;overflow:hidden;box-shadow:var(--sh-lg);aspect-ratio:4/3.4;opacity:0;transform:translateY(30px) scale(.98);transition:opacity 1s .3s,transform 1s .3s;}
+  .hero.intro .hero-photo{opacity:1;transform:none;}
+  @media(max-width:980px){.hero-photo{aspect-ratio:4/3;}}
+  .hero-photo img{width:100%;height:100%;object-fit:cover;}
+  .hero-card{position:absolute;top:50%;right:-22px;transform:translateY(-50%);background:#fff;border-radius:16px;box-shadow:var(--sh);padding:22px 24px;width:270px;opacity:0;transition:opacity 1s .8s,transform 1s .8s;}
+  .hero.intro .hero-card{opacity:1;}
+  @media(max-width:1180px){.hero-card{right:12px;width:230px;padding:18px;}}
+  @media(max-width:980px){.hero-card{position:static;transform:none;width:auto;margin-top:-40px;margin-left:auto;margin-right:auto;max-width:340px;}}
+  .hero-card-row{display:flex;gap:12px;align-items:flex-start;padding:9px 0;}
+  .hero-card-row:not(:last-child){border-bottom:1px solid var(--line);}
+  .hero-card-row svg{width:22px;height:22px;color:var(--red);flex-shrink:0;margin-top:2px;}
+  .hero-card-row .t{font-family:var(--head);font-weight:600;font-size:15px;color:var(--navy);line-height:1.2;}
+  .hero-card-row .d{font-size:12.5px;color:var(--muted);margin-top:1px;}
 
   /* trust marquee strip */
   .trust{background:var(--white);border-bottom:1px solid var(--line);position:relative;z-index:3;}
@@ -437,21 +452,37 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-bg" id="heroBg"><img src="hero-colonial.jpg" alt="Clear View team cleaning windows on a large Connecticut home under a bright sky"></div>
-  <div class="hero-scrim"></div>
-  <div class="hero-in">
-    <div class="hero-eyebrow" id="hEy"><span class="dot"></span>Locally Owned · Eastern Connecticut</div>
-    <h1>
-      <span class="ln"><span id="h1">A Better View</span></span>
-      <span class="ln"><span id="h2"><em>Starts Here.</em></span></span>
-    </h1>
-    <p class="hero-sub" id="hSub">Premium residential window cleaning and pressure washing — pure-water clean, streak-free, and done with the kind of care your home deserves.</p>
-    <div class="hero-btns" id="hBtn">
-      <button class="btn btn-red btn-lg" onclick="openModal()">Get a Free Quote</button>
-      <a href="#estimate" class="btn btn-light btn-lg">Instant Price Estimate</a>
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="hero-eyebrow"><span class="dot"></span>Locally Owned · Eastern Connecticut</div>
+      <h1>
+        <span class="ln"><span>A Better</span></span>
+        <span class="ln"><span>View</span></span>
+        <span class="ln"><span><em>Starts Here.</em></span></span>
+      </h1>
+      <p class="hero-sub">Premium window cleaning &amp; pressure washing for Eastern Connecticut homes. Pure-water technology, fully insured, spotless results every time.</p>
+      <div class="hero-btns">
+        <button class="btn btn-red btn-lg" onclick="openModal()">Get a Free Quote</button>
+        <a href="#work" class="btn btn-ghost btn-lg">See Our Work</a>
+      </div>
+      <div class="hero-proof">
+        <div class="hero-faces"><span>S</span><span>J</span><span>L</span><span>M</span></div>
+        <div class="hero-proof-tx">
+          <div class="stars">★★★★★ <span class="rt">5.0</span></div>
+          <div class="sub">Loved by homeowners across Eastern CT</div>
+        </div>
+      </div>
+    </div>
+    <div class="hero-right">
+      <div class="hero-photo"><img src="barn-cart.jpg" alt="Clear View cleaning tall windows on a Connecticut home with the pure-water pole system"></div>
+      <div class="hero-card">
+        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
+        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
+        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg><div><div class="t">Local CT Team</div><div class="d">Proudly local, always on time</div></div></div>
+        <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
+      </div>
     </div>
   </div>
-  <a href="#trust" class="hero-scroll"><span>Scroll</span><span class="mouse"></span></a>
 </section>
 
 <!-- TRUST -->
@@ -835,11 +866,8 @@
 
   // parallax
   const pars=[...document.querySelectorAll('[data-par]')];
-  const heroBg=document.getElementById('heroBg');
   let ticking=false;
   function parallax(){
-    const y=window.scrollY;
-    if(heroBg) heroBg.style.transform=`translateY(${y*0.35}px)`;
     pars.forEach(el=>{
       const r=el.getBoundingClientRect();
       const off=(r.top+r.height/2-window.innerHeight/2);
