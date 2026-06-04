@@ -26,7 +26,7 @@
   "telephone":"+18609663149","priceRange":"$$",
   "address":{"@type":"PostalAddress","addressLocality":"Columbia","addressRegion":"CT","addressCountry":"US"},
   "areaServed":["Columbia CT","Coventry CT","Mansfield CT","Andover CT","Tolland CT","Storrs CT","Manchester CT","Glastonbury CT","Vernon CT","Bolton CT"],
-  "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"12"},
+  "aggregateRating":{"@type":"AggregateRating","ratingValue":"5.0","reviewCount":"11"},
   "openingHoursSpecification":{"@type":"OpeningHoursSpecification","dayOfWeek":["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],"opens":"08:00","closes":"18:00"}
 }
 </script>
@@ -107,15 +107,17 @@
   .mobile-menu a{font-family:var(--head);font-size:30px;color:#fff;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.12);}
   .mobile-menu .btn{margin-top:26px;}
 
-  /* hero — light split layout */
-  .hero{position:relative;background:var(--cream);padding-top:140px;overflow:hidden;}
-  .hero-grid{max-width:1300px;margin:0 auto;padding:48px 36px 0;display:grid;grid-template-columns:1fr 1.12fr;gap:54px;align-items:center;min-height:calc(100vh - 104px);}
-  @media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:32px;padding:32px 22px 0;min-height:0;}}
-  .hero-left{position:relative;z-index:2;}
+  /* hero — full-bleed split layout */
+  .hero{position:relative;background:var(--cream);overflow:hidden;}
+  .hero-grid{display:grid;grid-template-columns:minmax(0,560px) 1fr;gap:0;align-items:stretch;min-height:100vh;}
+  @media(max-width:980px){.hero-grid{grid-template-columns:1fr;min-height:0;}}
+  .hero-left{position:relative;z-index:3;display:flex;flex-direction:column;justify-content:center;padding:150px 48px 80px max(36px,calc((100vw - 1300px)/2 + 36px));}
+  @media(max-width:1180px){.hero-left{padding-left:36px;padding-right:36px;}}
+  @media(max-width:980px){.hero-left{padding:140px 22px 50px;}}
   .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:22px;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
   .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(200,54,47,.2);}
-  .hero h1{font-size:clamp(44px,5.4vw,76px);font-weight:600;color:var(--navy);letter-spacing:-.025em;line-height:1.02;}
+  .hero h1{font-size:clamp(44px,5vw,72px);font-weight:600;color:var(--navy);letter-spacing:-.025em;line-height:1.02;}
   .hero h1 .ln{display:block;overflow:hidden;}
   .hero h1 .ln span{display:block;transform:translateY(110%);transition:transform 1s cubic-bezier(.2,.8,.2,1);}
   .hero.intro h1 .ln span{transform:translateY(0);}
@@ -134,16 +136,18 @@
   .hero-proof-tx .stars{color:var(--red);font-size:15px;letter-spacing:1px;}
   .hero-proof-tx .rt{font-weight:600;font-size:14px;color:var(--navy);}
   .hero-proof-tx .sub{font-size:13px;color:var(--muted);}
-  /* hero photo panel */
-  .hero-right{position:relative;z-index:1;}
-  .hero-photo{position:relative;border-radius:22px;overflow:hidden;box-shadow:var(--sh-lg);aspect-ratio:4/3.4;opacity:0;transform:translateY(30px) scale(.98);transition:opacity 1s .3s,transform 1s .3s;}
-  .hero.intro .hero-photo{opacity:1;transform:none;}
-  @media(max-width:980px){.hero-photo{aspect-ratio:4/3;}}
-  .hero-photo img{width:100%;height:100%;object-fit:cover;}
-  .hero-card{position:absolute;top:50%;right:-22px;transform:translateY(-50%);background:#fff;border-radius:16px;box-shadow:var(--sh);padding:22px 24px;width:270px;opacity:0;transition:opacity 1s .8s,transform 1s .8s;}
+  /* full-bleed photo */
+  .hero-right{position:relative;z-index:1;min-height:380px;}
+  @media(max-width:980px){.hero-right{min-height:0;aspect-ratio:4/3.2;}}
+  .hero-photo-bleed{position:absolute;inset:0;opacity:0;transition:opacity 1.1s .3s;}
+  .hero.intro .hero-photo-bleed{opacity:1;}
+  .hero-photo-bleed img{width:100%;height:100%;object-fit:cover;object-position:center;}
+  .hero-photo-bleed::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--cream) 0%,rgba(245,240,230,.4) 8%,transparent 22%);}
+  @media(max-width:980px){.hero-photo-bleed::before{background:linear-gradient(0deg,var(--cream),transparent 30%);}}
+  .hero-card{position:absolute;bottom:38px;left:-60px;z-index:2;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px 22px;width:280px;opacity:0;transition:opacity 1s .85s;}
   .hero.intro .hero-card{opacity:1;}
-  @media(max-width:1180px){.hero-card{right:12px;width:230px;padding:18px;}}
-  @media(max-width:980px){.hero-card{position:static;transform:none;width:auto;margin-top:-40px;margin-left:auto;margin-right:auto;max-width:340px;}}
+  @media(max-width:1180px){.hero-card{left:16px;width:250px;}}
+  @media(max-width:980px){.hero-card{position:static;width:auto;max-width:340px;margin:-50px auto 0;}}
   .hero-card-row{display:flex;gap:12px;align-items:flex-start;padding:9px 0;}
   .hero-card-row:not(:last-child){border-bottom:1px solid var(--line);}
   .hero-card-row svg{width:22px;height:22px;color:var(--red);flex-shrink:0;margin-top:2px;}
@@ -234,19 +238,18 @@
   .proc-step p{font-size:14.5px;color:var(--muted);line-height:1.6;}
   .proc-step .bar{width:34px;height:3px;background:var(--red);margin-top:16px;}
 
-  /* results showcase */
+  /* results gallery — big multi-photo grid */
   .ba-sec{background:var(--white);}
-  .work-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:24px;max-width:1100px;margin:0 auto;}
-  @media(max-width:760px){.work-grid{grid-template-columns:1fr;}}
-  .work-big{position:relative;border-radius:18px;overflow:hidden;box-shadow:var(--sh);aspect-ratio:3/4;}
-  .work-big img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.8,.2,1);}
-  .work-big:hover img{transform:scale(1.05);}
-  .work-big figcaption{position:absolute;left:0;right:0;bottom:0;padding:26px 24px 20px;background:linear-gradient(transparent,rgba(27,42,74,.85));color:#fff;font-family:var(--head);font-style:italic;font-size:17px;}
-  .work-col{display:grid;grid-template-rows:1fr 1fr;gap:24px;}
-  @media(max-width:760px){.work-col{grid-template-rows:none;grid-template-columns:1fr 1fr;}}
-  .work-sm{border-radius:18px;overflow:hidden;box-shadow:var(--sh-sm);}
-  .work-sm img{width:100%;height:100%;object-fit:cover;transition:transform 1.2s cubic-bezier(.2,.8,.2,1);}
-  .work-sm:hover img{transform:scale(1.06);}
+  .gal{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:230px;gap:16px;max-width:1200px;margin:0 auto;}
+  @media(max-width:900px){.gal{grid-template-columns:repeat(2,1fr);grid-auto-rows:200px;}}
+  @media(max-width:520px){.gal{grid-auto-rows:150px;gap:10px;}}
+  .gal figure{position:relative;border-radius:16px;overflow:hidden;box-shadow:var(--sh-sm);margin:0;}
+  .gal figure img{width:100%;height:100%;object-fit:cover;transition:transform 1.1s cubic-bezier(.2,.8,.2,1);}
+  .gal figure:hover img{transform:scale(1.06);}
+  .gal .tall{grid-row:span 2;}
+  .gal .wide{grid-column:span 2;}
+  .gal figcaption{position:absolute;left:0;right:0;bottom:0;padding:22px 18px 14px;background:linear-gradient(transparent,rgba(27,42,74,.82));color:#fff;font-family:var(--head);font-style:italic;font-size:15px;opacity:0;transition:opacity .3s;}
+  .gal figure:hover figcaption{opacity:1;}
 
   /* estimator */
   .est{background:var(--navy);color:#fff;position:relative;overflow:hidden;}
@@ -317,6 +320,7 @@
   .rev-au{display:flex;align-items:center;gap:13px;padding-top:18px;border-top:1px solid var(--line);}
   .rev-av{width:44px;height:44px;border-radius:50%;background:var(--navy);color:#fff;font-family:var(--head);font-weight:600;font-size:18px;display:flex;align-items:center;justify-content:center;}
   .rev-nm{font-family:var(--head);font-weight:600;font-size:16px;color:var(--navy);}.rev-lc{font-size:13px;color:var(--muted);}
+  .rev-cta{text-align:center;margin-top:44px;}
 
   /* area */
   .area{background:var(--white);}
@@ -474,7 +478,7 @@
       </div>
     </div>
     <div class="hero-right">
-      <div class="hero-photo"><img src="barn-cart.jpg" alt="Clear View cleaning tall windows on a Connecticut home with the pure-water pole system"></div>
+      <div class="hero-photo-bleed"><img src="hero-barn.jpg" alt="Clear View cleaning second-story windows on a Connecticut home with the pure-water pole system"></div>
       <div class="hero-card">
         <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
         <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
@@ -569,12 +573,17 @@
       <h2 class="title rv d1">The detail is in the <em>glass.</em></h2>
       <p class="lead rv d2">Pure-water cleaning in action — watch the grime lift in a single pass, leaving nothing but clear, spot-free glass behind.</p>
     </div>
-    <div class="work-grid">
-      <figure class="work-big rv"><img src="skylight.jpg" alt="Skylight mid-clean — dirty glass clearing to spotless in one pass"><figcaption>Skylight, mid-clean — one pass, no streaks.</figcaption></figure>
-      <div class="work-col">
-        <figure class="work-sm rv d1"><img src="barn-cart.jpg" alt="Clear View cleaning tall windows on a Connecticut barn-style home with the pure-water cart system"></figure>
-        <figure class="work-sm rv d2"><img src="lilac-home.jpg" alt="Reaching second-story windows on a classic New England home framed by lilacs"></figure>
-      </div>
+    <div class="gal">
+      <figure class="tall rv"><img src="hero-barn.jpg" alt="Cleaning second-story windows on a light-blue Connecticut barn home"><figcaption>Pure-water reach, second story</figcaption></figure>
+      <figure class="rv d1"><img src="action-solar.jpg" alt="Reaching high windows above solar panels on a Connecticut colonial"><figcaption>High windows, solar home</figcaption></figure>
+      <figure class="rv d2"><img src="aframe-glass.jpg" alt="Cleaning a tall A-frame glass wall on a lakeside brick home"><figcaption>A-frame glass wall</figcaption></figure>
+      <figure class="wide rv d1"><img src="window-row.jpg" alt="A long row of crystal-clear windows on a Connecticut home after cleaning"><figcaption>Spotless, frame to frame</figcaption></figure>
+      <figure class="rv d2"><img src="action-colonial2.jpg" alt="Clear View cleaning windows on a large colonial under a blue sky"><figcaption>Two-story colonial</figcaption></figure>
+      <figure class="rv d1"><img src="gray-home.jpg" alt="Pristine windows on a gray Connecticut home"><figcaption>Clean &amp; clear</figcaption></figure>
+      <figure class="rv d2"><img src="skylight.jpg" alt="Skylight being cleaned with the pure-water system"><figcaption>Skylights too</figcaption></figure>
+      <figure class="wide rv d1"><img src="lilac-home.jpg" alt="Reaching second-story windows on a New England home framed by lilacs"><figcaption>Every window, every story</figcaption></figure>
+      <figure class="rv d2"><img src="worker-home.jpg" alt="Clear View team member cleaning windows on a Connecticut home"><figcaption>On the job</figcaption></figure>
+      <figure class="rv d1"><img src="church-barn.jpg" alt="Freshly cleaned windows on a white barn-style building in Connecticut"><figcaption>Big jobs welcome</figcaption></figure>
     </div>
   </div>
 </section>
@@ -674,15 +683,19 @@
 <section class="rev pad" id="reviews">
   <div class="wrap">
     <div class="sec-head center" style="margin-bottom:30px;">
-      <div class="eyebrow rv">5-Star Reviews</div>
+      <div class="eyebrow rv">Real Google Reviews</div>
       <h2 class="title rv d1">What homeowners <em>say.</em></h2>
     </div>
-    <div class="rev-top rv"><div class="rev-stars">★★★★★</div><div class="rev-rt">5.0 Rating · Loved across Eastern Connecticut</div></div>
+    <div class="rev-top rv"><div class="rev-stars">★★★★★</div><div class="rev-rt">5.0 on Google · Verified Eastern CT customers</div></div>
     <div class="rev-grid">
-      <div class="rev-card rv"><div class="qs">★★★★★</div><p class="qt">They did an amazing job! My windows have never looked better — you can see the difference from across the yard.</p><div class="rev-au"><span class="rev-av">S</span><div><div class="rev-nm">Sarah M.</div><div class="rev-lc">Columbia, CT</div></div></div></div>
-      <div class="rev-card rv d1"><div class="qs">★★★★★</div><p class="qt">Professional, on time, and very upfront about pricing. No surprises at all. Highly recommend to anyone nearby.</p><div class="rev-au"><span class="rev-av">J</span><div><div class="rev-nm">James T.</div><div class="rev-lc">Coventry, CT</div></div></div></div>
-      <div class="rev-card rv d2"><div class="qs">★★★★★</div><p class="qt">Our house looks brand new again. Careful, friendly, and the results speak for themselves. Repeat customers for life.</p><div class="rev-au"><span class="rev-av">L</span><div><div class="rev-nm">Lisa R.</div><div class="rev-lc">Mansfield, CT</div></div></div></div>
+      <div class="rev-card rv"><div class="qs">★★★★★</div><p class="qt">Very pleased with the professionalism as well as the quality of the final product. My windows shine! Definitely recommend Garrison and co.!</p><div class="rev-au"><span class="rev-av">H</span><div><div class="rev-nm">Holly Sawtelle</div><div class="rev-lc">Google Review</div></div></div></div>
+      <div class="rev-card rv d1"><div class="qs">★★★★★</div><p class="qt">Our windows were beautiful after being cleaned by Garrison and his coworker. They took great care in the work they did, were respectful of our property, and the results were great.</p><div class="rev-au"><span class="rev-av">D</span><div><div class="rev-nm">Diane Sauer</div><div class="rev-lc">Google Review</div></div></div></div>
+      <div class="rev-card rv d2"><div class="qs">★★★★★</div><p class="qt">We hired Clear View to clean our church windows. They were prompt, professional, and did a great job! They even cleaned the screens. Very efficient!</p><div class="rev-au"><span class="rev-av">S</span><div><div class="rev-nm">Scott Majek</div><div class="rev-lc">Google Review</div></div></div></div>
+      <div class="rev-card rv"><div class="qs">★★★★★</div><p class="qt">Garrison was great — on time and work was excellent. The technology he uses is impressive too; it leaves no water marks on the glass. Will do this annually. Thanks!</p><div class="rev-au"><span class="rev-av">S</span><div><div class="rev-nm">Steve Hudd</div><div class="rev-lc">Google Review</div></div></div></div>
+      <div class="rev-card rv d1"><div class="qs">★★★★★</div><p class="qt">I have washed windows for years. Due to my medical issues, Garrison came by and gave me a quote. Reliable! On time! Great result! Will use him every year. He deserves a 5 star review.</p><div class="rev-au"><span class="rev-av">A</span><div><div class="rev-nm">Ann Hudd</div><div class="rev-lc">Google Review</div></div></div></div>
+      <div class="rev-card rv d2"><div class="qs">★★★★★</div><p class="qt">Wonderful job! Windows look terrific. We will have Garrison come every year to do our windows.</p><div class="rev-au"><span class="rev-av">K</span><div><div class="rev-nm">Kathleen Joppru</div><div class="rev-lc">Local Guide · Google</div></div></div></div>
     </div>
+    <div class="rev-cta rv"><a href="https://www.google.com/search?q=Clear+View+Window+Cleaning+Columbia+CT" target="_blank" rel="noopener" class="btn btn-ghost">Read all reviews on Google →</a></div>
   </div>
 </section>
 
@@ -733,7 +746,7 @@
 
 <!-- QUOTE BAND (lake glass) -->
 <section class="qband">
-  <div class="qband-bg" data-par="0.16"><img src="lake-glass.jpg" alt="View through a freshly cleaned lakeside window in Connecticut"></div>
+  <div class="qband-bg" data-par="0.16"><img src="sunset-lake.jpg" alt="Sunset over a Connecticut lakeside home with freshly cleaned windows"></div>
   <div class="qband-scrim"></div>
   <div class="qband-in">
     <h2 class="rv">Cleaner windows. <em>Brighter homes.</em></h2>
