@@ -118,98 +118,84 @@
   /* ===== HERO — full-bleed background, overlaid text (matches mockup) ===== */
   .hero{position:relative;background:var(--cream);overflow:hidden;}
   .hero-bg{position:absolute;inset:0;z-index:0;}
-  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 42%;opacity:0;transform:scale(1.04);transition:opacity 1.4s .1s,transform 6s ease-out;}
+  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 40%;opacity:0;transform:scale(1.04);transition:opacity 1.4s .1s,transform 7s ease-out;}
   .hero.intro .hero-bg img{opacity:1;transform:scale(1);}
-  /* cream fade on the left so overlaid text stays readable */
+  /* lighter cream fade — house stays visible behind text */
   .hero-bg-fade{position:absolute;inset:0;background:
-      linear-gradient(90deg, var(--cream) 0%, rgba(246,242,234,.96) 22%, rgba(246,242,234,.72) 38%, rgba(246,242,234,.32) 50%, rgba(246,242,234,.05) 62%, transparent 72%),
-      linear-gradient(180deg, rgba(246,242,234,.4) 0%, transparent 18%, transparent 80%, rgba(22,40,74,.12) 100%);}
+      linear-gradient(90deg, rgba(246,242,234,.92) 0%, rgba(246,242,234,.72) 18%, rgba(246,242,234,.46) 32%, rgba(246,242,234,.2) 44%, rgba(246,242,234,.04) 56%, transparent 66%),
+      linear-gradient(180deg, rgba(246,242,234,.3) 0%, transparent 16%, transparent 82%, rgba(22,40,74,.1) 100%);}
   @media(max-width:980px){.hero-bg-fade{background:
-      linear-gradient(180deg, rgba(246,242,234,.92) 0%, rgba(246,242,234,.7) 30%, rgba(246,242,234,.45) 55%, rgba(246,242,234,.15) 100%);}}
+      linear-gradient(180deg, rgba(246,242,234,.9) 0%, rgba(246,242,234,.66) 32%, rgba(246,242,234,.4) 56%, rgba(246,242,234,.12) 100%);}}
 
-  .hero-inner{position:relative;z-index:2;width:100%;max-width:1440px;margin:0 auto;padding:150px 56px 128px;display:grid;grid-template-columns:42% 58%;align-items:center;min-height:80vh;}
-  @media(max-width:1180px){.hero-inner{padding:142px 40px 116px;}}
-  @media(max-width:980px){.hero-inner{grid-template-columns:1fr;min-height:0;padding:130px 24px 90px;}}
-  .hero-left{position:relative;z-index:3;grid-column:1;max-width:560px;}
+  .hero-inner{position:relative;z-index:2;width:100%;max-width:1440px;margin:0 auto;padding:148px 56px 130px;display:grid;grid-template-columns:46% 54%;align-items:center;min-height:80vh;}
+  @media(max-width:1180px){.hero-inner{padding:140px 40px 118px;}}
+  @media(max-width:980px){.hero-inner{grid-template-columns:1fr;min-height:0;padding:128px 24px 88px;}}
+  .hero-left{position:relative;z-index:3;grid-column:1;max-width:600px;}
 
-  .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:22px;line-height:1.4;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:24px;line-height:1.4;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
   .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(216,67,53,.18);}
 
-  .hero h1{font-family:var(--head);font-size:clamp(40px,4.4vw,72px);font-weight:800;color:var(--navy);letter-spacing:-.02em;line-height:1.02;}
-  .hero h1 .ln{display:block;overflow:hidden;padding-bottom:.03em;white-space:nowrap;}
-  .hero h1 .ln span{display:block;transform:translateY(110%);transition:transform 1s cubic-bezier(.2,.8,.2,1);}
+  .hero h1{font-family:var(--head);font-size:clamp(40px,4.6vw,68px);font-weight:800;color:var(--navy);letter-spacing:-.022em;line-height:.98;}
+  .hero h1 .ln{display:block;overflow:hidden;padding-bottom:.04em;}
+  .hero h1 .ln span{display:block;transform:translateY(110%);transition:transform 1s cubic-bezier(.2,.8,.2,1);white-space:nowrap;}
   .hero.intro h1 .ln span{transform:translateY(0);}
   .hero.intro h1 .ln:nth-child(2) span{transition-delay:.1s;}
   .hero.intro h1 .ln:nth-child(3) span{transition-delay:.2s;}
   .hero h1 em{font-style:italic;font-weight:700;color:var(--red);}
 
-  /* rating row */
-  .hero-rating{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:24px 0 14px;opacity:0;transform:translateY(20px);transition:opacity .9s .35s,transform .9s .35s;}
+  /* rating row — single line under headline */
+  .hero-rating{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:26px 0 0;opacity:0;transform:translateY(20px);transition:opacity .9s .35s,transform .9s .35s;}
   .hero.intro .hero-rating{opacity:1;transform:none;}
   .hr-stars{color:var(--red);font-size:17px;letter-spacing:1.5px;}
   .hr-score{font-family:var(--head);font-weight:700;font-size:16.5px;color:var(--navy);}
-  .hr-sep{width:1px;height:15px;background:rgba(22,40,74,.2);}
-  .hr-sub{font-size:13.5px;color:var(--muted);}
+  .hr-sep{width:1px;height:15px;background:rgba(22,40,74,.22);}
+  .hr-sub{font-size:14px;color:#55617a;}
 
-  /* differentiator row */
-  .hero-diff{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:500;color:var(--navy);margin-bottom:22px;opacity:0;transform:translateY(20px);transition:opacity .9s .42s,transform .9s .42s;}
-  .hero.intro .hero-diff{opacity:1;transform:none;}
-  .hero-diff svg{width:17px;height:17px;color:var(--red);flex-shrink:0;}
-
-  /* trust bullets — two columns */
-  .hero-checks{list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:14px 28px;margin:0 0 30px;max-width:480px;opacity:0;transform:translateY(20px);transition:opacity .9s .5s,transform .9s .5s;}
-  @media(max-width:520px){.hero-checks{grid-template-columns:1fr;gap:11px;}}
-  .hero.intro .hero-checks{opacity:1;transform:none;}
-  .hero-checks li{display:inline-flex;align-items:center;gap:9px;font-size:14.5px;font-weight:500;color:var(--navy);}
-  .hero-checks svg{width:19px;height:19px;color:var(--red);flex-shrink:0;}
-
-  .hero-sub{font-size:clamp(15px,1.15vw,16.5px);color:var(--muted);max-width:520px;margin:0 0 32px;font-weight:400;line-height:1.7;opacity:0;transform:translateY(20px);transition:opacity .9s .58s,transform .9s .58s;}
+  .hero-sub{font-size:clamp(16px,1.2vw,18px);color:#46506a;max-width:480px;margin:22px 0 36px;font-weight:400;line-height:1.65;opacity:0;transform:translateY(20px);transition:opacity .9s .48s,transform .9s .48s;}
   .hero.intro .hero-sub{opacity:1;transform:none;}
 
-  .hero-btns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;transform:translateY(20px);transition:opacity .9s .66s,transform .9s .66s;}
+  .hero-btns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;transform:translateY(20px);transition:opacity .9s .58s,transform .9s .58s;}
   .hero-btns .btn{white-space:nowrap;}
-  .hero-btns .btn-ghost{background:var(--white);}
+  .hero-btns .btn-ghost{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
   .hero.intro .hero-btns{opacity:1;transform:none;}
 
   /* soft blur glow behind the floating card */
-  .hero-card-glow{position:absolute;z-index:2;right:46px;top:50%;transform:translateY(-50%);width:320px;height:340px;border-radius:50%;background:radial-gradient(circle,rgba(22,40,74,.22) 0%,transparent 70%);filter:blur(44px);opacity:0;transition:opacity 1.2s .7s;}
+  .hero-card-glow{position:absolute;z-index:2;right:48px;top:50%;transform:translateY(-50%);width:330px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(22,40,74,.18) 0%,transparent 70%);filter:blur(48px);opacity:0;transition:opacity 1.2s .7s;}
   .hero.intro .hero-card-glow{opacity:1;}
   @media(max-width:980px){.hero-card-glow{display:none;}}
 
-  /* frosted glass trust card — floating right, vertically centered */
-  .hero-card{position:absolute;z-index:3;top:50%;right:46px;transform:translateY(-50%);width:300px;
-      background:linear-gradient(155deg, rgba(248,245,238,.6), rgba(246,242,234,.42));
-      -webkit-backdrop-filter:blur(26px) saturate(150%);backdrop-filter:blur(26px) saturate(150%);
-      border:1px solid rgba(255,255,255,.5);border-radius:22px;
-      box-shadow:0 40px 80px -26px rgba(22,40,74,.45),0 1px 0 rgba(255,255,255,.6) inset,0 0 0 1px rgba(22,40,74,.04);
-      padding:10px 24px;opacity:0;transition:opacity 1s .85s,transform 1s .85s;}
+  /* frosted glass trust card — Apple-style, transparent */
+  .hero-card{position:absolute;z-index:3;top:50%;right:48px;transform:translateY(-50%);width:312px;
+      background:linear-gradient(155deg, rgba(255,255,255,.28), rgba(255,255,255,.14));
+      -webkit-backdrop-filter:blur(34px) saturate(150%);backdrop-filter:blur(34px) saturate(150%);
+      border:1px solid rgba(255,255,255,.45);border-radius:26px;
+      box-shadow:0 50px 90px -30px rgba(22,40,74,.4),0 1px 0 rgba(255,255,255,.55) inset,0 0 0 1px rgba(255,255,255,.08);
+      padding:14px 26px;opacity:0;transition:opacity 1s .85s,transform 1s .85s;}
   .hero.intro .hero-card{opacity:1;}
-  @media(max-width:1180px){.hero-card{right:30px;width:276px;padding:8px 20px;}}
-  @media(max-width:980px){.hero-card{position:relative;top:auto;right:auto;transform:none;width:auto;max-width:420px;margin:36px auto 0;grid-column:1;background:linear-gradient(155deg, rgba(255,255,255,.9), rgba(255,255,255,.8));}}
-  .hero-card-row{display:flex;gap:14px;align-items:center;padding:13px 0;}
-  .hero-card-row:not(:last-child){border-bottom:1px solid rgba(22,40,74,.1);}
-  .hci{flex-shrink:0;width:36px;height:36px;border-radius:10px;background:linear-gradient(145deg,rgba(216,67,53,.15),rgba(216,67,53,.06));display:flex;align-items:center;justify-content:center;}
-  .hci svg{width:18px;height:18px;color:var(--red);}
-  .hero-card-row .t{font-family:var(--head);font-weight:600;font-size:14.5px;color:var(--navy);line-height:1.2;}
-  .hero-card-row .d{font-size:12px;color:var(--muted);margin-top:2px;}
+  @media(max-width:1180px){.hero-card{right:32px;width:286px;padding:10px 22px;}}
+  @media(max-width:980px){.hero-card{position:relative;top:auto;right:auto;transform:none;width:auto;max-width:430px;margin:34px auto 0;grid-column:1;background:linear-gradient(155deg, rgba(255,255,255,.82), rgba(255,255,255,.68));}}
+  .hero-card-row{display:flex;gap:15px;align-items:center;padding:15px 0;}
+  .hero-card-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.28);}
+  @media(max-width:980px){.hero-card-row:not(:last-child){border-bottom-color:rgba(22,40,74,.1);}}
+  .hci{flex-shrink:0;width:38px;height:38px;border-radius:11px;background:linear-gradient(145deg,rgba(216,67,53,.18),rgba(216,67,53,.08));display:flex;align-items:center;justify-content:center;}
+  .hci svg{width:19px;height:19px;color:var(--red);}
+  .hero-card-row .t{font-family:var(--head);font-weight:600;font-size:15px;color:var(--navy);line-height:1.2;}
+  .hero-card-row .d{font-size:12.5px;color:#55617a;margin-top:2px;}
 
-  /* ===== TRUST — single horizontal stat strip ===== */
-  .trust{background:var(--cream);position:relative;z-index:4;margin-top:-46px;padding:0 0 56px;}
-  @media(max-width:980px){.trust{margin-top:24px;padding-bottom:44px;}}
-  .trust-strip{display:grid;grid-template-columns:1fr auto 1fr auto 1fr auto 1fr;align-items:center;gap:0;
-      background:var(--white);border-radius:20px;padding:26px 20px;
-      box-shadow:0 26px 60px -26px rgba(22,40,74,.3),0 2px 0 rgba(255,255,255,.6) inset;border:1px solid rgba(228,221,204,.7);}
-  @media(max-width:760px){.trust-strip{grid-template-columns:1fr 1fr;gap:22px 0;padding:24px 16px;}.ts-div{display:none;}}
-  .ts-item{display:flex;align-items:center;justify-content:center;gap:14px;padding:4px 20px;}
-  @media(max-width:760px){.ts-item{padding:8px;}}
-  .ts-ico{flex-shrink:0;width:50px;height:50px;border-radius:50%;background:rgba(216,67,53,.08);color:var(--red);display:flex;align-items:center;justify-content:center;}
-  .ts-ico svg{width:25px;height:25px;}
-  .ts-num{font-family:var(--head);font-weight:700;font-size:30px;color:var(--navy);line-height:1;}
-  .ts-num.ts-text{font-size:20px;}
-  .ts-lab{font-size:13px;color:var(--muted);margin-top:3px;}
-  .ts-stars{color:var(--red);font-size:11px;letter-spacing:1px;margin-top:3px;}
-  .ts-div{width:1px;height:54px;background:var(--line);}
+  /* ===== TRUST — single horizontal strip, typography-led, no icons ===== */
+  .trust{background:var(--cream);position:relative;z-index:4;margin-top:-52px;padding:0 0 60px;}
+  @media(max-width:980px){.trust{margin-top:22px;padding-bottom:44px;}}
+  .trust-strip{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;align-items:center;gap:0;
+      background:var(--white);border-radius:22px;padding:34px 24px;
+      box-shadow:0 30px 64px -28px rgba(22,40,74,.28),0 2px 0 rgba(255,255,255,.6) inset;border:1px solid rgba(228,221,204,.6);}
+  @media(max-width:760px){.trust-strip{grid-template-columns:1fr 1fr;gap:26px 0;padding:30px 18px;}.ts-div{display:none;}}
+  .ts-item{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2px 16px;}
+  .ts-num{font-family:var(--head);font-weight:700;font-size:clamp(28px,2.8vw,38px);color:var(--navy);line-height:1;letter-spacing:-.01em;}
+  .ts-num.ts-text{font-size:clamp(22px,2.2vw,30px);}
+  .ts-lab{font-size:12.5px;font-weight:500;letter-spacing:.04em;color:var(--muted);margin-top:8px;text-transform:uppercase;}
+  .ts-stars{color:var(--red);font-size:12px;letter-spacing:1.5px;margin-top:6px;}
+  .ts-div{width:1px;height:48px;background:var(--line);justify-self:center;}
 
   /* section base */
   section{position:relative;}
@@ -231,10 +217,10 @@
 
   /* story split */
   .story{background:var(--cream);}
-  .story-grid{display:grid;grid-template-columns:1.15fr 1fr;gap:84px;align-items:center;}
+  .story-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:96px;align-items:center;}
   @media(max-width:900px){.story-grid{grid-template-columns:1fr;gap:56px;}}
   .story-visual{position:relative;}
-  .story-visual .ph{border-radius:22px;overflow:hidden;aspect-ratio:5/6;box-shadow:0 50px 100px -32px rgba(22,40,74,.5),0 18px 44px -24px rgba(22,40,74,.32);}
+  .story-visual .ph{border-radius:22px;overflow:hidden;aspect-ratio:4/4.4;box-shadow:0 60px 110px -34px rgba(22,40,74,.52),0 20px 48px -26px rgba(22,40,74,.32);}
   .story-visual .ph::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 60%,rgba(22,40,74,.18) 100%);pointer-events:none;}
   .story-visual .ph img{width:100%;height:100%;object-fit:cover;transition:transform 1.4s cubic-bezier(.2,.8,.2,1);}
   .story-visual:hover .ph img{transform:scale(1.05);}
@@ -464,7 +450,7 @@
   @media(prefers-reduced-motion:reduce){
     .rv{opacity:1!important;transform:none!important;transition:none!important;}
     .hero-bg,.band-bg,.qband-bg{transform:none!important;}
-    .hero h1 .ln span,.hero-eyebrow,.hero-sub,.hero-btns,.hero-rating,.hero-diff,.hero-checks,.hero-bg img,.hero-card,.hero-card-glow{transform:none!important;opacity:1!important;}
+    .hero h1 .ln span,.hero-eyebrow,.hero-sub,.hero-btns,.hero-rating,.hero-bg img,.hero-card,.hero-card-glow{transform:none!important;opacity:1!important;}
   }
 </style>
 </head>
@@ -522,22 +508,10 @@
         <span class="hr-stars">★★★★★</span>
         <span class="hr-score">5.0 Rating</span>
         <span class="hr-sep"></span>
-        <span class="hr-sub">Based on 100+ Connecticut homeowners</span>
+        <span class="hr-sub">100+ Connecticut homeowners</span>
       </div>
 
-      <div class="hero-diff">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg>
-        Using Pure-Water Technology for Spot-Free Results
-      </div>
-
-      <ul class="hero-checks">
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg>Fully Insured</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg>Local Connecticut Team</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg>Pure Water Technology</li>
-        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg>Satisfaction Guaranteed</li>
-      </ul>
-
-      <p class="hero-sub">Premium window cleaning for Eastern Connecticut homeowners. Pure-water technology, fully insured, and spotless results — every single time.</p>
+      <p class="hero-sub">Crystal-clear windows that make your home look its best.</p>
 
       <div class="hero-btns">
         <button class="btn btn-red btn-xl" onclick="openModal()">Get My Free Quote <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
@@ -560,23 +534,24 @@
   <div class="wrap">
     <div class="trust-strip rv">
       <div class="ts-item">
-        <span class="ts-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-7 9 7M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
-        <div><div class="ts-num" data-count="100" data-suffix="+">0</div><div class="ts-lab">Homes Served</div></div>
+        <div class="ts-num" data-count="100" data-suffix="+">0</div>
+        <div class="ts-lab">Homes Served</div>
       </div>
       <div class="ts-div"></div>
       <div class="ts-item">
-        <span class="ts-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.6.6-5 4.3 1.5 6.4L12 16.8 6 19.6l1.5-6.4-5-4.3 6.6-.6z"/></svg></span>
-        <div><div class="ts-num">5.0</div><div class="ts-lab">Google Rating</div><div class="ts-stars">★★★★★</div></div>
+        <div class="ts-num">5.0</div>
+        <div class="ts-lab">Google Rating</div>
+        <div class="ts-stars">★★★★★</div>
       </div>
       <div class="ts-div"></div>
       <div class="ts-item">
-        <span class="ts-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21s7-5.7 7-11a7 7 0 0 0-14 0c0 5.3 7 11 7 11z"/><circle cx="12" cy="10" r="2.4"/></svg></span>
-        <div><div class="ts-num" data-count="3" data-suffix="+">0</div><div class="ts-lab">Years Local</div></div>
+        <div class="ts-num ts-text">Eastern CT</div>
+        <div class="ts-lab">Locally Owned</div>
       </div>
       <div class="ts-div"></div>
       <div class="ts-item">
-        <span class="ts-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span>
-        <div><div class="ts-num ts-text">Pure Water</div><div class="ts-lab">Technology</div></div>
+        <div class="ts-num ts-text">Pure Water</div>
+        <div class="ts-lab">Technology</div>
       </div>
     </div>
   </div>
