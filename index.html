@@ -149,7 +149,7 @@
   .hero.intro .hero-photo-bleed{opacity:1;}
   .hero-photo-bleed img{width:100%;height:100%;object-fit:cover;object-position:center 42%;}
   /* soft cream fade on the LEFT edge only so it melts into the text side */
-  .hero-photo-bleed::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,var(--cream) 0%,rgba(245,240,230,.7) 7%,rgba(245,240,230,.25) 16%,transparent 28%);}
+  .hero-photo-bleed::before{content:"";position:absolute;inset:0;z-index:1;background:linear-gradient(110deg,var(--cream) 0%,rgba(245,240,230,.72) 9%,rgba(245,240,230,.28) 19%,transparent 32%);}
   @media(max-width:980px){.hero-photo-bleed::before{background:linear-gradient(0deg,var(--cream) 0%,transparent 28%);}}
   .hero-card{position:absolute;top:50%;right:40px;transform:translateY(-50%);z-index:2;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px 22px;width:266px;opacity:0;transition:opacity 1s .85s;}
   .hero.intro .hero-card{opacity:1;}
