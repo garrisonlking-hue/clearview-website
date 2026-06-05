@@ -13,7 +13,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html { scroll-behavior: smooth; }
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; color: #0f172a; background: #F6F2EA; line-height: 1.6; overflow-x: hidden; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; color: #0f172a; background: #FFFFFF; line-height: 1.6; overflow-x: hidden; }
     img { max-width: 100%; display: block; }
     button { font-family: inherit; cursor: pointer; border: none; }
     input, textarea, select { font-family: inherit; }
@@ -36,7 +36,7 @@
       --gray-900: #0f172a;
     }
 
-    .hero-section { background: linear-gradient(180deg, #F6F2EA 0%, #FFFFFF 100%); position: relative; min-height: 100vh; overflow: hidden; }
+    .hero-section { background: #FFFFFF; position: relative; min-height: 100vh; overflow: hidden; }
     .hero-section::before { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: radial-gradient(circle at top right, rgba(201,71,58,0.06) 0%, transparent 60%); pointer-events: none; }
 
     .nav { position: relative; z-index: 10; padding: 24px 2.5rem; }
@@ -59,8 +59,8 @@
     @media (max-width: 1024px) { .mobile-btn { display: flex; } }
 
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 28px; font-size: 15px; font-weight: 600; transition: all 0.2s ease; cursor: pointer; text-decoration: none; border: none; }
-    .btn-primary { background: var(--blue-bright); color: white; border-radius: 12px; box-shadow: 0 4px 14px rgba(201,71,58,0.4); }
-    .btn-primary:hover { background: #a83a2f; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,71,58,0.5); }
+    .btn-primary { background: #F6F2EA; color: #16284A; border: 1.5px solid #16284A; border-radius: 12px; box-shadow: 0 4px 14px rgba(22,40,74,0.12); }
+    .btn-primary:hover { background: #ece4d3; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,40,74,0.18); }
     .btn-outline-light { background: transparent; color: #16284A; border-radius: 12px; border: 1.5px solid rgba(22,40,74,0.35); }
     .btn-outline-light:hover { background: rgba(22,40,74,0.06); border-color: rgba(22,40,74,0.6); }
     .btn-nav { padding: 12px 24px; font-size: 14px; border-radius: 10px; }
