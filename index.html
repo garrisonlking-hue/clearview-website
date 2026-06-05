@@ -15,7 +15,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500;1,9..144,600&family=Outfit:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;0,800;1,500;1,600;1,700&family=Inter:wght@300;400;500;600;700&family=Dancing+Script:wght@600;700&display=swap" rel="stylesheet">
 
 <script type="application/ld+json">
 {
@@ -47,11 +47,11 @@
   *{margin:0;padding:0;box-sizing:border-box;}
   html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;}
   :root{
-    --navy:#1B2A4A; --navy-2:#243a63; --red:#C8362F; --red-2:#a82c26;
-    --cream:#F5F0E6; --cream-2:#ece4d3; --white:#fff;
+    --navy:#16284A; --navy-2:#1f3460; --red:#D84335; --red-2:#bb362a;
+    --cream:#F6F2EA; --cream-2:#ece4d3; --white:#fff;
     --ink:#1d2433; --muted:#6f6a5f; --line:#e4ddcc;
-    --head:'Fraunces',Georgia,serif; --body:'Outfit',-apple-system,sans-serif;
-    --sh-sm:0 2px 10px rgba(27,42,74,.06); --sh:0 18px 50px rgba(27,42,74,.12); --sh-lg:0 40px 90px rgba(27,42,74,.18);
+    --head:'Playfair Display',Georgia,serif; --body:'Inter',-apple-system,sans-serif;
+    --sh-sm:0 2px 10px rgba(22,40,74,.06); --sh:0 18px 50px rgba(22,40,74,.12); --sh-lg:0 40px 90px rgba(22,40,74,.18);
   }
   body{font-family:var(--body);color:var(--ink);background:var(--cream);line-height:1.65;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
   img{max-width:100%;display:block;}
@@ -74,11 +74,18 @@
   .btn-light{background:rgba(255,255,255,.14);color:#fff;border:1.5px solid rgba(255,255,255,.4);backdrop-filter:blur(8px);}
   .btn-light:hover{background:rgba(255,255,255,.24);transform:translateY(-3px);}
   .btn-lg{padding:17px 36px;font-size:16px;}
+  .btn-xl{padding:21px 44px;font-size:16.5px;border-radius:999px;}
+  .btn-red.btn-xl{box-shadow:0 12px 32px rgba(216,67,53,.34),0 2px 6px rgba(216,67,53,.2);}
+  .btn-red.btn-xl:hover{box-shadow:0 20px 46px rgba(216,67,53,.46);transform:translateY(-4px);}
+  .btn-ghost.btn-xl{border-width:1.5px;border-color:rgba(22,40,74,.3);}
 
   /* announce + header */
-  .announce{background:var(--navy);color:rgba(255,255,255,.92);font-size:13.5px;text-align:center;padding:9px 20px;position:fixed;top:0;left:0;right:0;z-index:60;}
-  header.nav{position:fixed;top:38px;left:0;right:0;z-index:50;padding:18px 0;background:rgba(245,240,230,.92);backdrop-filter:blur(14px);transition:box-shadow .35s,padding .35s;}
-  .announce strong{color:#fff;}
+  .announce{background:var(--navy);color:rgba(255,255,255,.86);font-size:13.5px;letter-spacing:.01em;text-align:center;padding:11px 20px;position:fixed;top:0;left:0;right:0;z-index:60;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap;}
+  .announce strong{color:#fff;font-weight:600;}
+  .ann-stars{color:var(--red);letter-spacing:2px;font-size:12.5px;}
+  .ann-dot{opacity:.4;}
+  @media(max-width:600px){.announce .ann-dot,.announce{font-size:12px;}}
+  header.nav{position:fixed;top:42px;left:0;right:0;z-index:50;padding:18px 0;background:rgba(246,242,234,.92);backdrop-filter:blur(14px);transition:box-shadow .35s,padding .35s;}
   header.nav.solid{box-shadow:var(--sh-sm);padding:13px 0;}
   .nav-in{width:100%;margin:0;padding:0 56px 0 64px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
   @media(max-width:1180px){.nav-in{padding-left:40px;padding-right:40px;}}
@@ -108,72 +115,96 @@
   .mobile-menu a{font-family:var(--head);font-size:30px;color:#fff;padding:16px 0;border-bottom:1px solid rgba(255,255,255,.12);}
   .mobile-menu .btn{margin-top:26px;}
 
-  /* hero — TRUE full-bleed: photo fills right half top-to-bottom, no box, fades into cream on left */
-  .hero{position:relative;background:var(--cream);overflow:hidden;}
-  .hero-grid{position:relative;width:100%;margin:0;padding:104px 0 0 64px;display:grid;grid-template-columns:minmax(0,620px) 1fr;gap:0;align-items:center;min-height:72vh;}
-  @media(max-width:1180px){.hero-grid{padding-left:40px;}}
-  @media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:0;min-height:0;padding:96px 22px 0;}}
-  .hero-left{position:relative;z-index:3;padding:32px 0;}
-  @media(max-width:980px){.hero-left{padding:0 0 36px;}}
-  .hero-grid-spacer{display:block;}
-  @media(max-width:980px){.hero-grid-spacer{display:none;}.hero{display:flex;flex-direction:column;}.hero-grid{order:1;}.hero-right{order:2;}}
-  .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:20px;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
+  /* ===== HERO — premium luxury redesign ===== */
+  .hero{position:relative;background:
+      radial-gradient(120% 90% at 88% 0%, rgba(22,40,74,.05) 0%, transparent 55%),
+      linear-gradient(180deg,#faf7f0 0%, var(--cream) 100%);overflow:hidden;}
+  .hero-grid{position:relative;width:100%;max-width:1480px;margin:0 auto;padding:150px 60px 84px;display:grid;grid-template-columns:43% 57%;gap:60px;align-items:center;min-height:84vh;}
+  @media(max-width:1180px){.hero-grid{padding:140px 40px 64px;gap:44px;}}
+  @media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:0;min-height:0;padding:120px 24px 0;}}
+  .hero-left{position:relative;z-index:3;}
+  @media(max-width:980px){.hero-left{padding:0 0 40px;}}
+
+  .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:600;font-size:12px;letter-spacing:.24em;text-transform:uppercase;color:var(--navy);margin-bottom:28px;line-height:1.4;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
-  .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(200,54,47,.2);}
-  .hero h1{font-size:clamp(40px,4.4vw,60px);font-weight:600;color:var(--navy);letter-spacing:-.02em;line-height:1.05;}
-  .hero h1 .ln{display:block;overflow:hidden;}
+  .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(216,67,53,.18);}
+
+  .hero h1{font-family:var(--head);font-size:clamp(44px,5vw,82px);font-weight:700;color:var(--navy);letter-spacing:-.018em;line-height:1.03;}
+  .hero h1 .ln{display:block;overflow:hidden;padding-bottom:.02em;white-space:nowrap;}
   .hero h1 .ln span{display:block;transform:translateY(110%);transition:transform 1s cubic-bezier(.2,.8,.2,1);}
   .hero.intro h1 .ln span{transform:translateY(0);}
   .hero.intro h1 .ln:nth-child(2) span{transition-delay:.1s;}
   .hero.intro h1 .ln:nth-child(3) span{transition-delay:.2s;}
-  .hero h1 em{font-style:italic;font-weight:500;color:var(--red);}
-  .hero-sub{font-size:clamp(15px,1.4vw,18px);color:var(--muted);max-width:44ch;margin:22px 0 30px;font-weight:400;line-height:1.6;opacity:0;transform:translateY(20px);transition:opacity .9s .4s,transform .9s .4s;}
+  .hero h1 em{font-style:italic;font-weight:600;color:var(--red);}
+
+  /* rating row */
+  .hero-rating{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin:30px 0 18px;opacity:0;transform:translateY(20px);transition:opacity .9s .35s,transform .9s .35s;}
+  .hero.intro .hero-rating{opacity:1;transform:none;}
+  .hr-stars{color:var(--red);font-size:18px;letter-spacing:2px;}
+  .hr-score{font-family:var(--head);font-weight:700;font-size:17px;color:var(--navy);}
+  .hr-sep{width:1px;height:16px;background:var(--line);}
+  .hr-sub{font-size:14px;color:var(--muted);}
+
+  /* checks row */
+  .hero-checks{list-style:none;display:flex;flex-wrap:wrap;gap:9px 20px;margin:0 0 26px;opacity:0;transform:translateY(20px);transition:opacity .9s .45s,transform .9s .45s;}
+  .hero.intro .hero-checks{opacity:1;transform:none;}
+  .hero-checks li{display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:500;color:var(--navy);}
+  .hero-checks svg{width:16px;height:16px;color:var(--red);flex-shrink:0;}
+
+  .hero-sub{font-size:clamp(15px,1.25vw,17.5px);color:var(--muted);max-width:46ch;margin:0 0 34px;font-weight:400;line-height:1.7;opacity:0;transform:translateY(20px);transition:opacity .9s .55s,transform .9s .55s;}
   .hero.intro .hero-sub{opacity:1;transform:none;}
-  .hero-btns{display:flex;gap:14px;flex-wrap:nowrap;margin-bottom:28px;opacity:0;transform:translateY(20px);transition:opacity .9s .55s,transform .9s .55s;}
-  @media(max-width:420px){.hero-btns{flex-wrap:wrap;}}
+
+  .hero-btns{display:flex;gap:16px;flex-wrap:wrap;opacity:0;transform:translateY(20px);transition:opacity .9s .65s,transform .9s .65s;}
   .hero-btns .btn{white-space:nowrap;}
   .hero.intro .hero-btns{opacity:1;transform:none;}
-  .hero-proof{display:flex;align-items:center;gap:14px;opacity:0;transform:translateY(20px);transition:opacity .9s .7s,transform .9s .7s;}
-  .hero.intro .hero-proof{opacity:1;transform:none;}
-  .hero-faces{display:flex;}
-  .hero-faces span{width:38px;height:38px;border-radius:50%;border:2px solid var(--cream);margin-left:-10px;background:var(--navy);color:#fff;font-family:var(--head);font-weight:600;font-size:15px;display:flex;align-items:center;justify-content:center;}
-  .hero-faces span:first-child{margin-left:0;}
-  .hero-proof-tx .stars{color:var(--red);font-size:15px;letter-spacing:1px;}
-  .hero-proof-tx .rt{font-weight:600;font-size:14px;color:var(--navy);}
-  .hero-proof-tx .sub{font-size:13px;color:var(--muted);}
-  /* full-bleed photo — direct child of .hero, anchored to TRUE right viewport edge */
-  .hero-right{position:absolute;top:0;bottom:0;right:0;width:56%;z-index:1;}
-  @media(max-width:980px){.hero-right{position:relative;top:auto;bottom:auto;right:auto;width:auto;margin:0 -22px;height:auto;}}
-  .hero-photo-bleed{position:absolute;inset:0;opacity:0;transition:opacity 1.2s .3s;}
-  @media(max-width:980px){.hero-photo-bleed{position:relative;aspect-ratio:4/3;}}
-  .hero.intro .hero-photo-bleed{opacity:1;}
-  .hero-photo-bleed img{position:relative;z-index:0;width:100%;height:100%;object-fit:cover;object-position:center 42%;}
-  /* soft cream fade on the LEFT edge only so it melts into the text side */
-  .hero-photo-bleed::before{content:"";position:absolute;inset:0;z-index:5;pointer-events:none;background:linear-gradient(110deg,var(--cream) 0%,rgba(245,240,230,.72) 9%,rgba(245,240,230,.28) 19%,transparent 32%);}
-  @media(max-width:980px){.hero-photo-bleed::before{background:linear-gradient(0deg,var(--cream) 0%,transparent 28%);}}
-  .hero-card{position:absolute;top:50%;right:40px;transform:translateY(-50%);z-index:2;background:#fff;border-radius:16px;box-shadow:var(--sh);padding:20px 22px;width:266px;opacity:0;transition:opacity 1s .85s;}
-  .hero.intro .hero-card{opacity:1;}
-  @media(max-width:1180px){.hero-card{right:24px;width:244px;padding:16px 18px;}}
-  @media(max-width:980px){.hero-card{position:static;transform:none;width:auto;max-width:340px;margin:-46px auto 0;}}
-  .hero-card-row{display:flex;gap:12px;align-items:flex-start;padding:9px 0;}
-  .hero-card-row:not(:last-child){border-bottom:1px solid var(--line);}
-  .hero-card-row svg{width:22px;height:22px;color:var(--red);flex-shrink:0;margin-top:2px;}
-  .hero-card-row .t{font-family:var(--head);font-weight:600;font-size:15px;color:var(--navy);line-height:1.2;}
-  .hero-card-row .d{font-size:12.5px;color:var(--muted);margin-top:1px;}
 
-  /* trust marquee strip */
-  .trust{background:var(--white);border-bottom:1px solid var(--line);position:relative;z-index:3;}
-  .trust-in{display:grid;grid-template-columns:repeat(4,1fr);}
+  /* right column / luxury photo */
+  .hero-right{position:relative;z-index:1;}
+  @media(max-width:980px){.hero-right{margin:0 -24px;}}
+  .hero-photo-bleed{position:relative;border-radius:24px;overflow:hidden;aspect-ratio:4/3.05;box-shadow:0 50px 110px -30px rgba(22,40,74,.5),0 18px 44px -22px rgba(22,40,74,.35);opacity:0;transform:translateY(26px) scale(.985);transition:opacity 1.2s .25s,transform 1.2s .25s;}
+  @media(max-width:980px){.hero-photo-bleed{border-radius:0;aspect-ratio:4/3.2;}}
+  .hero.intro .hero-photo-bleed{opacity:1;transform:none;}
+  .hero-photo-bleed img{width:100%;height:100%;object-fit:cover;object-position:center 46%;transform:scale(1.001);}
+  /* glass sheen sweep across the glazing */
+  .hero-glass-sheen{position:absolute;inset:0;z-index:1;pointer-events:none;background:
+      linear-gradient(125deg, rgba(255,255,255,.32) 0%, rgba(255,255,255,0) 26%),
+      linear-gradient(200deg, rgba(22,40,74,.18) 0%, transparent 38%);mix-blend-mode:screen;}
+  .hero-glass-sheen::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 55%,rgba(22,40,74,.22) 100%);mix-blend-mode:multiply;}
+
+  /* soft blur glow behind the floating card for depth */
+  .hero-card-glow{position:absolute;z-index:2;right:40px;top:50%;transform:translateY(-50%);width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(22,40,74,.28) 0%,transparent 70%);filter:blur(34px);opacity:0;transition:opacity 1.2s .7s;}
+  .hero.intro .hero-card-glow{opacity:1;}
+  @media(max-width:560px){.hero-card-glow{display:none;}}
+
+  /* frosted glass trust card */
+  .hero-card{position:absolute;z-index:3;top:50%;right:24px;transform:translateY(-50%);width:272px;
+      background:linear-gradient(155deg, rgba(255,255,255,.86), rgba(255,255,255,.7));
+      -webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);
+      border:1px solid rgba(255,255,255,.7);border-radius:20px;
+      box-shadow:0 30px 70px -22px rgba(22,40,74,.45),0 2px 0 rgba(255,255,255,.6) inset;
+      padding:10px 22px;opacity:0;transition:opacity 1s .85s,transform 1s .85s;}
+  .hero.intro .hero-card{opacity:1;}
+  @media(max-width:1180px){.hero-card{right:16px;width:248px;padding:6px 16px;}}
+  @media(max-width:980px){.hero-card{position:relative;top:auto;right:auto;transform:none;width:auto;max-width:380px;margin:-54px auto 0;}}
+  .hero-card-row{display:flex;gap:13px;align-items:flex-start;padding:13px 0;}
+  .hero-card-row:not(:last-child){border-bottom:1px solid rgba(22,40,74,.1);}
+  .hci{flex-shrink:0;width:34px;height:34px;border-radius:10px;background:rgba(216,67,53,.1);display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .hci svg{width:18px;height:18px;color:var(--red);}
+  .hero-card-row .t{font-family:var(--head);font-weight:600;font-size:14.5px;color:var(--navy);line-height:1.2;}
+  .hero-card-row .d{font-size:12px;color:var(--muted);margin-top:2px;}
+
+  /* ===== TRUST — premium stat cards ===== */
+  .trust{background:var(--cream);position:relative;z-index:3;padding:54px 0 60px;}
+  @media(max-width:760px){.trust{padding:40px 0 44px;}}
+  .trust-in{display:grid;grid-template-columns:repeat(4,1fr);gap:22px;}
   @media(max-width:900px){.trust-in{grid-template-columns:1fr 1fr;}}
-  @media(max-width:520px){.trust-in{grid-template-columns:1fr;}}
-  .trust-cell{display:flex;gap:15px;align-items:center;padding:28px 30px;border-right:1px solid var(--line);}
-  .trust-cell:last-child{border-right:none;}
-  @media(max-width:900px){.trust-cell:nth-child(2n){border-right:none;}.trust-cell{border-bottom:1px solid var(--line);}}
-  @media(max-width:520px){.trust-cell{border-right:none;}}
-  .trust-ico{width:40px;height:40px;flex-shrink:0;color:var(--red);}
-  .trust-ico svg{width:40px;height:40px;}
-  .trust-t{font-family:var(--head);font-weight:600;font-size:16px;color:var(--navy);}
-  .trust-d{font-size:13px;color:var(--muted);line-height:1.4;}
+  @media(max-width:520px){.trust-in{grid-template-columns:1fr 1fr;gap:14px;}}
+  .stat-card{background:var(--white);border:1px solid var(--line);border-radius:18px;padding:30px 26px;text-align:center;box-shadow:var(--sh-sm);transition:transform .3s cubic-bezier(.2,.8,.2,1),box-shadow .3s;}
+  .stat-card:hover{transform:translateY(-6px);box-shadow:0 26px 56px -18px rgba(22,40,74,.28);}
+  .stat-ico{display:inline-flex;width:44px;height:44px;border-radius:12px;background:rgba(216,67,53,.09);color:var(--red);align-items:center;justify-content:center;margin-bottom:16px;}
+  .stat-ico svg{width:24px;height:24px;}
+  .stat-num{font-family:var(--head);font-weight:700;font-size:clamp(32px,3.6vw,44px);color:var(--navy);line-height:1;}
+  .stat-lab{font-size:13.5px;font-weight:500;letter-spacing:.02em;color:var(--muted);margin-top:8px;}
 
   /* section base */
   section{position:relative;}
@@ -422,13 +453,13 @@
   @media(prefers-reduced-motion:reduce){
     .rv{opacity:1!important;transform:none!important;transition:none!important;}
     .hero-bg,.band-bg,.qband-bg{transform:none!important;}
-    .hero h1 .ln span,.hero-eyebrow,.hero-sub,.hero-btns{transform:none!important;opacity:1!important;}
+    .hero h1 .ln span,.hero-eyebrow,.hero-sub,.hero-btns,.hero-rating,.hero-checks,.hero-photo-bleed,.hero-card,.hero-card-glow{transform:none!important;opacity:1!important;}
   }
 </style>
 </head>
 <body id="top">
 
-<div class="announce" id="announce"><strong>Now booking spring &amp; summer dates</strong> — current lead time ~2 weeks. Reserve early to lock your neighborhood rate.</div>
+<div class="announce" id="announce"><span class="ann-stars">★★★★★</span> <strong>Trusted by homeowners across Eastern Connecticut</strong> <span class="ann-dot">·</span> Now booking Summer 2026 projects</div>
 
 <header class="nav" id="nav">
   <div class="nav-in">
@@ -463,15 +494,6 @@
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-right">
-    <div class="hero-photo-bleed"><img src="hero-barn.jpg" alt="Clear View cleaning second-story windows on a Connecticut home with the pure-water pole system"></div>
-    <div class="hero-card">
-      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
-      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
-      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg><div><div class="t">Local CT Team</div><div class="d">Proudly local, always on time</div></div></div>
-      <div class="hero-card-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
-    </div>
-  </div>
   <div class="hero-grid">
     <div class="hero-left">
       <div class="hero-eyebrow"><span class="dot"></span>Locally Owned · Eastern Connecticut</div>
@@ -480,30 +502,70 @@
         <span class="ln"><span>You'll Forget</span></span>
         <span class="ln"><span><em>They're There.</em></span></span>
       </h1>
-      <p class="hero-sub">Premium window cleaning for Eastern Connecticut homeowners. Pure-water technology. Fully insured. Spotless results every time.</p>
-      <div class="hero-btns">
-        <button class="btn btn-red btn-lg" onclick="openModal()">Get a Free Quote</button>
-        <a href="#work" class="btn btn-ghost btn-lg">See Our Work</a>
+
+      <div class="hero-rating">
+        <span class="hr-stars">★★★★★</span>
+        <span class="hr-score">5.0 Rating</span>
+        <span class="hr-sep"></span>
+        <span class="hr-sub">Based on 100+ Connecticut homeowners</span>
       </div>
-      <div class="hero-proof">
-        <div class="hero-faces"><span>S</span><span>J</span><span>L</span><span>M</span></div>
-        <div class="hero-proof-tx">
-          <div class="stars">★★★★★ <span class="rt">5.0</span></div>
-          <div class="sub">Loved by homeowners across Eastern CT</div>
-        </div>
+
+      <ul class="hero-checks">
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4 10-10"/></svg>Fully Insured</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4 10-10"/></svg>Pure Water Technology</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4 10-10"/></svg>Local Team</li>
+        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M5 12l4 4 10-10"/></svg>Satisfaction Guaranteed</li>
+      </ul>
+
+      <p class="hero-sub">Premium window cleaning for Eastern Connecticut homeowners. Pure-water technology, fully insured, and spotless results — every single time.</p>
+
+      <div class="hero-btns">
+        <button class="btn btn-red btn-xl" onclick="openModal()">Get Free Quote</button>
+        <a href="#work" class="btn btn-ghost btn-xl">See Our Work</a>
       </div>
     </div>
-    <div class="hero-grid-spacer" aria-hidden="true"></div>
+
+    <div class="hero-right">
+      <div class="hero-photo-bleed">
+        <img src="images/hero-luxury.jpg" alt="Luxury Connecticut home with large black-framed windows reflecting golden-hour light and surrounding trees">
+        <div class="hero-glass-sheen" aria-hidden="true"></div>
+      </div>
+      <div class="hero-card-glow" aria-hidden="true"></div>
+      <div class="hero-card">
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg></span><div><div class="t">Local Connecticut Team</div><div class="d">Proudly local, always on time</div></div></div>
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12l4 4 10-10"/></svg></span><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
+      </div>
+    </div>
   </div>
 </section>
 
 <!-- TRUST -->
 <section class="trust" id="trust">
-  <div class="trust-in">
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="trust-t">Fully Insured</div><div class="trust-d">Your home protected</div></div></div>
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 2l2.9 6.3 6.6.6-5 4.3 1.5 6.4L12 16.8 6 19.6l1.5-6.4-5-4.3 6.6-.6z"/></svg></span><div><div class="trust-t">5.0 Star Rating</div><div class="trust-d">Real Google reviews</div></div></div>
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span><div><div class="trust-t">Pure Water System</div><div class="trust-d">Spot-free results</div></div></div>
-    <div class="trust-cell"><span class="trust-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 11l9-7 9 7M5 10v9h14v-9M9 19v-5h6v5"/></svg></span><div><div class="trust-t">Local & Trusted</div><div class="trust-d">3+ years in CT</div></div></div>
+  <div class="wrap">
+    <div class="trust-in">
+      <div class="stat-card rv">
+        <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 11l9-7 9 7M5 10v9h14v-9M9 19v-5h6v5"/></svg></span>
+        <div class="stat-num" data-count="100" data-suffix="+">0</div>
+        <div class="stat-lab">Homes Served</div>
+      </div>
+      <div class="stat-card rv d1">
+        <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 2l2.9 6.3 6.6.6-5 4.3 1.5 6.4L12 16.8 6 19.6l1.5-6.4-5-4.3 6.6-.6z"/></svg></span>
+        <div class="stat-num">5.0</div>
+        <div class="stat-lab">Google Rating</div>
+      </div>
+      <div class="stat-card rv d2">
+        <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span>
+        <div class="stat-num" data-count="3" data-suffix="+">0</div>
+        <div class="stat-lab">Years Local</div>
+      </div>
+      <div class="stat-card rv d3">
+        <span class="stat-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span>
+        <div class="stat-num" data-count="100" data-suffix="%">0</div>
+        <div class="stat-lab">Satisfaction Focused</div>
+      </div>
+    </div>
   </div>
 </section>
 
