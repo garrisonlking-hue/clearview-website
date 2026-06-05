@@ -127,17 +127,17 @@
   @media(max-width:980px){.hero-bg-fade{background:
       linear-gradient(180deg, rgba(246,242,234,.86) 0%, rgba(246,242,234,.58) 34%, rgba(246,242,234,.3) 58%, rgba(246,242,234,.08) 100%);}}
 
-  .hero-inner{position:relative;z-index:2;width:100%;max-width:1440px;margin:0 auto;padding:160px 56px 140px;display:grid;grid-template-columns:35% 65%;align-items:center;min-height:84vh;}
-  @media(max-width:1180px){.hero-inner{padding:148px 40px 124px;grid-template-columns:40% 60%;}}
+  .hero-inner{position:relative;z-index:2;width:100%;max-width:1440px;margin:0 auto;padding:150px 56px 128px;display:grid;grid-template-columns:45% 55%;align-items:center;min-height:82vh;}
+  @media(max-width:1180px){.hero-inner{padding:140px 40px 118px;grid-template-columns:48% 52%;}}
   @media(max-width:980px){.hero-inner{grid-template-columns:1fr;min-height:0;padding:132px 24px 96px;}}
-  .hero-left{position:relative;z-index:3;grid-column:1;max-width:520px;}
-  .hero-left h1,.hero-left .hero-eyebrow,.hero-left .hero-rating,.hero-left .hero-sub{text-shadow:0 1px 24px rgba(246,242,234,.85);}
+  .hero-left{position:relative;z-index:3;grid-column:1;max-width:560px;}
+  .hero-left h1,.hero-left .hero-eyebrow,.hero-left .hero-rating,.hero-left .hero-sub{text-shadow:0 1px 22px rgba(246,242,234,.7);}
 
   .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:28px;line-height:1.4;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
   .hero-eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--red);box-shadow:0 0 0 4px rgba(216,67,53,.18);}
 
-  .hero h1{font-family:var(--head);font-size:clamp(38px,3.9vw,58px);font-weight:800;color:var(--navy);letter-spacing:-.022em;line-height:1.0;}
+  .hero h1{font-family:var(--head);font-size:clamp(40px,4.5vw,66px);font-weight:800;color:var(--navy);letter-spacing:-.022em;line-height:.98;}
   .hero h1 .ln{display:block;overflow:hidden;padding-bottom:.05em;}
   .hero h1 .ln span{display:block;transform:translateY(110%);transition:transform 1s cubic-bezier(.2,.8,.2,1);}
   .hero.intro h1 .ln span{transform:translateY(0);}
@@ -161,19 +161,42 @@
   .hero-btns .btn-ghost{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
   .hero.intro .hero-btns{opacity:1;transform:none;}
 
-  /* ===== TRUST — elegant typographic row, no container ===== */
-  .trust{background:var(--cream);position:relative;z-index:4;padding:18px 0 64px;}
-  @media(max-width:980px){.trust{padding:8px 0 48px;}}
-  .trust-strip{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;}
-  .ts-item{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6px 48px;}
-  @media(max-width:980px){.ts-item{padding:14px 28px;}}
-  @media(max-width:560px){.ts-item{padding:12px 20px;flex:1 1 40%;}}
+  /* soft blur glow behind the floating card */
+  .hero-card-glow{position:absolute;z-index:2;right:42px;top:50%;transform:translateY(-50%);width:340px;height:380px;border-radius:50%;background:radial-gradient(circle,rgba(22,40,74,.16) 0%,transparent 70%);filter:blur(50px);opacity:0;transition:opacity 1.2s .7s;}
+  .hero.intro .hero-card-glow{opacity:1;}
+  @media(max-width:980px){.hero-card-glow{display:none;}}
+
+  /* frosted glass trust card — top-right, vertically centered */
+  .hero-card{position:absolute;z-index:3;top:50%;right:42px;transform:translateY(-50%);width:336px;
+      background:linear-gradient(155deg, rgba(255,255,255,.32), rgba(255,255,255,.16));
+      -webkit-backdrop-filter:blur(32px) saturate(150%);backdrop-filter:blur(32px) saturate(150%);
+      border:1px solid rgba(255,255,255,.5);border-radius:24px;
+      box-shadow:0 50px 90px -30px rgba(22,40,74,.42),0 1px 0 rgba(255,255,255,.55) inset;
+      padding:14px 28px;opacity:0;transition:opacity 1s .85s;}
+  .hero.intro .hero-card{opacity:1;}
+  @media(max-width:1180px){.hero-card{right:28px;width:300px;padding:10px 22px;}}
+  @media(max-width:980px){.hero-card{position:relative;top:auto;right:auto;transform:none;width:auto;max-width:430px;margin:34px auto 0;grid-column:1;background:linear-gradient(155deg, rgba(255,255,255,.86), rgba(255,255,255,.72));}}
+  .hero-card-row{display:flex;gap:18px;align-items:flex-start;padding:17px 0;}
+  .hero-card-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.3);}
+  @media(max-width:980px){.hero-card-row:not(:last-child){border-bottom-color:rgba(22,40,74,.1);}}
+  .hci{flex-shrink:0;width:34px;height:34px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .hci svg{width:22px;height:22px;color:var(--red);}
+  .hero-card-row .t{font-family:var(--head);font-weight:700;font-size:15.5px;color:var(--navy);line-height:1.2;}
+  .hero-card-row .d{font-size:12.5px;color:#55617a;margin-top:3px;}
+
+  /* ===== TRUST — single white strip with vertical dividers ===== */
+  .trust{background:var(--cream);position:relative;z-index:4;margin-top:-46px;padding:0 0 70px;}
+  @media(max-width:980px){.trust{margin-top:24px;padding-bottom:48px;}}
+  .trust-strip{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;align-items:center;gap:0;
+      background:var(--white);border-radius:18px;padding:30px 20px;
+      box-shadow:0 34px 70px -30px rgba(22,40,74,.22),0 2px 0 rgba(255,255,255,.6) inset;border:1px solid rgba(228,221,204,.55);}
+  @media(max-width:760px){.trust-strip{grid-template-columns:1fr 1fr;gap:24px 0;padding:28px 16px;}.ts-div{display:none;}}
+  .ts-item{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:2px 16px;}
   .ts-num{font-family:var(--head);font-weight:700;font-size:clamp(26px,2.6vw,36px);color:var(--navy);line-height:1;letter-spacing:-.01em;}
-  .ts-num.ts-text{font-size:clamp(20px,2vw,27px);}
-  .ts-lab{font-size:12px;font-weight:500;letter-spacing:.1em;color:var(--muted);margin-top:9px;text-transform:uppercase;}
+  .ts-num.ts-text{font-size:clamp(20px,2vw,28px);}
+  .ts-lab{font-size:12px;font-weight:500;letter-spacing:.04em;color:var(--muted);margin-top:9px;text-transform:capitalize;}
   .ts-stars{color:var(--red);font-size:12px;letter-spacing:1.5px;margin-top:7px;}
-  .ts-div{width:1px;height:46px;background:var(--line);}
-  @media(max-width:560px){.ts-div{display:none;}}
+  .ts-div{width:1px;height:62px;background:var(--line);justify-self:center;}
 
   /* section base */
   section{position:relative;}
@@ -452,6 +475,7 @@
     .rv{opacity:1!important;transform:none!important;transition:none!important;}
     .hero-bg,.band-bg,.qband-bg{transform:none!important;}
     .hero h1 .ln span,.hero-eyebrow,.hero-sub,.hero-btns,.hero-rating,.hero-bg img{transform:none!important;opacity:1!important;}
+    .hero-card,.hero-card-glow{opacity:1!important;}
   }
 </style>
 </head>
@@ -518,6 +542,14 @@
         <button class="btn btn-red btn-xl" onclick="openModal()">Get My Free Quote <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <a href="#work" class="btn btn-ghost btn-xl">See Our Work</a>
       </div>
+    </div>
+
+    <div class="hero-card-glow" aria-hidden="true"></div>
+    <div class="hero-card">
+      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
+      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
+      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg></span><div><div class="t">Local Connecticut Team</div><div class="d">Proudly local, always on time</div></div></div>
+      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg></span><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
     </div>
   </div>
 </section>
