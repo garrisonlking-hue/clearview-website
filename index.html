@@ -36,51 +36,51 @@
       --gray-900: #0f172a;
     }
 
-    .hero-section { background: linear-gradient(180deg, #16284A 0%, #1f3460 100%); position: relative; min-height: 100vh; overflow: hidden; }
-    .hero-section::before { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: radial-gradient(circle at top right, rgba(201,71,58,0.4) 0%, transparent 60%); pointer-events: none; }
+    .hero-section { background: linear-gradient(180deg, #F6F2EA 0%, #FFFFFF 100%); position: relative; min-height: 100vh; overflow: hidden; }
+    .hero-section::before { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: radial-gradient(circle at top right, rgba(201,71,58,0.06) 0%, transparent 60%); pointer-events: none; }
 
     .nav { position: relative; z-index: 10; padding: 24px 2.5rem; }
     @media (max-width: 768px) { .nav { padding: 20px 1.25rem; } }
     .nav-inner { max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     .nav-logo { display: flex; align-items: center; gap: 14px; }
-    .nav-logo-icon { width: 48px; height: 48px; background: white; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-    .nav-logo-text { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 700; color: white; letter-spacing: -0.02em; line-height: 1; }
-    .nav-logo-sub { font-size: 11px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.18em; margin-top: 4px; font-weight: 600; }
+    .nav-logo-icon { width: 48px; height: 48px; background: #16284A; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
+    .nav-logo-text { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 700; color: #16284A; letter-spacing: -0.02em; line-height: 1; }
+    .nav-logo-sub { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.18em; margin-top: 4px; font-weight: 600; }
     .nav-links { display: flex; gap: 38px; align-items: center; }
-    .nav-links a { font-size: 15px; font-weight: 500; color: rgba(255,255,255,0.92); transition: color 0.2s; }
-    .nav-links a:hover { color: white; }
-    .nav-phone { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: white; }
-    .nav-phone-icon { width: 28px; height: 28px; border: 1.5px solid rgba(255,255,255,0.5); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    .nav-links a { font-size: 15px; font-weight: 500; color: #16284A; transition: color 0.2s; }
+    .nav-links a:hover { color: #C9473A; }
+    .nav-phone { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #16284A; }
+    .nav-phone-icon { width: 28px; height: 28px; border: 1.5px solid rgba(22,40,74,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
     @media (max-width: 1024px) { .nav-links { display: none; } }
     .mobile-btn { display: none; background: transparent; padding: 8px; flex-direction: column; gap: 5px; cursor: pointer; }
-    .mobile-btn span { width: 24px; height: 2px; background: white; }
+    .mobile-btn span { width: 24px; height: 2px; background: #16284A; }
     @media (max-width: 1024px) { .mobile-btn { display: flex; } }
 
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 28px; font-size: 15px; font-weight: 600; transition: all 0.2s ease; cursor: pointer; text-decoration: none; border: none; }
     .btn-primary { background: var(--blue-bright); color: white; border-radius: 12px; box-shadow: 0 4px 14px rgba(201,71,58,0.4); }
     .btn-primary:hover { background: #a83a2f; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,71,58,0.5); }
-    .btn-outline-light { background: transparent; color: white; border-radius: 12px; border: 1.5px solid rgba(255,255,255,0.35); }
-    .btn-outline-light:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.6); }
+    .btn-outline-light { background: transparent; color: #16284A; border-radius: 12px; border: 1.5px solid rgba(22,40,74,0.35); }
+    .btn-outline-light:hover { background: rgba(22,40,74,0.06); border-color: rgba(22,40,74,0.6); }
     .btn-nav { padding: 12px 24px; font-size: 14px; border-radius: 10px; }
     .btn-lg { padding: 18px 32px; font-size: 16px; }
 
     .hero-content { position: relative; z-index: 5; padding: 60px 2.5rem 100px; max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
     @media (max-width: 1024px) { .hero-content { grid-template-columns: 1fr; padding: 40px 1.5rem 80px; gap: 40px; } }
 
-    .hero-text { color: white; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.18); padding: 10px 20px; border-radius: 50px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: white; margin-bottom: 32px; backdrop-filter: blur(8px); }
+    .hero-text { color: #16284A; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(22,40,74,0.06); border: 1px solid rgba(22,40,74,0.15); padding: 10px 20px; border-radius: 50px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #16284A; margin-bottom: 32px; backdrop-filter: blur(8px); }
     .hero-badge-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; }
     .hero-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(48px, 6.5vw, 84px); font-weight: 700; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 28px; }
-    .hero-title-accent { color: var(--blue-light); display: block; font-style: italic; font-weight: 600; }
-    .hero-desc { font-size: 18px; line-height: 1.7; color: rgba(255,255,255,0.85); margin-bottom: 16px; max-width: 560px; }
-    .hero-tagline { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 18px; color: var(--blue-light); margin-bottom: 36px; }
+    .hero-title-accent { color: #C9473A; display: block; font-style: italic; font-weight: 600; }
+    .hero-desc { font-size: 18px; line-height: 1.7; color: #334155; margin-bottom: 16px; max-width: 560px; }
+    .hero-tagline { font-family: 'Playfair Display', Georgia, serif; font-style: italic; font-size: 18px; color: #C9473A; margin-bottom: 36px; }
     .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 60px; }
 
-    .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.15); max-width: 580px; }
+    .hero-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-top: 32px; border-top: 1px solid rgba(22,40,74,0.15); max-width: 580px; }
     .hero-stat { text-align: left; }
     .hero-stat-icon { width: 38px; height: 38px; background: var(--blue-bright); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; color: white; }
-    .hero-stat-num { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; font-weight: 700; color: white; line-height: 1; letter-spacing: -0.02em; }
-    .hero-stat-label { font-size: 13px; color: rgba(255,255,255,0.65); margin-top: 6px; font-weight: 500; }
+    .hero-stat-num { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; font-weight: 700; color: #16284A; line-height: 1; letter-spacing: -0.02em; }
+    .hero-stat-label { font-size: 13px; color: #64748b; margin-top: 6px; font-weight: 500; }
 
     .hero-image-wrap { position: relative; aspect-ratio: 1/1; max-width: 720px; justify-self: end; width: 100%; }
     @media (max-width: 1024px) { .hero-image-wrap { justify-self: center; max-width: 600px; } }
@@ -787,7 +787,7 @@
     </div>
 
     <div class="hero-image-wrap fade-up d2">
-      <img src="https://clearviewwindowsct.my.canva.site/images/61c514ee0169cde965cd0621cb692be8.jpg" alt="A clean, well-cared-for home with spotless windows" class="hero-image">
+      <img src="hero.jpg" alt="Clear View technician cleaning windows with a water-fed pole on a New England home" class="hero-image">
       <div class="floating-card top">
         <div class="floating-card-icon star">★</div>
         <div>
