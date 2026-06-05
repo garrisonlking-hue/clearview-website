@@ -43,9 +43,11 @@
     @media (max-width: 768px) { .nav { padding: 20px 1.25rem; } }
     .nav-inner { max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
     .nav-logo { display: flex; align-items: center; gap: 14px; }
-    .nav-logo-icon { width: 48px; height: 48px; background: #16284A; border-radius: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-    .nav-logo-text { font-family: 'Playfair Display', Georgia, serif; font-size: 24px; font-weight: 700; color: #16284A; letter-spacing: -0.02em; line-height: 1; }
-    .nav-logo-sub { font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.18em; margin-top: 4px; font-weight: 600; }
+    .nav-logo-badge { width: 56px; height: 56px; object-fit: contain; }
+    .nav-logo-wordmark { display: flex; flex-direction: column; }
+    .nav-logo-text { font-family: 'Playfair Display', Georgia, serif; font-size: 23px; font-weight: 800; color: #16284A; letter-spacing: 0.04em; line-height: 1; text-transform: uppercase; }
+    .nav-logo-sub { display: flex; align-items: center; gap: 7px; font-family: 'Inter', sans-serif; font-size: 11px; color: #C9473A; text-transform: uppercase; letter-spacing: 0.28em; margin-top: 5px; font-weight: 700; }
+    .wm-dash { display: inline-block; width: 14px; height: 1.5px; background: #16284A; opacity: 0.5; }
     .nav-links { display: flex; gap: 38px; align-items: center; }
     .nav-links a { font-size: 15px; font-weight: 500; color: #16284A; transition: color 0.2s; }
     .nav-links a:hover { color: #C9473A; }
@@ -721,12 +723,10 @@
   <nav class="nav">
     <div class="nav-inner">
       <a href="#top" class="nav-logo">
-        <div class="nav-logo-icon">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="#C9473A"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1c.55 0 1-.45 1-1s-.45-1-1-1L12 2 2 11c-.55 0-1 .45-1 1s.45 1 1 1z"/></svg>
-        </div>
-        <div>
-          <div class="nav-logo-text">Clear View</div>
-          <div class="nav-logo-sub">Window Cleaning · CT</div>
+        <img src="logo.png" alt="Clear View Window Co. badge logo" class="nav-logo-badge">
+        <div class="nav-logo-wordmark">
+          <div class="nav-logo-text">CLEAR&nbsp;VIEW</div>
+          <div class="nav-logo-sub"><span class="wm-dash"></span>WINDOW&nbsp;CO.<span class="wm-dash"></span></div>
         </div>
       </a>
       <div class="nav-links">
