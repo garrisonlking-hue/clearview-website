@@ -116,24 +116,20 @@
   .mobile-menu .btn{margin-top:26px;}
 
   /* ===== HERO — inset rounded image panel, text overlapping left edge (matches approved mockup) ===== */
-  .hero{position:relative;background:var(--cream);overflow:hidden;padding:96px 0 0;}
-  @media(max-width:980px){.hero{padding:80px 0 0;}}
-  .hero-bg{position:absolute;top:96px;right:0;bottom:0;left:0;z-index:0;border-radius:28px 0 0 0;overflow:hidden;}
-  @media(max-width:980px){.hero-bg{top:80px;border-radius:20px 20px 0 0;}}
+  /* HARD SPLIT: cream text panel (left) | clean photo (right). No scrim, no text-shadow. */
+  .hero{position:relative;background:var(--cream);overflow:hidden;}
+  .hero-bg{position:absolute;top:0;right:0;bottom:0;left:54%;z-index:0;overflow:hidden;}
+  @media(max-width:980px){.hero-bg{position:relative;left:0;width:100%;height:46vw;min-height:280px;max-height:440px;border-radius:0;}}
   .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:center 38%;opacity:0;transform:scale(1.04);transition:opacity 1.4s .1s,transform 8s ease-out;}
   .hero.intro .hero-bg img{opacity:1;transform:scale(1);}
-  /* light left scrim so dark text reads over the sunlit left edge of the photo */
-  .hero-bg-fade{position:absolute;inset:0;background:
-      linear-gradient(90deg, rgba(246,242,234,.78) 0%, rgba(246,242,234,.46) 16%, rgba(246,242,234,.2) 28%, rgba(246,242,234,.04) 38%, transparent 48%),
-      linear-gradient(180deg, rgba(246,242,234,.18) 0%, transparent 12%, transparent 88%, rgba(22,40,74,.06) 100%);}
-  @media(max-width:980px){.hero-bg-fade{background:
-      linear-gradient(180deg, rgba(246,242,234,.86) 0%, rgba(246,242,234,.58) 34%, rgba(246,242,234,.3) 58%, rgba(246,242,234,.08) 100%);}}
+  /* no fade over the photo on the split layout */
+  .hero-bg-fade{display:none;}
 
-  .hero-inner{position:relative;z-index:2;width:100%;max-width:1440px;margin:0 auto;padding:78px 56px 150px;display:grid;grid-template-columns:46% 54%;align-items:center;min-height:74vh;}
-  @media(max-width:1180px){.hero-inner{padding:70px 40px 140px;grid-template-columns:50% 50%;}}
-  @media(max-width:980px){.hero-inner{grid-template-columns:1fr;min-height:0;padding:60px 24px 110px;}}
-  .hero-left{position:relative;z-index:3;grid-column:1;max-width:600px;}
-  .hero-left h1,.hero-left .hero-eyebrow,.hero-left .hero-rating,.hero-left .hero-sub{text-shadow:0 1px 22px rgba(246,242,234,.72);}
+  .hero-inner{position:relative;z-index:2;width:100%;max-width:1440px;margin:0 auto;padding:0;display:grid;grid-template-columns:54% 46%;align-items:stretch;min-height:78vh;}
+  @media(max-width:980px){.hero-inner{grid-template-columns:1fr;min-height:0;}}
+  .hero-left{position:relative;z-index:3;grid-column:1;display:flex;flex-direction:column;justify-content:center;padding:124px 64px 120px;}
+  @media(max-width:1180px){.hero-left{padding:110px 44px 100px;}}
+  @media(max-width:980px){.hero-left{padding:54px 24px 70px;}}
 
   .hero-eyebrow{display:inline-flex;align-items:center;gap:11px;font-weight:700;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--navy);margin-bottom:28px;line-height:1.4;opacity:0;transform:translateY(20px);transition:opacity .8s,transform .8s;}
   .hero.intro .hero-eyebrow{opacity:1;transform:none;}
@@ -160,27 +156,19 @@
 
   .hero-btns{display:flex;gap:14px;flex-wrap:wrap;opacity:0;transform:translateY(20px);transition:opacity .9s .58s,transform .9s .58s;}
   .hero-btns .btn{white-space:nowrap;}
-  .hero-btns .btn-ghost{background:rgba(255,255,255,.92);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);}
+  .hero-btns .btn-ghost{background:#fff;border:1px solid rgba(22,40,74,.16);}
   .hero.intro .hero-btns{opacity:1;transform:none;}
 
-  /* soft blur glow behind the floating card */
-  .hero-card-glow{position:absolute;z-index:2;right:42px;top:200px;width:340px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(22,40,74,.14) 0%,transparent 70%);filter:blur(50px);opacity:0;transition:opacity 1.2s .7s;}
-  .hero.intro .hero-card-glow{opacity:1;}
-  @media(max-width:980px){.hero-card-glow{display:none;}}
-
-  /* frosted glass trust card — upper-right, neutral/warm transparency */
-  .hero-card{position:absolute;z-index:3;top:190px;right:42px;width:344px;
-      background:linear-gradient(155deg, rgba(250,247,240,.34), rgba(245,240,230,.18));
-      -webkit-backdrop-filter:blur(30px) saturate(140%);backdrop-filter:blur(30px) saturate(140%);
-      border:1px solid rgba(255,255,255,.42);border-radius:24px;
-      box-shadow:0 50px 90px -30px rgba(22,40,74,.4),0 1px 0 rgba(255,255,255,.45) inset;
-      padding:18px 30px;opacity:0;transition:opacity 1s .85s;}
-  .hero.intro .hero-card{opacity:1;}
-  @media(max-width:1180px){.hero-card{right:28px;width:308px;padding:14px 24px;top:170px;}}
-  @media(max-width:980px){.hero-card{position:relative;top:auto;right:auto;width:auto;max-width:430px;margin:34px auto 0;grid-column:1;background:linear-gradient(155deg, rgba(255,255,255,.86), rgba(255,255,255,.72));}}
-  .hero-card-row{display:flex;gap:18px;align-items:flex-start;padding:18px 0;}
-  .hero-card-row:not(:last-child){border-bottom:1px solid rgba(255,255,255,.28);}
-  @media(max-width:980px){.hero-card-row:not(:last-child){border-bottom-color:rgba(22,40,74,.1);}}
+  /* trust card now flows inside the left panel — clean, not frosted */
+  .hero-card-glow{display:none;}
+  .hero-card{position:relative;z-index:3;width:100%;max-width:430px;margin:42px 0 0;
+      background:#fff;border:1px solid rgba(22,40,74,.1);border-radius:18px;
+      box-shadow:0 24px 50px -28px rgba(22,40,74,.28);
+      padding:6px 26px;opacity:0;transform:translateY(20px);transition:opacity .9s .7s,transform .9s .7s;}
+  .hero.intro .hero-card{opacity:1;transform:none;}
+  @media(max-width:980px){.hero-card{margin:30px auto 0;}}
+  .hero-card-row{display:flex;gap:18px;align-items:flex-start;padding:16px 0;}
+  .hero-card-row:not(:last-child){border-bottom:1px solid rgba(22,40,74,.08);}
   .hci{flex-shrink:0;width:34px;height:34px;display:flex;align-items:center;justify-content:center;margin-top:1px;}
   .hci svg{width:22px;height:22px;color:var(--red);}
   .hero-card-row .t{font-family:var(--head);font-weight:700;font-size:15.5px;color:var(--navy);line-height:1.2;}
@@ -545,14 +533,13 @@
         <button class="btn btn-red btn-xl" onclick="openModal()">Get My Free Quote <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" style="width:18px;height:18px;"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
         <a href="#work" class="btn btn-ghost btn-xl">See Our Work</a>
       </div>
-    </div>
 
-    <div class="hero-card-glow" aria-hidden="true"></div>
-    <div class="hero-card">
-      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
-      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
-      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg></span><div><div class="t">Local Connecticut Team</div><div class="d">Proudly local, always on time</div></div></div>
-      <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg></span><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
+      <div class="hero-card">
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3l7 3v5c0 4.5-3 8.5-7 9.5-4-1-7-5-7-9.5V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></span><div><div class="t">Fully Insured</div><div class="d">Your home is protected</div></div></div>
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/></svg></span><div><div class="t">Spot-Free Pure Water</div><div class="d">Streak-free clarity</div></div></div>
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 11l9-7 9 7M5 10v9h14v-9"/></svg></span><div><div class="t">Local Connecticut Team</div><div class="d">Proudly local, always on time</div></div></div>
+        <div class="hero-card-row"><span class="hci"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 12l2.4 2.4 4.6-4.8"/></svg></span><div><div class="t">Satisfaction Guaranteed</div><div class="d">We're not happy until you are</div></div></div>
+      </div>
     </div>
   </div>
 </section>
