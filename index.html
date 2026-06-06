@@ -271,6 +271,25 @@
       .mobile-sticky-cta { display: flex; }
       body { padding-bottom: 80px; }
     }
+  
+    /* ===== SCROLLING REVIEWS BAR ===== */
+    .rev-marquee-section { background:#fff; padding:4rem 0 4.5rem; overflow:hidden; }
+    .rev-marquee-head { text-align:center; margin-bottom:2.5rem; }
+    .rev-marquee-rating { display:inline-flex; align-items:center; gap:.6rem; margin-top:.6rem; color:var(--navy); font-weight:600; font-size:.95rem; }
+    .rev-marquee-rating .stars { color:#f5a623; letter-spacing:2px; }
+    .rev-marquee { position:relative; width:100%; -webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent); }
+    .rev-track { display:flex; gap:1.25rem; width:max-content; animation:revscroll 40s linear infinite; }
+    .rev-marquee:hover .rev-track { animation-play-state:paused; }
+    @keyframes revscroll { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+    .rev-card { flex:0 0 340px; background:var(--gray-50); border:1px solid rgba(22,40,74,.06); border-radius:18px; padding:1.5rem; box-shadow:0 6px 24px rgba(22,40,74,.05); }
+    .rev-card-top { display:flex; align-items:center; gap:.8rem; margin-bottom:.7rem; }
+    .rev-avatar { width:42px; height:42px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; flex:0 0 42px; }
+    .rev-name { font-weight:700; color:var(--navy); font-size:.95rem; }
+    .rev-date { font-size:.78rem; color:var(--gray-500); }
+    .rev-stars { color:#f5a623; letter-spacing:2px; margin-bottom:.5rem; }
+    .rev-text { color:var(--gray-600,#444); font-size:.9rem; line-height:1.6; }
+    @media(max-width:600px){ .rev-card{ flex-basis:280px; } }
+
   </style>
 </head>
 <body>
@@ -526,31 +545,182 @@
   </div>
 </section>
 
-<!-- ================= REVIEWS ================= -->
-<section class="section" id="reviews" style="background: var(--gray-50);">
-  <div class="section-inner">
-    <div class="section-header center">
-      <div class="eyebrow">Customer Reviews</div>
-      <h2 class="section-title">What our clients <span class="blue">are saying.</span></h2>
-      <p class="section-subtitle">Real reviews from real homeowners across Eastern Connecticut.</p>
-    </div>
-    <div class="testimonials-grid">
-      <div class="testimonial">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"I never realized how dirty our windows were until today. They did an amazing job and were so professional and courteous. Our windows look brand new. Highly recommend."</p>
-        <div class="testimonial-author"><div class="testimonial-avatar">S</div><div><div class="testimonial-name">Sandy</div><div class="testimonial-role">Verified Customer</div></div></div>
+
+
+<!-- ================= SCROLLING REVIEWS BAR ================= -->
+<section class="rev-marquee-section" id="reviews">
+  <div class="rev-marquee-head">
+    <div class="eyebrow" style="justify-content:center;">See what your</div>
+    <h2 class="section-title">Neighbors <span class="blue">are saying.</span></h2>
+    <div class="rev-marquee-rating"><span class="stars">★★★★★</span> 5.0 rating on Google · 25+ reviews</div>
+  </div>
+  <div class="rev-marquee">
+    <div class="rev-track">
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Joanne Buck</div><div class="rev-date">18 hours ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison and his co-worker did an amazing job on our house. Very professional, super courteous, arrived on time and gave us a very fair price. We highly recommend them!!</p>
       </div>
-      <div class="testimonial">
-        <div class="testimonial-stars">★★★★★</div>
-        <p class="testimonial-text">"Garrison is extremely conscientious and has a work ethic that is rarely found these days. Screens and windows along with sills are immaculate. You won't find a more respectful individual to care for your home."</p>
-        <div class="testimonial-author"><div class="testimonial-avatar">M</div><div><div class="testimonial-name">Marcia</div><div class="testimonial-role">Verified Customer</div></div></div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">H</div>
+          <div><div class="rev-name">Holly Sawtelle</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Very pleased with the professionalism as well as the quality of final product. My windows shine!!! Definitely recommend Garrison and co.!</p>
       </div>
-    </div>
-    <div class="reviews-cta">
-      <button class="btn btn-primary" onclick="openModal()">Get your free quote</button>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">D</div>
+          <div><div class="rev-name">Diane Sauer</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Our windows were beautiful after being cleaned by Garrison and his coworker. They took great care in the work they did, were respectful of our property, and the results were great.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Scott Majek</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">We hired Clear View to clean our church windows. They were prompt, professional, and did a great job! They even cleaned the screens. Very efficient!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">K</div>
+          <div><div class="rev-name">Kathleen Joppru</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Wonderful job! Windows look terrific. We will have Garrison come every year to do our windows.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Jackson Simms</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Great working with kids their age, always stayed on task and truly thoughtful with their work. They put a lot of effort in and made sure I was happy with their job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">O</div>
+          <div><div class="rev-name">Oscar Flores</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I used Clear View Window Cleaning to tidy up the exterior of my home prior to selling. They did an amazing job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">A</div>
+          <div><div class="rev-name">Ann Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I have washed windows for years. Due to my medical issues, Garrison came by & gave me a quote. Reliable! On time! Great result! Will use him every year. He deserves a 5 star review.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">M</div>
+          <div><div class="rev-name">Mike Burke</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">They did a great job cleaning the windows and screens. They were on time and a good price as well.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Steve Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison was great - on time and work was excellent. The technology utilized in his method is also impressive in that it leaves no water marks on the glass. Will do this annually. Thanks!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Joanne Buck</div><div class="rev-date">18 hours ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison and his co-worker did an amazing job on our house. Very professional, super courteous, arrived on time and gave us a very fair price. We highly recommend them!!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">H</div>
+          <div><div class="rev-name">Holly Sawtelle</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Very pleased with the professionalism as well as the quality of final product. My windows shine!!! Definitely recommend Garrison and co.!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">D</div>
+          <div><div class="rev-name">Diane Sauer</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Our windows were beautiful after being cleaned by Garrison and his coworker. They took great care in the work they did, were respectful of our property, and the results were great.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Scott Majek</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">We hired Clear View to clean our church windows. They were prompt, professional, and did a great job! They even cleaned the screens. Very efficient!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">K</div>
+          <div><div class="rev-name">Kathleen Joppru</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Wonderful job! Windows look terrific. We will have Garrison come every year to do our windows.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Jackson Simms</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Great working with kids their age, always stayed on task and truly thoughtful with their work. They put a lot of effort in and made sure I was happy with their job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">O</div>
+          <div><div class="rev-name">Oscar Flores</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I used Clear View Window Cleaning to tidy up the exterior of my home prior to selling. They did an amazing job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">A</div>
+          <div><div class="rev-name">Ann Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I have washed windows for years. Due to my medical issues, Garrison came by & gave me a quote. Reliable! On time! Great result! Will use him every year. He deserves a 5 star review.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">M</div>
+          <div><div class="rev-name">Mike Burke</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">They did a great job cleaning the windows and screens. They were on time and a good price as well.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Steve Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison was great - on time and work was excellent. The technology utilized in his method is also impressive in that it leaves no water marks on the glass. Will do this annually. Thanks!</p>
+      </div>
     </div>
   </div>
 </section>
+
+
 
 <!-- ================= SERVICE AREA ================= -->
 <section class="section" id="service-area">
