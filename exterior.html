@@ -314,7 +314,7 @@
   
     /* ===== SERVICE PAGE ===== */
     .svc-hero { background: var(--navy); color:#fff; padding: 8rem 1.5rem 3.5rem; text-align:center; }
-    .svc-hero .eyebrow { color: var(--red); justify-content:center; }
+    .svc-hero .eyebrow { background: rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.35); padding:.4rem 1rem; border-radius:30px; letter-spacing:.12em; }
     .svc-hero h1 { font-family:'Playfair Display',Georgia,serif; font-size:clamp(2.2rem,6vw,3.6rem); margin:.4rem 0 .8rem; }
     .svc-hero p { opacity:.88; max-width:620px; margin:0 auto; font-size:1.1rem; }
 
@@ -352,6 +352,20 @@
     .svc-cta { background:var(--navy); color:#fff; text-align:center; padding:4.5rem 1.5rem; }
     .svc-cta h2 { font-family:'Playfair Display',Georgia,serif; font-size:clamp(1.8rem,4vw,2.6rem); margin-bottom:1rem; }
     .svc-cta p { opacity:.85; margin-bottom:1.6rem; }
+
+  
+    /* ===== CURVED NAVY CTA ===== */
+    .curved-cta { position:relative; background:var(--navy); color:#fff; text-align:center; padding: 5.5rem 1.5rem 5rem; margin-top:5rem; }
+    .curved-top { position:absolute; top:-79px; left:0; width:100%; height:80px; display:block; }
+    .curved-inner { max-width:760px; margin:0 auto; }
+    .curved-cta h2 { font-family:'Playfair Display',Georgia,serif; font-size:clamp(2rem,5vw,3.2rem); line-height:1.1; margin:0 0 1rem; }
+    .curved-cta p { opacity:.85; font-size:1.1rem; margin:0 0 2rem; }
+    .curved-btns { display:flex; gap:1rem; justify-content:center; flex-wrap:wrap; }
+    .btn-curved { display:inline-flex; align-items:center; gap:.5rem; padding:1rem 2rem; border-radius:50px; font-weight:700; font-size:1rem; text-decoration:none; transition:all .2s; }
+    .btn-curved.primary { background:#C9473A; color:#fff; box-shadow:0 6px 20px rgba(201,71,58,.35); }
+    .btn-curved.primary:hover { transform:translateY(-2px); box-shadow:0 10px 30px rgba(201,71,58,.4); }
+    .btn-curved.ghost { background:transparent; color:#fff; border:1.5px solid rgba(255,255,255,.4); }
+    .btn-curved.ghost:hover { background:rgba(255,255,255,.1); }
 
   </style>
 <body>
@@ -633,10 +647,16 @@
   </div>
 </section>
 
-<section class="svc-cta">
-  <h2>Get your exterior window cleaning quote</h2>
-  <p>Free instant estimate, or call (860) 966-3149.</p>
-  <a href="index.html#estimate" class="btn btn-primary btn-lg">Get Instant Quote →</a>
+<section class="curved-cta">
+  <svg class="curved-top" viewBox="0 0 1440 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg"><path d="M0,80 C360,0 1080,0 1440,80 Z" fill="var(--navy)"/></svg>
+  <div class="curved-inner">
+    <h2>Transform your view with Clear View's exterior window cleaning.</h2>
+    <p>Spotless results and honest pricing. Get your free quote today.</p>
+    <div class="curved-btns">
+      <a href="index.html#estimate" class="btn-curved primary">Get Instant Quote →</a>
+      <a href="tel:+18609663149" class="btn-curved ghost">Call (860) 966-3149</a>
+    </div>
+  </div>
 </section>
 
 </body>
