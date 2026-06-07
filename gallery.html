@@ -340,7 +340,7 @@
     .gal-item { break-inside:avoid; margin-bottom:16px; border-radius:16px; overflow:hidden; position:relative; box-shadow:0 6px 24px rgba(22,40,74,.08); }
     .gal-item img { width:100%; display:block; transition:transform .4s; }
     .gal-item:hover img { transform:scale(1.04); }
-    .gal-item .gal-tag { position:absolute; top:12px; left:12px; background:rgba(22,40,74,.85); color:#fff; padding:.25rem .7rem; border-radius:20px; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+    .gal-tag { position:absolute; top:12px; left:12px; background:rgba(22,40,74,.85); color:#fff; padding:.25rem .7rem; border-radius:20px; font-size:.72rem; font-weight:600; text-transform:uppercase; letter-spacing:.05em; z-index:2; }
 
   </style>
 <body>
@@ -394,22 +394,42 @@
       <button class="gal-filter" onclick="filterGal(this,'sky')">Skylights</button>
     </div>
     <div class="gal-grid" id="galGrid">
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="exterior.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="interior.jpg" alt="Interior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="hero-barn.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="sky"><span class="gal-tag">Skylight</span><img src="images/skylight.jpg" alt="Skylight window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="worker-home.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="images/lake-glass.jpg" alt="Interior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="hero-colonial.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="images/window-row.jpg" alt="Interior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="action-solar.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="images/white-shutters.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="hero-luxury.jpg" alt="Interior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="images/gray-home.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="church-barn.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="images/lilac-home.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="screens.jpg" alt="Exterior window cleaning by Clear View" loading="lazy"></div>
-      <div class="gal-item" data-cat="ext"><span class="gal-tag">Detailing</span><img src="tracks.jpg" alt="Detailing window cleaning by Clear View" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-1.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-1.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="sky"><span class="gal-tag">Skylight</span><img src="work-sky-4.jpg" alt="Skylight window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-2.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-2.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-3.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-3.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-4.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-4.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-5.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-5.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-6.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-6.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-7.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-7.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-8.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-8.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-9.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-9.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-10.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-10.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-11.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="int"><span class="gal-tag">Interior</span><img src="work-int-11.jpg" alt="Interior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-12.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-13.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-14.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-15.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-16.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-17.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-18.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-19.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-ext-20.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-sky-1.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-sky-2.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-sky-3.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
+      <div class="gal-item" data-cat="ext"><span class="gal-tag">Exterior</span><img src="work-sky-5.jpg" alt="Exterior window cleaning by Clear View Window Co. in Connecticut" loading="lazy"></div>
     </div>
   </div>
 </section>
@@ -427,7 +447,7 @@ function filterGal(btn, cat){
   document.querySelectorAll('.gal-filter').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   document.querySelectorAll('.gal-item').forEach(it=>{
-    it.style.display = (cat==='all'||it.dataset.cat===cat)?'':'none';
+    it.style.display=(cat==='all'||it.dataset.cat===cat)?'':'none';
   });
 }
 </script>
