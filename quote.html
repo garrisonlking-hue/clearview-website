@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Get a Quote | Clear View Window Co.</title>
+<meta name="description" content="Build your custom window cleaning quote in under a minute. Instant estimate, pick your plan, request your date.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="icon-192.png">
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+  :root{
+    --navy:#16284A; --red:#C9473A; --blue:#C8362F; --blue-pale:#FBEEEC;
+    --cream:#F6F2EA; --gray-50:#F7F6F3; --gray-500:#5b6473; --gray-600:#444;
+    --shadow:0 10px 30px rgba(22,40,74,.10);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--navy);background:var(--gray-50);-webkit-font-smoothing:antialiased}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1100px;margin:0 auto;padding:0 1.25rem}
+
+  /* top bar */
+  .qb-top{background:#fff;border-bottom:1px solid rgba(22,40,74,.08);position:sticky;top:0;z-index:50}
+  .qb-top-inner{max-width:1100px;margin:0 auto;padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+  .qb-brand{display:flex;align-items:center;gap:.6rem;font-family:'Playfair Display',serif;font-weight:800;font-size:1.15rem;letter-spacing:.02em;color:var(--navy)}
+  .qb-brand img{width:34px;height:34px;border-radius:50%}
+  .qb-brand small{display:block;font-family:'Inter';font-weight:700;font-size:.6rem;letter-spacing:.18em;color:var(--red)}
+  .qb-total{background:var(--blue-pale);color:var(--navy);font-weight:700;font-size:.95rem;padding:.5rem 1rem;border-radius:30px;white-space:nowrap}
+  .qb-total b{color:var(--red)}
+
+  /* progress */
+  .qb-progress{display:flex;gap:6px;max-width:1100px;margin:1.25rem auto 0;padding:0 1.25rem}
+  .qb-progress .seg{height:5px;border-radius:5px;background:rgba(22,40,74,.10);flex:1;transition:background .3s}
+  .qb-progress .seg.done{background:var(--red)}
+  .qb-progress .seg.cur{background:var(--navy)}
+
+  /* card */
+  .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;margin:1.5rem auto 0;max-width:1100px}
+  @media(max-width:600px){ .qb-card{padding:1.5rem} }
+  .qb-step-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
+  .qb-h{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:700;margin:.4rem 0 .3rem;line-height:1.1}
+  .qb-sub{color:var(--gray-500);margin-bottom:2rem;font-size:1rem}
+
+  /* option grid */
+  .opt-grid{display:grid;gap:14px}
+  .opt-grid.cols-3{grid-template-columns:repeat(3,1fr)}
+  .opt-grid.cols-2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:680px){ .opt-grid.cols-3,.opt-grid.cols-2{grid-template-columns:1fr} }
+  .opt{border:2px solid rgba(22,40,74,.12);border-radius:16px;padding:1.4rem 1.2rem;cursor:pointer;text-align:center;transition:all .18s;background:#fff;position:relative}
+  .opt:hover{border-color:var(--navy);transform:translateY(-2px)}
+  .opt.sel{border-color:var(--red);background:var(--blue-pale)}
+  .opt .ic{width:46px;height:46px;border-radius:12px;background:var(--gray-50);display:flex;align-items:center;justify-content:center;margin:0 auto .7rem;font-size:1.4rem}
+  .opt.sel .ic{background:#fff}
+  .opt .t{font-weight:700;font-size:1rem}
+  .opt .d{font-size:.82rem;color:var(--gray-500);margin-top:3px}
+  .opt.multi.sel::after{content:'\2713';position:absolute;top:10px;right:12px;color:var(--red);font-weight:800}
+
+  /* fields */
+  .fld-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+  @media(max-width:600px){ .fld-grid{grid-template-columns:1fr} }
+  .fld{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
+  .fld label{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-500)}
+  .fld label .req{color:var(--red)}
+  .fld input,.fld textarea{font-family:inherit;font-size:1rem;padding:.85rem 1rem;border:1.5px solid rgba(22,40,74,.15);border-radius:12px;background:#fff;color:var(--navy);transition:border .15s}
+  .fld input:focus,.fld textarea:focus{outline:none;border-color:var(--navy)}
+  .fld textarea{min-height:90px;resize:vertical}
+
+  /* plans */
+  .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  @media(max-width:760px){ .plan-grid{grid-template-columns:1fr} }
+  .plan{border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.6rem 1.3rem;cursor:pointer;transition:all .18s;background:#fff;position:relative;text-align:center}
+  .plan:hover{transform:translateY(-3px)}
+  .plan.sel{border-color:var(--red);background:var(--blue-pale)}
+  .plan .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;padding:.3rem .8rem;border-radius:20px;text-transform:uppercase}
+  .plan h3{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:.2rem}
+  .plan .freq{font-size:.85rem;color:var(--gray-500);margin-bottom:1rem}
+  .plan .price{font-size:2rem;font-weight:800;color:var(--navy)}
+  .plan .price s{font-size:1.1rem;color:var(--gray-500);font-weight:600;margin-right:.3rem}
+  .plan .per{font-size:.8rem;color:var(--gray-500)}
+  .plan .save{margin-top:.8rem;font-size:.85rem;font-weight:700;color:#1a8a4f}
+
+  /* calendar */
+  .cal{border:1.5px solid rgba(22,40,74,.12);border-radius:16px;overflow:hidden;max-width:520px;margin:0 auto}
+  .cal-head{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;background:var(--gray-50);font-weight:700}
+  .cal-head button{border:none;background:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;box-shadow:var(--shadow)}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:.6rem}
+  .cal-dow{text-align:center;font-size:.7rem;font-weight:700;color:var(--gray-500);padding:.4rem 0}
+  .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .12s}
+  .cal-day.empty{cursor:default}
+  .cal-day.dis{color:rgba(22,40,74,.25);cursor:not-allowed}
+  .cal-day:not(.dis):not(.empty):hover{background:var(--blue-pale)}
+  .cal-day.sel{background:var(--navy);color:#fff}
+  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1.4rem;max-width:520px;margin-left:auto;margin-right:auto}
+  @media(max-width:600px){ .slots{grid-template-columns:1fr 1fr} }
+  .slot{border:1.5px solid rgba(22,40,74,.15);border-radius:12px;padding:.8rem;text-align:center;cursor:pointer;font-weight:600;transition:all .15s}
+  .slot:hover{border-color:var(--navy)}
+  .slot.sel{background:var(--red);color:#fff;border-color:var(--red)}
+
+  /* review */
+  .rev-box{background:var(--gray-50);border-radius:16px;padding:1.5rem;margin-bottom:1.2rem}
+  .rev-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(22,40,74,.08);font-size:.95rem}
+  .rev-row:last-child{border-bottom:none}
+  .rev-row .k{color:var(--gray-500)}
+  .rev-row .v{font-weight:600;text-align:right}
+  .rev-total{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:1rem;border-top:2px solid rgba(22,40,74,.12)}
+  .rev-total .lbl{font-weight:700}
+  .rev-total .amt{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:800;color:var(--red)}
+
+  /* footer nav */
+  .qb-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;max-width:1100px;margin:1.5rem auto 4rem;padding:0 1.25rem}
+  .btn{font-family:inherit;font-weight:700;font-size:1rem;border-radius:40px;padding:.9rem 1.8rem;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:.5rem}
+  .btn-back{background:#fff;color:var(--navy);box-shadow:var(--shadow)}
+  .btn-back:hover{transform:translateY(-1px)}
+  .btn-next{background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(201,71,58,.35)}
+  .btn-next:hover{background:#b23a2e;transform:translateY(-1px)}
+  .btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+  .hidden{display:none}
+  .info-note{background:#eef4fb;border-radius:12px;padding:.85rem 1.1rem;font-size:.88rem;color:var(--navy);margin-top:1.4rem}
+  .success-wrap{text-align:center;padding:2rem 1rem}
+  .success-wrap .big{font-family:'Playfair Display',serif;font-size:2.2rem;margin:.5rem 0}
+  .err{color:var(--red);font-size:.9rem;margin-top:.6rem;text-align:center}
+  .price-pill{display:inline-block;background:var(--navy);color:#fff;font-weight:700;padding:.5rem 1.1rem;border-radius:30px;margin-top:1rem}
+</style>
+</head>
+<body>
+
+<div class="qb-top">
+  <div class="qb-top-inner">
+    <a href="index.html" class="qb-brand"><img src="logo.png" alt="Clear View"><span>CLEAR VIEW<small>WINDOW CO.</small></span></a>
+    <div class="qb-total" id="totalPill">Estimate: <b id="totalAmt">—</b></div>
+  </div>
+</div>
+
+<div class="qb-progress" id="progress"></div>
+
+<div class="qb-card" id="card"><!-- steps injected --></div>
+
+<div class="qb-nav">
+  <button class="btn btn-back" id="backBtn" onclick="prev()">← Back</button>
+  <button class="btn btn-next" id="nextBtn" onclick="next()">Continue →</button>
+</div>
+
+<script>
+  // ---------- CONFIG: real Clear View pricing ----------
+  const SUPABASE_URL='https://xenmysvxfydcbyrlwlfm.supabase.co';
+  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlbm15c3Z4ZnlkY2J5cmx3bGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTExMjIsImV4cCI6MjA5MzkyNzEyMn0.KkloIssWfOnvMDRZ0h4CsvK5--QsA1iA_luTH5Pg_PI';
+  let _sb=null; function getSB(){ if(!_sb && window.supabase){ _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); } return _sb; }
+
+  const SIZE = [
+    {v:195,label:'Under 1,000 sq ft'},
+    {v:255,label:'1,000 – 1,500 sq ft'},
+    {v:330,label:'1,500 – 2,000 sq ft'},
+    {v:415,label:'2,000 – 2,500 sq ft'},
+    {v:505,label:'2,500 – 3,000 sq ft'},
+    {v:600,label:'3,000 – 3,500 sq ft'},
+    {v:725,label:'3,500 – 4,500 sq ft'},
+    {v:-1,label:'4,500+ sq ft (custom quote)'},
+  ];
+  const DIRT = [{v:1.0,t:'Light',d:'Cleaned recently'},{v:1.15,t:'Moderate',d:'Typical buildup'},{v:1.35,t:'Heavy',d:'Hasn\'t been done in a while'},{v:1.60,t:'Severe',d:'New construction / years'}];
+  const STORIES = [{v:1.0,t:'1 Story'},{v:1.15,t:'2 Stories'},{v:1.30,t:'3+ Stories'}];
+  // services: factor applies to base; add-ons are per-unit but here simplified as included service scope
+  const SERVICES = [
+    {id:'exterior',t:'Exterior Windows',base:true,factor:0.70,d:'Outside glass, pure-water'},
+    {id:'interior',t:'Interior Windows',base:true,factor:0.55,d:'Inside glass, hand-cleaned'},
+    {id:'tracks',t:'Sill & Track Detailing',add:60,d:'Vacuumed & scrubbed'},
+    {id:'screens',t:'Screen Cleaning',add:40,d:'Removed & washed'},
+    {id:'solar',t:'Solar Panel Cleaning',add:90,d:'Pure-water, no chemicals'},
+    {id:'pressure',t:'Pressure Washing',add:150,d:'Siding, walks, patios'},
+  ];
+  const PLANS = [
+    {id:'onetime',t:'One-Time',freq:'Single cleaning',disc:0,save:'Flexible, no commitment'},
+    {id:'annual',t:'Annual',freq:'1 cleaning / year',disc:0.10,save:'Save 10% each visit',popular:true},
+    {id:'biannual',t:'Biannual',freq:'2 cleanings / year',disc:0.15,save:'Save 15% each visit'},
+  ];
+
+  // ---------- STATE ----------
+  const S = {
+    propType:null, size:null, sizeLabel:null, dirt:null, dirtLabel:null,
+    stories:null, storiesLabel:null, services:[], plan:null,
+    name:'',phone:'',email:'',address:'',notes:'',
+    date:null, time:null
+  };
+
+  // ---------- PRICE ENGINE (mirrors site estimator) ----------
+  function priceBase(){
+    if(S.size===null) return null;
+    if(S.size===-1) return -1; // custom
+    // service factor: if both ext+int -> 1.0; ext only ->0.70; int only ->0.55; none -> 0
+    const hasExt=S.services.includes('exterior'), hasInt=S.services.includes('interior');
+    let factor=0;
+    if(hasExt&&hasInt) factor=1.0; else if(hasExt) factor=0.70; else if(hasInt) factor=0.55;
+    const dirt=S.dirt??1, stories=S.stories??1;
+    let sub = S.size*dirt*stories*factor;
+    // add-on services
+    SERVICES.forEach(s=>{ if(s.add && S.services.includes(s.id)) sub+=s.add; });
+    return sub;
+  }
+  function priceForPlan(planDisc){
+    const b=priceBase();
+    if(b===null) return null;
+    if(b===-1) return -1;
+    return b*(1-planDisc);
+  }
+  function fmtRange(v){
+    if(v===null) return '—';
+    if(v===-1) return 'Custom quote';
+    const low=Math.round(v*0.92/5)*5, high=Math.round(v*1.08/5)*5;
+    return '$'+low+' – $'+high;
+  }
+  function updateTotal(){
+    const disc = S.plan ? (PLANS.find(p=>p.id===S.plan)?.disc||0) : 0;
+    document.getElementById('totalAmt').textContent = fmtRange(priceForPlan(disc));
+  }
+
+  // ---------- STEPS ----------
+  const steps = [
+    {key:'propType', render:stepPropType, valid:()=>!!S.propType},
+    {key:'size',     render:stepSize,     valid:()=>S.size!==null},
+    {key:'dirt',     render:stepDirt,     valid:()=>S.dirt!==null},
+    {key:'stories',  render:stepStories,  valid:()=>S.stories!==null},
+    {key:'services', render:stepServices, valid:()=>S.services.includes('exterior')||S.services.includes('interior')},
+    {key:'plan',     render:stepPlan,     valid:()=>!!S.plan},
+    {key:'contact',  render:stepContact,  valid:validContact},
+    {key:'schedule', render:stepSchedule, valid:()=>!!S.date && !!S.time},
+    {key:'review',   render:stepReview,   valid:()=>true},
+  ];
+  let cur=0;
+
+  function renderProgress(){
+    const p=document.getElementById('progress'); p.innerHTML='';
+    steps.forEach((_,i)=>{ const seg=document.createElement('div'); seg.className='seg '+(i<cur?'done':i===cur?'cur':''); p.appendChild(seg); });
+  }
+  function renderStep(){
+    renderProgress();
+    document.getElementById('card').innerHTML = steps[cur].render();
+    document.getElementById('backBtn').style.visibility = cur===0?'hidden':'visible';
+    const nb=document.getElementById('nextBtn');
+    nb.textContent = cur===steps.length-1 ? 'Submit Request →' : 'Continue →';
+    refreshNext();
+    if(steps[cur].after) steps[cur].after();
+    updateTotal();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function refreshNext(){ document.getElementById('nextBtn').disabled = !steps[cur].valid(); }
+
+  function next(){
+    if(!steps[cur].valid()) return;
+    if(cur===steps.length-1){ submit(); return; }
+    cur++; renderStep();
+  }
+  function prev(){ if(cur>0){cur--;renderStep();} }
+
+  // ---- step renderers ----
+  function optCard(sel,onclick,ic,t,d,multi){
+    return `<div class="opt ${multi?'multi':''} ${sel?'sel':''}" onclick="${onclick}">${ic?`<div class="ic">${ic}</div>`:''}<div class="t">${t}</div>${d?`<div class="d">${d}</div>`:''}</div>`;
+  }
+
+  function stepPropType(){
+    const types=[{id:'house',ic:'🏠',t:'House',d:'Single or multi-level home'},{id:'townhome',ic:'🏘️',t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:'🏢',t:'Condo',d:'Unit in a shared building'}];
+    return `<div class="qb-step-eyebrow">Step 1 of 9</div><h1 class="qb-h">What type of property?</h1><p class="qb-sub">Pick the option that best describes your home.</p>
+    <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
+  }
+  function stepSize(){
+    return `<div class="qb-step-eyebrow">Step 2 of 9</div><h1 class="qb-h">How big is your home?</h1><p class="qb-sub">Approximate square footage — close is fine.</p>
+    <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
+  }
+  function stepDirt(){
+    return `<div class="qb-step-eyebrow">Step 3 of 9</div><h1 class="qb-h">How dirty are the windows?</h1><p class="qb-sub">This helps us gauge the time it'll take.</p>
+    <div class="opt-grid cols-2">${DIRT.map(x=>optCard(S.dirt===x.v,`pickDirt(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
+  }
+  function stepStories(){
+    return `<div class="qb-step-eyebrow">Step 4 of 9</div><h1 class="qb-h">How many stories?</h1><p class="qb-sub">Taller homes take more setup and reach.</p>
+    <div class="opt-grid cols-3">${STORIES.map(x=>optCard(S.stories===x.v,`pickStories(${x.v},'${x.t}')`,'',x.t,'')).join('')}</div>`;
+  }
+  function stepServices(){
+    return `<div class="qb-step-eyebrow">Step 5 of 9</div><h1 class="qb-h">Which services do you want?</h1><p class="qb-sub">Pick as many as you like — choose at least exterior or interior.</p>
+    <div class="opt-grid cols-2">${SERVICES.map(x=>optCard(S.services.includes(x.id),`toggleSvc('${x.id}')`,'',x.t,x.d,true)).join('')}</div>
+    <div class="info-note">Tip: most homeowners pair <b>Exterior + Interior</b> for a full clean.</div>`;
+  }
+  function stepPlan(){
+    const cards = PLANS.map(p=>{
+      const full=priceForPlan(0), disc=priceForPlan(p.disc);
+      let priceHtml;
+      if(full===-1){ priceHtml='<div class="price">Custom</div>'; }
+      else { priceHtml = `<div class="price">${p.disc>0?`<s>${fmtRange(full).split(' – ')[0]}</s>`:''}${fmtRange(disc).split(' – ')[0]}<span class="per"> est.</span></div>`; }
+      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pick('plan','${p.id}')">${p.popular?'<span class="badge">Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<div class="save">${p.save}</div></div>`;
+    }).join('');
+    return `<div class="qb-step-eyebrow">Step 6 of 9</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">Recurring plans lock in a discount on every visit.</p>
+    <div class="plan-grid">${cards}</div>
+    <div class="info-note">Prices are estimates based on your answers. Final price is confirmed at your free in-person walkthrough.</div>`;
+  }
+  function stepContact(){
+    return `<div class="qb-step-eyebrow">Step 7 of 9</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
+    <div class="fld-grid">
+      <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
+      <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
+    </div>
+    <div class="fld"><label>Email</label><input id="f_email" value="${S.email}" oninput="S.email=this.value" placeholder="you@email.com"></div>
+    <div class="fld"><label>Property Address <span class="req">*</span></label><input id="f_addr" value="${S.address}" oninput="S.address=this.value;refreshNext()" placeholder="Street, Town, CT"></div>
+    <div class="fld"><label>Notes (optional)</label><textarea id="f_notes" oninput="S.notes=this.value" placeholder="Gate codes, pets, special requests, approx window count...">${S.notes}</textarea></div>`;
+  }
+  // calendar state
+  let calView=new Date(); calView.setDate(1);
+  function stepSchedule(){
+    return `<div class="qb-step-eyebrow">Step 8 of 9</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
+    <div id="calMount"></div>
+    <div id="slotMount"></div>
+    <div class="info-note">This is a <b>request</b>, not a locked booking — we'll text or call to confirm your exact time.</div>`;
+  }
+  function stepReview(){
+    const svc = S.services.map(id=>SERVICES.find(s=>s.id===id).t).join(', ');
+    const plan = PLANS.find(p=>p.id===S.plan);
+    const disc = plan?plan.disc:0;
+    return `<div class="qb-step-eyebrow">Step 9 of 9</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Here's everything — submit and we'll be in touch fast.</p>
+    <div class="rev-box">
+      <div class="rev-row"><span class="k">Property</span><span class="v">${cap(S.propType)} · ${S.sizeLabel}</span></div>
+      <div class="rev-row"><span class="k">Condition</span><span class="v">${S.dirtLabel} · ${S.storiesLabel}</span></div>
+      <div class="rev-row"><span class="k">Services</span><span class="v">${svc}</span></div>
+      <div class="rev-row"><span class="k">Plan</span><span class="v">${plan.t} (${plan.freq})</span></div>
+      <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} · ${S.phone}</span></div>
+      <div class="rev-row"><span class="k">Address</span><span class="v">${S.address}</span></div>
+      <div class="rev-row"><span class="k">Requested</span><span class="v">${S.date} · ${S.time}</span></div>
+      <div class="rev-total"><span class="lbl">Estimated price${disc>0?` (${Math.round(disc*100)}% off)`:''}</span><span class="amt">${fmtRange(priceForPlan(disc))}</span></div>
+    </div>
+    <div class="info-note">Final price confirmed at your free in-person walkthrough. Fully insured · $1M coverage.</div>
+    <div id="submitErr" class="err"></div>`;
+  }
+
+  // ---- pick handlers ----
+  function pick(key,val){ S[key]=val; renderStep(); }
+  function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); }
+  function pickDirt(v,t){ S.dirt=v; S.dirtLabel=t; renderStep(); }
+  function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); }
+  function toggleSvc(id){
+    const i=S.services.indexOf(id);
+    if(i>=0) S.services.splice(i,1); else S.services.push(id);
+    document.getElementById('card').innerHTML=stepServices();
+    refreshNext(); updateTotal();
+  }
+  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim(); }
+  function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1):''; }
+
+  // ---- calendar ----
+  function renderCal(){
+    const mount=document.getElementById('calMount'); if(!mount) return;
+    const today=new Date(); today.setHours(0,0,0,0);
+    const y=calView.getFullYear(), m=calView.getMonth();
+    const first=new Date(y,m,1).getDay();
+    const days=new Date(y,m+1,0).getDate();
+    const monthName=calView.toLocaleString('en-US',{month:'long',year:'numeric'});
+    let cells='';
+    ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>cells+=`<div class="cal-dow">${d}</div>`);
+    for(let i=0;i<first;i++) cells+='<div class="cal-day empty"></div>';
+    for(let d=1;d<=days;d++){
+      const date=new Date(y,m,d);
+      const iso=date.toISOString().slice(0,10);
+      const past=date<today;
+      const sun=date.getDay()===0;
+      const dis=past||sun;
+      const sel=S.date===prettyDate(date);
+      cells+=`<div class="cal-day ${dis?'dis':''} ${sel?'sel':''}" ${dis?'':`onclick="pickDate('${iso}')"`}>${d}</div>`;
+    }
+    mount.innerHTML=`<div class="cal"><div class="cal-head"><button onclick="calMove(-1)">‹</button><span>${monthName}</span><button onclick="calMove(1)">›</button></div><div class="cal-grid">${cells}</div></div>`;
+    renderSlots();
+  }
+  function prettyDate(date){ return date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}); }
+  function calMove(n){ calView.setMonth(calView.getMonth()+n); renderCal(); }
+  function pickDate(iso){ const d=new Date(iso+'T00:00'); S.date=prettyDate(d); S.time=null; renderCal(); refreshNext(); }
+  function renderSlots(){
+    const mount=document.getElementById('slotMount'); if(!mount) return;
+    if(!S.date){ mount.innerHTML=''; return; }
+    const times=['8:00 AM','9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM'];
+    mount.innerHTML=`<div style="text-align:center;font-weight:700;margin-top:1.4rem">${S.date}</div><div class="slots">${times.map(t=>`<div class="slot ${S.time===t?'sel':''}" onclick="pickTime('${t}')">${t}</div>`).join('')}</div>`;
+  }
+  function pickTime(t){ S.time=t; renderSlots(); refreshNext(); }
+
+  // attach calendar render after schedule step
+  steps[7].after=renderCal;
+
+  // ---- submit ----
+  async function submit(){
+    const btn=document.getElementById('nextBtn'); btn.disabled=true; btn.textContent='Sending...';
+    const plan=PLANS.find(p=>p.id===S.plan);
+    const disc=plan?plan.disc:0;
+    const svcList=S.services.map(id=>SERVICES.find(s=>s.id===id).t).join(', ');
+    const notes=[
+      `Quote Builder lead`,
+      `Property: ${cap(S.propType)}, ${S.sizeLabel}`,
+      `Condition: ${S.dirtLabel}, ${S.storiesLabel}`,
+      `Services: ${svcList}`,
+      `Plan: ${plan.t} (${plan.freq})`,
+      `Est. price: ${fmtRange(priceForPlan(disc))}`,
+      `Requested: ${S.date} at ${S.time}`,
+      S.notes?`Customer notes: ${S.notes}`:''
+    ].filter(Boolean).join('\n');
+    try{
+      const client=getSB(); if(!client){ throw new Error('offline'); } const {error}=await client.from('leads').insert([{
+        name:S.name, phone:S.phone, email:S.email||null, address:S.address||null,
+        service:svcList, preferred_date:null, notes:notes, source:'website-quote-builder', status:'new'
+      }]);
+      if(error){ throw error; }
+      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} — we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(priceForPlan(disc))}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
+      document.querySelector('.qb-nav').style.display='none';
+      document.getElementById('progress').style.display='none';
+      window.scrollTo({top:0,behavior:'smooth'});
+    }catch(e){
+      console.error(e);
+      btn.disabled=false; btn.textContent='Submit Request →';
+      const el=document.getElementById('submitErr'); if(el) el.textContent='Could not submit — please call us at (860) 966-3149 and we\'ll take care of it.';
+    }
+  }
+
+  renderStep();
+</script>
+</body>
+</html>
