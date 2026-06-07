@@ -111,7 +111,13 @@
     .section-header.center .section-subtitle { margin-left: auto; margin-right: auto; }
 
     /* SERVICES — image-tile grid (DirtyMint-style, Clear View colors) */
-    .svc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .svc-grid-bottom { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 22px; }
+    .svc-tile.big { aspect-ratio: 16/10; }
+    .svc-tile.small .svc-tile-title { font-size: 1.05rem; }
+    .svc-tile.small .svc-tile-desc { display:none; }
+    @media(max-width:900px){ .svc-grid{ grid-template-columns:1fr; } .svc-grid-bottom{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:520px){ .svc-grid-bottom{ grid-template-columns:1fr; } }
     @media (max-width: 900px) { .svc-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 560px) { .svc-grid { grid-template-columns: 1fr; } }
     .svc-tile { cursor:pointer; position: relative; aspect-ratio: 4/3; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(22,40,74,0.10); cursor: pointer; display: block; }
@@ -423,9 +429,7 @@
     </div>
 
     <div class="svc-grid">
-
-      <!-- EXTERIOR — photo (exterior.jpg). NOTE: low-res source; swap a sharper photo here when available. -->
-      <a class="svc-tile" href="exterior.html">
+<a class="svc-tile big" href="exterior.html">
         <div class="svc-tile-bg" style="background-image: url('exterior.jpg');"></div>
         <div class="svc-overlay">
           <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h4v4H7zm6 0h4v4h-4zM7 13h4v4H7zm6 0h4v4h-4z"/></svg></div>
@@ -433,9 +437,7 @@
           <p class="svc-tile-desc">Pure-water, water-fed pole cleaning — spotless glass with no streaks, even on high windows.</p>
         </div>
       </a>
-
-      <!-- INTERIOR — photo (interior.jpg) -->
-      <a class="svc-tile" href="interior.html">
+<a class="svc-tile big" href="interior.html">
         <div class="svc-tile-bg" style="background-image: url('interior.jpg');"></div>
         <div class="svc-overlay">
           <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg></div>
@@ -443,9 +445,9 @@
           <p class="svc-tile-desc">Hand-cleaned glass inside the home — including tall foyer and arch windows reached safely.</p>
         </div>
       </a>
-
-      <!-- TRACK — color block fallback (no photo yet). Add site-images/tracks.jpg + remove "color" class to convert. -->
-      <a class="svc-tile" href="tracks.html">
+      </div>
+      <div class="svc-grid-bottom">
+<a class="svc-tile small" href="tracks.html">
         <div class="svc-tile-bg" style="background-image: url('tracks.jpg');"></div>
         <div class="svc-overlay">
           <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
@@ -453,9 +455,7 @@
           <p class="svc-tile-desc">Built-up dirt, dead bugs, and grime cleaned out of sills and tracks — often the biggest visible difference.</p>
         </div>
       </a>
-
-      <!-- SCREENS — photo (screens.jpg) -->
-      <a class="svc-tile" href="screens.html">
+<a class="svc-tile small" href="screens.html">
         <div class="svc-tile-bg" style="background-image: url('screens.jpg');"></div>
         <div class="svc-overlay">
           <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 2h10v2H7zm0 4h10v2H7z"/></svg></div>
@@ -463,9 +463,7 @@
           <p class="svc-tile-desc">Pulled, deep-washed off-frame, dried, and reinstalled. Airflow restored, appearance like new.</p>
         </div>
       </a>
-
-      <!-- SOLAR — photo (solar.jpg) -->
-      <a class="svc-tile" href="solar.html">
+<a class="svc-tile small" href="solar.html">
         <div class="svc-tile-bg" style="background-image: url('solar.jpg');"></div>
         <div class="svc-overlay">
           <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H4zm2 2v8h12V6zm-3 12h18v2H3z"/></svg></div>
@@ -473,9 +471,7 @@
           <p class="svc-tile-desc">Dust, pollen, and grime gently removed so your panels run at full efficiency again.</p>
         </div>
       </a>
-
-      <!-- PRESSURE WASHING — photo (pressure.jpg) -->
-      <a class="svc-tile" href="pressure.html">
+<a class="svc-tile small" href="pressure.html">
         <div class="svc-tile-bg" style="background-image: url('pressure.jpg');"></div>
         <div class="svc-overlay">
           <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-2v2h2v2h-6V3h-2v4H9V5H7v2H5v2h14zm-7 6v12h-2v-5H7v5H5V11h7zm7 0v6h-5v-6z"/></svg></div>
@@ -483,8 +479,7 @@
           <p class="svc-tile-desc">Decks, patios, and walkways restored — years of grime and algae blasted away.</p>
         </div>
       </a>
-
-    </div>
+      </div>
   </div>
 </section>
 
