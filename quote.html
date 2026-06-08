@@ -31,14 +31,29 @@
   .qb-total b{color:var(--red)}
 
   /* progress */
-  .qb-progress{display:flex;gap:6px;max-width:1100px;margin:1.25rem auto 0;padding:0 1.25rem}
+  .qb-progress{display:flex;gap:6px;max-width:1180px;margin:1.25rem auto 0;padding:0 1.25rem}
   .qb-progress .seg{height:5px;border-radius:5px;background:rgba(22,40,74,.10);flex:1;transition:background .3s}
   .qb-progress .seg.done{background:var(--red)}
   .qb-progress .seg.cur{background:var(--navy)}
 
+  /* layout: card + sidebar */
+  .qb-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1.5rem;max-width:1180px;margin:1.5rem auto 0;padding:0 1.25rem;align-items:start}
+  @media(max-width:920px){ .qb-layout{grid-template-columns:1fr} }
+
   /* card */
-  .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;margin:1.5rem auto 0;max-width:1100px}
+  .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;min-width:0}
   @media(max-width:600px){ .qb-card{padding:1.5rem} }
+
+  /* sidebar — Property Details */
+  .qb-side{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:1.6rem 1.5rem;position:sticky;top:90px}
+  @media(max-width:920px){ .qb-side{position:static;order:-1} }
+  .qb-side h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.1rem}
+  .qb-side-row{padding:.85rem 0;border-bottom:1px solid rgba(22,40,74,.08)}
+  .qb-side-row:last-child{border-bottom:none}
+  .qb-side-k{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-500)}
+  .qb-side-v{font-size:.98rem;font-weight:600;margin-top:.35rem;color:var(--navy)}
+  .qb-side-v.empty{color:rgba(22,40,74,.3);font-weight:500}
+  .qb-side-v.set{color:var(--red)}
   .qb-step-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
   .qb-h{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:700;margin:.4rem 0 .3rem;line-height:1.1}
   .qb-sub{color:var(--gray-500);margin-bottom:2rem;font-size:1rem}
@@ -109,10 +124,10 @@
   .rev-total .amt{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:800;color:var(--red)}
 
   /* footer nav */
-  .qb-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;max-width:1100px;margin:1.5rem auto 4rem;padding:0 1.25rem}
+  .qb-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;max-width:1180px;margin:1.5rem auto 4rem;padding:0 1.25rem}
   .btn{font-family:inherit;font-weight:700;font-size:1rem;border-radius:40px;padding:.9rem 1.8rem;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:.5rem}
-  .btn-back{background:#fff;color:var(--navy);box-shadow:var(--shadow)}
-  .btn-back:hover{transform:translateY(-1px)}
+  .btn-back{background:#fff;color:var(--navy);box-shadow:var(--shadow);width:52px;height:52px;border-radius:50%;padding:0;justify-content:center;font-size:1.3rem}
+  .btn-back:hover{transform:translateY(-1px);background:var(--blue-pale)}
   .btn-next{background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(201,71,58,.35)}
   .btn-next:hover{background:#b23a2e;transform:translateY(-1px)}
   .btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
@@ -135,10 +150,16 @@
 
 <div class="qb-progress" id="progress"></div>
 
-<div class="qb-card" id="card"><!-- steps injected --></div>
+<div class="qb-layout">
+  <div class="qb-card" id="card"><!-- steps injected --></div>
+  <aside class="qb-side" id="sidebar">
+    <h2>Property Details</h2>
+    <div id="sideRows"></div>
+  </aside>
+</div>
 
 <div class="qb-nav">
-  <button class="btn btn-back" id="backBtn" onclick="prev()">← Back</button>
+  <button class="btn btn-back" id="backBtn" onclick="prev()" aria-label="Back">←</button>
   <button class="btn btn-next" id="nextBtn" onclick="next()">Continue →</button>
 </div>
 
@@ -149,16 +170,28 @@
   let _sb=null; function getSB(){ if(!_sb && window.supabase){ _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); } return _sb; }
 
   const SIZE = [
-    {v:195,label:'Under 1,000 sq ft'},
-    {v:255,label:'1,000 – 1,500 sq ft'},
-    {v:330,label:'1,500 – 2,000 sq ft'},
-    {v:415,label:'2,000 – 2,500 sq ft'},
-    {v:505,label:'2,500 – 3,000 sq ft'},
-    {v:600,label:'3,000 – 3,500 sq ft'},
-    {v:725,label:'3,500 – 4,500 sq ft'},
-    {v:-1,label:'4,500+ sq ft (custom quote)'},
+    {v:255,label:'0 – 2,499 sq ft'},
+    {v:415,label:'2,500 – 3,499 sq ft'},
+    {v:600,label:'3,500 – 4,999 sq ft'},
+    {v:725,label:'5,000 – 6,499 sq ft'},
+    {v:875,label:'6,500 – 7,999 sq ft'},
+    {v:-1,label:'8,000+ sq ft (custom quote)'},
   ];
-  const DIRT = [{v:1.0,t:'Light',d:'Cleaned recently'},{v:1.15,t:'Moderate',d:'Typical buildup'},{v:1.35,t:'Heavy',d:'Hasn\'t been done in a while'},{v:1.60,t:'Severe',d:'New construction / years'}];
+  // Last cleaned drives the condition multiplier (replaces old dirt step)
+  const LASTCLEANED = [
+    {v:1.45,t:'Never',d:'First professional cleaning'},
+    {v:1.60,t:'New Construction',d:'Paint and stucco residue'},
+    {v:1.0, t:'Less than a year',d:'Recently cleaned'},
+    {v:1.15,t:'1–2 years',d:'Moderate buildup'},
+    {v:1.35,t:'3–5 years',d:'Significant buildup'},
+  ];
+  // French panes — % upcharge on base (grids take longer)
+  const FRENCH = [
+    {v:0,   t:'No',d:'No french pane windows'},
+    {v:0.10,t:'Yes, less than 25%',d:'A few french pane windows'},
+    {v:0.20,t:'Yes, about 50%',d:'Half of windows are french pane'},
+    {v:0.30,t:'Yes, all of them',d:'All windows are french pane style'},
+  ];
   const STORIES = [{v:1.0,t:'1 Story'},{v:1.15,t:'2 Stories'},{v:1.30,t:'3+ Stories'}];
   // services: factor applies to base; add-ons are per-unit but here simplified as included service scope
   const SERVICES = [
@@ -177,7 +210,8 @@
 
   // ---------- STATE ----------
   const S = {
-    propType:null, size:null, sizeLabel:null, dirt:null, dirtLabel:null,
+    propType:null, size:null, sizeLabel:null, cleaned:null, cleanedLabel:null,
+    french:null, frenchLabel:null,
     stories:null, storiesLabel:null, services:[], plan:null,
     name:'',phone:'',email:'',address:'',notes:'',
     date:null, time:null
@@ -191,8 +225,10 @@
     const hasExt=S.services.includes('exterior'), hasInt=S.services.includes('interior');
     let factor=0;
     if(hasExt&&hasInt) factor=1.0; else if(hasExt) factor=0.70; else if(hasInt) factor=0.55;
-    const dirt=S.dirt??1, stories=S.stories??1;
-    let sub = S.size*dirt*stories*factor;
+    const cleaned=S.cleaned??1, stories=S.stories??1, french=S.french??0;
+    let sub = S.size*cleaned*stories*factor;
+    // french pane upcharge on base scope
+    sub = sub*(1+french);
     // add-on services
     SERVICES.forEach(s=>{ if(s.add && S.services.includes(s.id)) sub+=s.add; });
     return sub;
@@ -216,16 +252,18 @@
 
   // ---------- STEPS ----------
   const steps = [
-    {key:'propType', render:stepPropType, valid:()=>!!S.propType},
-    {key:'size',     render:stepSize,     valid:()=>S.size!==null},
-    {key:'dirt',     render:stepDirt,     valid:()=>S.dirt!==null},
-    {key:'stories',  render:stepStories,  valid:()=>S.stories!==null},
+    {key:'propType', render:stepPropType, valid:()=>!!S.propType,  auto:true},
+    {key:'cleaned',  render:stepCleaned,  valid:()=>S.cleaned!==null, auto:true},
+    {key:'french',   render:stepFrench,   valid:()=>S.french!==null,  auto:true},
+    {key:'size',     render:stepSize,     valid:()=>S.size!==null,    auto:true},
+    {key:'stories',  render:stepStories,  valid:()=>S.stories!==null, auto:true},
     {key:'services', render:stepServices, valid:()=>S.services.includes('exterior')||S.services.includes('interior')},
-    {key:'plan',     render:stepPlan,     valid:()=>!!S.plan},
+    {key:'plan',     render:stepPlan,     valid:()=>!!S.plan,         auto:true},
     {key:'contact',  render:stepContact,  valid:validContact},
     {key:'schedule', render:stepSchedule, valid:()=>!!S.date && !!S.time},
     {key:'review',   render:stepReview,   valid:()=>true},
   ];
+  const TOTAL_STEPS = 10;
   let cur=0;
 
   function renderProgress(){
@@ -241,7 +279,20 @@
     refreshNext();
     if(steps[cur].after) steps[cur].after();
     updateTotal();
+    renderSidebar();
     window.scrollTo({top:0,behavior:'smooth'});
+  }
+
+  function renderSidebar(){
+    const rows=[
+      {k:'Property Type', v:S.propType?cap(S.propType):null},
+      {k:'Last Cleaned',  v:S.cleanedLabel},
+      {k:'French Panes',  v:S.frenchLabel},
+      {k:'Property Size', v:S.sizeLabel},
+    ];
+    document.getElementById('sideRows').innerHTML = rows.map(r=>
+      `<div class="qb-side-row"><div class="qb-side-k">${r.k}</div><div class="qb-side-v ${r.v?'set':'empty'}">${r.v||'—'}</div></div>`
+    ).join('');
   }
   function refreshNext(){ document.getElementById('nextBtn').disabled = !steps[cur].valid(); }
 
@@ -258,24 +309,29 @@
   }
 
   function stepPropType(){
-    const types=[{id:'house',ic:'🏠',t:'House',d:'Single or multi-level home'},{id:'townhome',ic:'🏘️',t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:'🏢',t:'Condo',d:'Unit in a shared building'}];
-    return `<div class="qb-step-eyebrow">Step 1 of 9</div><h1 class="qb-h">What type of property?</h1><p class="qb-sub">Pick the option that best describes your home.</p>
+    const types=[{id:'house',ic:'🏠',t:'House',d:'Single-level or multi-level home'},{id:'townhome',ic:'🏘️',t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:'🏢',t:'Condo',d:'Individual unit in a shared building'},{id:'storefront',ic:'🏪',t:'Store Front',d:'Commercial space for business use'},{id:'commercial',ic:'🏬',t:'Commercial',d:'Business or office building'}];
+    return `<div class="qb-step-eyebrow">Step 1 of ${TOTAL_STEPS}</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your property.</p>
     <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
   }
+  function stepCleaned(){
+    return `<div class="qb-step-eyebrow">Step 2 of ${TOTAL_STEPS}</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
+    <div class="opt-grid cols-3">${LASTCLEANED.map(x=>optCard(S.cleanedLabel===x.t,`pickCleaned(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
+  }
+  function stepFrench(){
+    return `<div class="qb-step-eyebrow">Step 3 of ${TOTAL_STEPS}</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
+    <div class="opt-grid cols-2">${FRENCH.map(x=>optCard(S.frenchLabel===x.t,`pickFrench(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
+    <div class="info-note"><b>Info:</b> French pane windows require additional cleaning time due to their grid patterns and multiple glass sections.</div>`;
+  }
   function stepSize(){
-    return `<div class="qb-step-eyebrow">Step 2 of 9</div><h1 class="qb-h">How big is your home?</h1><p class="qb-sub">Approximate square footage — close is fine.</p>
+    return `<div class="qb-step-eyebrow">Step 4 of ${TOTAL_STEPS}</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
     <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
   }
-  function stepDirt(){
-    return `<div class="qb-step-eyebrow">Step 3 of 9</div><h1 class="qb-h">How dirty are the windows?</h1><p class="qb-sub">This helps us gauge the time it'll take.</p>
-    <div class="opt-grid cols-2">${DIRT.map(x=>optCard(S.dirt===x.v,`pickDirt(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
-  }
   function stepStories(){
-    return `<div class="qb-step-eyebrow">Step 4 of 9</div><h1 class="qb-h">How many stories?</h1><p class="qb-sub">Taller homes take more setup and reach.</p>
+    return `<div class="qb-step-eyebrow">Step 5 of ${TOTAL_STEPS}</div><h1 class="qb-h">How many stories?</h1><p class="qb-sub">Taller homes take more setup and reach.</p>
     <div class="opt-grid cols-3">${STORIES.map(x=>optCard(S.stories===x.v,`pickStories(${x.v},'${x.t}')`,'',x.t,'')).join('')}</div>`;
   }
   function stepServices(){
-    return `<div class="qb-step-eyebrow">Step 5 of 9</div><h1 class="qb-h">Which services do you want?</h1><p class="qb-sub">Pick as many as you like — choose at least exterior or interior.</p>
+    return `<div class="qb-step-eyebrow">Step 6 of ${TOTAL_STEPS}</div><h1 class="qb-h">Which services do you want?</h1><p class="qb-sub">Pick as many as you like — choose at least exterior or interior.</p>
     <div class="opt-grid cols-2">${SERVICES.map(x=>optCard(S.services.includes(x.id),`toggleSvc('${x.id}')`,'',x.t,x.d,true)).join('')}</div>
     <div class="info-note">Tip: most homeowners pair <b>Exterior + Interior</b> for a full clean.</div>`;
   }
@@ -285,14 +341,14 @@
       let priceHtml;
       if(full===-1){ priceHtml='<div class="price">Custom</div>'; }
       else { priceHtml = `<div class="price">${p.disc>0?`<s>${fmtRange(full).split(' – ')[0]}</s>`:''}${fmtRange(disc).split(' – ')[0]}<span class="per"> est.</span></div>`; }
-      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pick('plan','${p.id}')">${p.popular?'<span class="badge">Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<div class="save">${p.save}</div></div>`;
+      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<div class="save">${p.save}</div></div>`;
     }).join('');
-    return `<div class="qb-step-eyebrow">Step 6 of 9</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">Recurring plans lock in a discount on every visit.</p>
+    return `<div class="qb-step-eyebrow">Step 7 of ${TOTAL_STEPS}</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">Recurring plans lock in a discount on every visit.</p>
     <div class="plan-grid">${cards}</div>
     <div class="info-note">Prices are estimates based on your answers. Final price is confirmed at your free in-person walkthrough.</div>`;
   }
   function stepContact(){
-    return `<div class="qb-step-eyebrow">Step 7 of 9</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
+    return `<div class="qb-step-eyebrow">Step 8 of ${TOTAL_STEPS}</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
     <div class="fld-grid">
       <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
       <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
@@ -304,7 +360,7 @@
   // calendar state
   let calView=new Date(); calView.setDate(1);
   function stepSchedule(){
-    return `<div class="qb-step-eyebrow">Step 8 of 9</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
+    return `<div class="qb-step-eyebrow">Step 9 of ${TOTAL_STEPS}</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
     <div id="calMount"></div>
     <div id="slotMount"></div>
     <div class="info-note">This is a <b>request</b>, not a locked booking — we'll text or call to confirm your exact time.</div>`;
@@ -313,10 +369,11 @@
     const svc = S.services.map(id=>SERVICES.find(s=>s.id===id).t).join(', ');
     const plan = PLANS.find(p=>p.id===S.plan);
     const disc = plan?plan.disc:0;
-    return `<div class="qb-step-eyebrow">Step 9 of 9</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Here's everything — submit and we'll be in touch fast.</p>
+    return `<div class="qb-step-eyebrow">Step 10 of ${TOTAL_STEPS}</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Here's everything — submit and we'll be in touch fast.</p>
     <div class="rev-box">
       <div class="rev-row"><span class="k">Property</span><span class="v">${cap(S.propType)} · ${S.sizeLabel}</span></div>
-      <div class="rev-row"><span class="k">Condition</span><span class="v">${S.dirtLabel} · ${S.storiesLabel}</span></div>
+      <div class="rev-row"><span class="k">Last cleaned</span><span class="v">${S.cleanedLabel} · ${S.storiesLabel}</span></div>
+      <div class="rev-row"><span class="k">French panes</span><span class="v">${S.frenchLabel}</span></div>
       <div class="rev-row"><span class="k">Services</span><span class="v">${svc}</span></div>
       <div class="rev-row"><span class="k">Plan</span><span class="v">${plan.t} (${plan.freq})</span></div>
       <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} · ${S.phone}</span></div>
@@ -329,10 +386,18 @@
   }
 
   // ---- pick handlers ----
-  function pick(key,val){ S[key]=val; renderStep(); }
-  function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); }
-  function pickDirt(v,t){ S.dirt=v; S.dirtLabel=t; renderStep(); }
-  function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); }
+  // autoNext: after a single-select, briefly show the selection then advance
+  function advance(){
+    if(steps[cur].auto && cur<steps.length-1 && steps[cur].valid()){
+      setTimeout(()=>{ cur++; renderStep(); }, 260);
+    }
+  }
+  function pick(key,val){ S[key]=val; if(key==='propType'){} renderStep(); advance(); }
+  function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); advance(); }
+  function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
+  function pickFrench(v,t){ S.french=v; S.frenchLabel=t; renderStep(); advance(); }
+  function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); advance(); }
+  function pickPlan(id){ S.plan=id; renderStep(); advance(); }
   function toggleSvc(id){
     const i=S.services.indexOf(id);
     if(i>=0) S.services.splice(i,1); else S.services.push(id);
@@ -377,7 +442,7 @@
   function pickTime(t){ S.time=t; renderSlots(); refreshNext(); }
 
   // attach calendar render after schedule step
-  steps[7].after=renderCal;
+  steps[8].after=renderCal;
 
   // ---- submit ----
   async function submit(){
@@ -388,7 +453,8 @@
     const notes=[
       `Quote Builder lead`,
       `Property: ${cap(S.propType)}, ${S.sizeLabel}`,
-      `Condition: ${S.dirtLabel}, ${S.storiesLabel}`,
+      `Condition: last cleaned ${S.cleanedLabel}, ${S.storiesLabel}`,
+      `French panes: ${S.frenchLabel}`,
       `Services: ${svcList}`,
       `Plan: ${plan.t} (${plan.freq})`,
       `Est. price: ${fmtRange(priceForPlan(disc))}`,
