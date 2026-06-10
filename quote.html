@@ -171,23 +171,23 @@
 
   // Pricing is per exterior pane of glass. Each size bracket maps to an
   // estimated pane count (confirmed exactly at the in-person walkthrough).
-  const RATE_PER_PANE = 6.5;   // midpoint of $5–8; fmtRange spreads to the ends
-  const RATE_LOW = 5, RATE_HIGH = 8;
+  // Pricing is per exterior pane of glass; the per-pane RATE scales with how
+  // dirty the windows are ($6 recently cleaned → $9 never cleaned).
   const MIN_JOB = 150;         // minimum job price floor
   const SIZE = [
-    {v:15,label:'0 – 2,499 sq ft'},
-    {v:25,label:'2,500 – 3,499 sq ft'},
-    {v:38,label:'3,500 – 4,999 sq ft'},
-    {v:52,label:'5,000 – 6,499 sq ft'},
-    {v:68,label:'6,500 – 7,999 sq ft'},
-    {v:-1,label:'8,000+ sq ft (custom quote)'},
+    {v:33, label:'0 – 2,499 sq ft'},
+    {v:53, label:'2,500 – 3,499 sq ft'},
+    {v:75, label:'3,500 – 4,999 sq ft'},
+    {v:100,label:'5,000 – 6,499 sq ft'},
+    {v:126,label:'6,500 – 7,999 sq ft'},
+    {v:-1, label:'8,000+ sq ft (custom quote)'},
   ];
-  // Last cleaned drives a light condition multiplier (replaces old dirt step)
+  // Last cleaned sets the per-pane RATE (dirtier = higher rate per pane)
   const LASTCLEANED = [
-    {v:1.0, t:'Less than a year',d:'Recently cleaned'},
-    {v:1.05,t:'1–2 years',d:'Moderate buildup'},
-    {v:1.15,t:'3–5 years',d:'Significant buildup'},
-    {v:1.20,t:'Never',d:'First professional cleaning'},
+    {v:6.00,t:'Less than a year',d:'Recently cleaned'},
+    {v:6.75,t:'1–2 years',d:'Moderate buildup'},
+    {v:7.75,t:'3–5 years',d:'Significant buildup'},
+    {v:9.00,t:'Never',d:'First professional cleaning'},
   ];
   // French panes — small % upcharge (grids take a little longer)
   const FRENCH = [
@@ -222,7 +222,7 @@
   };
 
   // ---------- PRICE ENGINE (mirrors site estimator) ----------
-  // Returns the combined multiplier applied to (panes × rate), or special flags.
+  // Returns the non-rate multiplier (service × stories × french), or special flags.
   function priceMultiplier(){
     if(S.size===null) return null;
     if(S.size===-1) return -1; // custom
@@ -230,20 +230,22 @@
     let factor=0;
     // ext+int = full; exterior only = 0.65 (most work is outside); interior only = 0.45
     if(hasExt&&hasInt) factor=1.0; else if(hasExt) factor=0.65; else if(hasInt) factor=0.45;
-    const cleaned=S.cleaned??1, stories=S.stories??1, french=S.french??0;
-    return factor*cleaned*stories*(1+french);
+    const stories=S.stories??1, french=S.french??0;
+    return factor*stories*(1+french);
   }
+  // Per-pane rate is set by how long since last cleaned ($6 clean → $9 never).
+  function paneRate(){ return S.cleaned ?? 6.0; }
   // Add-on services are flat dollar amounts, added after the per-pane base.
   function addOnTotal(){
     let a=0; SERVICES.forEach(s=>{ if(s.add && S.services.includes(s.id)) a+=s.add; });
     return a;
   }
-  // base at the midpoint rate
+  // base price (panes × rate × multiplier), floored at the minimum, plus add-ons
   function priceBase(){
     const m=priceMultiplier();
     if(m===null) return null;
     if(m===-1) return -1;
-    return Math.max(S.size*RATE_PER_PANE*m, MIN_JOB) + addOnTotal();
+    return Math.max(S.size*paneRate()*m, MIN_JOB) + addOnTotal();
   }
   function priceForPlan(planDisc){
     const b=priceBase();
@@ -251,16 +253,16 @@
     if(b===-1) return -1;
     return b*(1-planDisc);
   }
-  // Range comes from the real $5 (low) → $8 (high) per-pane spread, not a fake %.
+  // Range is a tight ±8% band around the base (dirtiness already sets the rate).
   function fmtRange(v, planDisc){
     const m=priceMultiplier();
     if(m===null) return '—';
     if(m===-1) return 'Custom quote';
     const d = (planDisc!==undefined ? planDisc : (S.plan ? (PLANS.find(p=>p.id===S.plan)?.disc||0) : 0));
     const add = addOnTotal();
-    // raw base at each end (before minimum), add-ons stack on top of the floor
-    let lowBase  = Math.max(S.size*RATE_LOW *m, MIN_JOB) + add;
-    let highBase = Math.max(S.size*RATE_HIGH*m, MIN_JOB) + add;
+    const core = S.size*paneRate()*m;
+    let lowBase  = Math.max(core*0.92, MIN_JOB) + add;
+    let highBase = Math.max(core*1.08, MIN_JOB) + add;
     const low  = Math.round((lowBase *(1-d))/5)*5;
     const high = Math.round((highBase*(1-d))/5)*5;
     return '$'+low+' – $'+high;
