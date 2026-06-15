@@ -506,74 +506,78 @@
 <section class="section" id="plans" style="background: var(--cream, #F6F2EA);">
   <div class="section-inner">
     <div class="section-header center">
-      <h2 class="section-title">Clean windows, <span class="blue">on repeat.</span></h2>
-      <p class="section-subtitle" style="margin:16px auto 0;">Set it and forget it. The more often we visit, the more you save — and the better your glass stays.</p>
+      <h2 class="section-title">Clean windows, <span class="blue">year round.</span></h2>
+      <p class="section-subtitle" style="margin:16px auto 0;">The more we visit, the more you save. Cancel anytime.</p>
     </div>
 
     <div class="plans-grid">
 
-      <!-- MONTHLY -->
-      <div class="plan-card plan-featured">
-        <div class="plan-flag">Most Popular</div>
-        <div class="plan-name">Monthly</div>
-        <div class="plan-price">$150 OFF</div>
-        <div class="plan-per">Per Cleaning</div>
-        <ul class="plan-list">
-          <li class="yes"><span class="pi">✓</span> Free Glass Protectant Treatment</li>
-          <li class="yes"><span class="pi">✓</span> 7-Day Rain Guarantee</li>
-          <li class="yes"><span class="pi">✓</span> Free Hard Water Stain Removal</li>
-        </ul>
-        <a href="quote.html" class="btn btn-primary plan-btn">Get Your Instant Quote →</a>
-      </div>
-
-      <!-- QUARTERLY -->
+      <!-- BI-ANNUAL -->
       <div class="plan-card">
-        <div class="plan-name">Quarterly</div>
-        <div class="plan-price">$100 OFF</div>
-        <div class="plan-per">Per Cleaning</div>
-        <ul class="plan-list">
-          <li class="yes"><span class="pi">✓</span> Free Glass Protectant Treatment</li>
-          <li class="yes"><span class="pi">✓</span> 7-Day Rain Guarantee</li>
-          <li class="yes"><span class="pi">✓</span> Free Hard Water Stain Removal</li>
-        </ul>
-        <a href="quote.html" class="btn btn-primary plan-btn">Get Your Instant Quote →</a>
-      </div>
-
-      <!-- BIANNUAL -->
-      <div class="plan-card">
-        <div class="plan-name">Biannual</div>
+        <div class="plan-name">Bi-Annual</div>
         <div class="plan-price">$50 OFF</div>
         <div class="plan-per">Per Cleaning</div>
         <ul class="plan-list">
-          <li class="no"><span class="pi">✕</span> Free Glass Protectant Treatment</li>
+          <li class="no"><span class="pi">✕</span> Unlimited touchups between visits</li>
           <li class="no"><span class="pi">✕</span> 7-Day Rain Guarantee</li>
-          <li class="no"><span class="pi">✕</span> Free Hard Water Stain Removal</li>
+          <li class="no"><span class="pi">✕</span> Free Hard Water &amp; Stain Removal</li>
+          <li class="no"><span class="pi">✕</span> Glass Protectant Treatment</li>
         </ul>
-        <a href="quote.html" class="btn btn-primary plan-btn">Get Your Instant Quote →</a>
+        <a href="quote.html" class="btn btn-primary plan-btn">Choose Bi-Annual</a>
+      </div>
+
+      <!-- QUARTERLY (featured) -->
+      <div class="plan-card plan-featured">
+        <div class="plan-flag">★ Most Popular</div>
+        <div class="plan-name">Quarterly</div>
+        <div class="plan-price">$150 OFF</div>
+        <div class="plan-per">Per Cleaning</div>
+        <ul class="plan-list">
+          <li class="yes"><span class="pi">✓</span> Unlimited touchups between visits</li>
+          <li class="yes"><span class="pi">✓</span> 7-Day Rain Guarantee</li>
+          <li class="yes"><span class="pi">✓</span> Free Hard Water &amp; Stain Removal</li>
+          <li class="yes"><span class="pi">✓</span> Glass Protectant Treatment</li>
+        </ul>
+        <a href="quote.html" class="btn btn-primary plan-btn">Choose Quarterly</a>
+      </div>
+
+      <!-- TRI-ANNUAL -->
+      <div class="plan-card">
+        <div class="plan-name">Tri-Annual</div>
+        <div class="plan-price">$100 OFF</div>
+        <div class="plan-per">Per Cleaning</div>
+        <ul class="plan-list">
+          <li class="no"><span class="pi">✕</span> Unlimited touchups between visits</li>
+          <li class="yes"><span class="pi">✓</span> 7-Day Rain Guarantee</li>
+          <li class="yes"><span class="pi">✓</span> Free Hard Water &amp; Stain Removal</li>
+          <li class="no"><span class="pi">✕</span> Glass Protectant Treatment</li>
+        </ul>
+        <a href="quote.html" class="btn btn-primary plan-btn">Choose Tri-Annual</a>
       </div>
 
     </div>
   </div>
 
   <style>
-    .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; margin-top: 56px; align-items: stretch; }
+    .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; align-items: center; }
     .plan-card { position: relative; background: #fff; border-radius: 22px; padding: 44px 32px 36px; box-shadow: 0 14px 40px rgba(22,40,74,0.10); display: flex; flex-direction: column; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
     .plan-card:hover { transform: translateY(-6px); box-shadow: 0 22px 54px rgba(22,40,74,0.16); }
-    .plan-featured { border: 2px solid var(--red, #C9473A); }
-    .plan-flag { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--red, #C9473A); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 7px 18px; border-radius: 999px; white-space: nowrap; }
+    .plan-featured { background: #fbf7f1; border: 2px solid var(--red, #C9473A); padding-top: 52px; box-shadow: 0 24px 60px rgba(22,40,74,0.16); z-index: 2; }
+    @media (min-width: 901px) { .plan-featured { transform: scale(1.04); } .plan-featured:hover { transform: scale(1.04) translateY(-6px); } }
+    .plan-flag { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: var(--red, #C9473A); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 8px 20px; border-radius: 999px; white-space: nowrap; box-shadow: 0 6px 16px rgba(201,71,58,0.3); }
     .plan-name { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red, #C9473A); margin-bottom: 14px; }
-    .plan-price { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(44px, 5vw, 58px); font-weight: 800; color: var(--navy, #16284A); line-height: 1; letter-spacing: -0.02em; }
-    .plan-per { font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--navy, #16284A); margin-top: 10px; opacity: 0.65; }
+    .plan-price { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(42px, 5vw, 56px); font-weight: 800; color: var(--navy, #16284A); line-height: 1; letter-spacing: -0.02em; }
+    .plan-per { font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--navy, #16284A); margin-top: 10px; opacity: 0.6; }
     .plan-list { list-style: none; padding: 0; margin: 32px 0; text-align: left; flex: 1; }
-    .plan-list li { display: flex; align-items: center; gap: 12px; font-size: 15px; color: var(--navy, #16284A); padding: 11px 0; border-bottom: 1px solid #eef0f3; }
-    .plan-list li:last-child { border-bottom: none; }
+    .plan-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.4; color: var(--navy, #16284A); padding: 12px 0; }
     .plan-list li.no { color: #9aa3b2; }
-    .plan-list .pi { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 800; flex-shrink: 0; }
+    .plan-list .pi { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
     .plan-list li.yes .pi { background: rgba(201,71,58,0.12); color: var(--red, #C9473A); }
-    .plan-list li.no .pi { background: #eef0f3; color: #9aa3b2; }
+    .plan-list li.no .pi { background: #f0f2f5; color: #b6bdc8; }
     .plan-btn { width: 100%; border-radius: 999px; }
     @media (max-width: 900px) {
       .plans-grid { grid-template-columns: 1fr; max-width: 440px; margin: 48px auto 0; gap: 32px; }
+      .plan-featured { order: -1; }
     }
   </style>
 </section>
