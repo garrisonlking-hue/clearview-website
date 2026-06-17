@@ -1,663 +1,1079 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Get a Quote | Clear View Window Co.</title>
-<meta name="description" content="Build your custom window cleaning quote in under a minute. Instant estimate, pick your plan, request your date.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="icon-192.png">
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<style>
-  :root{
-    --navy:#16284A; --red:#C9473A; --blue:#C8362F; --blue-pale:#FBEEEC;
-    --cream:#F6F2EA; --gray-50:#F7F6F3; --gray-500:#5b6473; --gray-600:#444;
-    --shadow:0 10px 30px rgba(22,40,74,.10);
-  }
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{font-family:'Inter',system-ui,sans-serif;color:var(--navy);background:var(--gray-50);-webkit-font-smoothing:antialiased}
-  a{color:inherit;text-decoration:none}
-  .wrap{max-width:1100px;margin:0 auto;padding:0 1.25rem}
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clear View Window Cleaning — Residential Window Cleaning in Connecticut</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="description" content="Clear View Window Cleaning provides reliable residential window cleaning across Connecticut. Columbia, Coventry, Mansfield, Andover, Tolland, Storrs, Manchester, Glastonbury. Free estimates. (860) 966-3149." />
+  <meta name="theme-color" content="#16284A" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; color: #0f172a; background: #FFFFFF; line-height: 1.6; overflow-x: hidden; }
+    img { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; }
+    input, textarea, select { font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: #C9473A; color: white; }
 
-  /* top bar */
-  .qb-top{background:#fff;border-bottom:1px solid rgba(22,40,74,.08);position:sticky;top:0;z-index:50}
-  .qb-top-inner{max-width:1100px;margin:0 auto;padding:.9rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
-  .qb-brand{display:flex;align-items:center;gap:.6rem;font-family:'Playfair Display',serif;font-weight:800;font-size:1.15rem;letter-spacing:.02em;color:var(--navy)}
-  .qb-brand img{width:34px;height:34px;border-radius:50%}
-  .qb-brand small{display:block;font-family:'Inter';font-weight:700;font-size:.6rem;letter-spacing:.18em;color:var(--red)}
-  .qb-total{background:var(--blue-pale);color:var(--navy);font-weight:700;font-size:.95rem;padding:.5rem 1rem;border-radius:30px;white-space:nowrap}
-  .qb-total b{color:var(--red)}
+    :root {
+      --navy: #16284A;
+      --navy-dark: #0d1830;
+      --blue: #C9473A;
+      --blue-bright: #C9473A;
+      --blue-light: #E8B4AE;
+      --blue-pale: #F6F2EA;
+      --green: #16a34a;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-900: #0f172a;
+    }
 
-  /* progress */
-  .qb-progress{display:flex;gap:6px;max-width:1180px;margin:1.25rem auto 0;padding:0 1.25rem}
-  .qb-progress .seg{height:5px;border-radius:5px;background:rgba(22,40,74,.10);flex:1;transition:background .3s}
-  .qb-progress .seg.done{background:var(--red)}
-  .qb-progress .seg.cur{background:var(--navy)}
+    .hero-section { background: #FFFFFF; position: relative; overflow: hidden; }
+    .hero-section::before { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: radial-gradient(circle at top right, rgba(201,71,58,0.06) 0%, transparent 60%); pointer-events: none; }
 
-  /* layout: card + sidebar */
-  .qb-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1.5rem;max-width:1180px;margin:1.5rem auto 0;padding:0 1.25rem;align-items:start}
-  @media(max-width:920px){ .qb-layout{grid-template-columns:1fr} }
+    .nav { position: relative; z-index: 10; padding: 24px 2.5rem; }
+    @media (max-width: 768px) { .nav { padding: 20px 1.25rem; } }
+    .nav-inner { max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo { display: flex; align-items: center; gap: 14px; }
+    .nav-logo-badge { width: 56px; height: 56px; object-fit: contain; }
+    .nav-logo-wordmark { display: flex; flex-direction: column; }
+    .nav-logo-text { font-family: 'Playfair Display', Georgia, serif; font-size: 23px; font-weight: 800; color: #16284A; letter-spacing: 0.04em; line-height: 1; text-transform: uppercase; }
+    .nav-logo-sub { display: flex; align-items: center; gap: 7px; font-family: 'Inter', sans-serif; font-size: 11px; color: #C9473A; text-transform: uppercase; letter-spacing: 0.28em; margin-top: 5px; font-weight: 700; }
+    .wm-dash { display: inline-block; width: 14px; height: 1.5px; background: #16284A; opacity: 0.5; }
+    .nav-links { display: flex; gap: 38px; align-items: center; }
+    .nav-links a { font-size: 15px; font-weight: 500; color: #16284A; transition: color 0.2s; }
+    .nav-links a:hover { color: #C9473A; }
+    .nav-phone { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #16284A; }
+    .nav-phone-icon { width: 28px; height: 28px; border: 1.5px solid rgba(22,40,74,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    @media (max-width: 1024px) { .nav-links { display: none; } }
+    .mobile-btn { display: none; background: transparent; padding: 8px; flex-direction: column; gap: 5px; cursor: pointer; }
+    .mobile-btn span { width: 24px; height: 2px; background: #16284A; }
+    @media (max-width: 1024px) { .mobile-btn { display: flex; } }
 
-  /* card */
-  .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;min-width:0}
-  @media(max-width:600px){ .qb-card{padding:1.5rem} }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 28px; font-size: 15px; font-weight: 600; transition: all 0.2s ease; cursor: pointer; text-decoration: none; border: none; }
+    .btn-primary { background: #F6F2EA; color: #16284A; border: 1.5px solid #16284A; border-radius: 12px; box-shadow: 0 4px 14px rgba(22,40,74,0.12); }
+    .btn-primary:hover { background: #ece4d3; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,40,74,0.18); }
+    .btn-outline-light { background: transparent; color: #16284A; border-radius: 12px; border: 1.5px solid rgba(22,40,74,0.35); }
+    .btn-outline-light:hover { background: rgba(22,40,74,0.06); border-color: rgba(22,40,74,0.6); }
+    .btn-nav { padding: 12px 24px; font-size: 14px; border-radius: 10px; }
+    .btn-lg { padding: 18px 32px; font-size: 16px; }
 
-  /* sidebar — Property Details */
-  .qb-side{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:1.6rem 1.5rem;position:sticky;top:90px}
-  @media(max-width:920px){ .qb-side{position:static;order:-1} }
-  .qb-side h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.1rem}
-  .qb-side-row{padding:.85rem 0;border-bottom:1px solid rgba(22,40,74,.08)}
-  .qb-side-row:last-child{border-bottom:none}
-  .qb-side-k{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-500)}
-  .qb-side-v{font-size:.98rem;font-weight:600;margin-top:.35rem;color:var(--navy)}
-  .qb-side-v.empty{color:rgba(22,40,74,.3);font-weight:500}
-  .qb-side-v.set{color:var(--red)}
-  .qb-step-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
-  .qb-h{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:700;margin:.4rem 0 .3rem;line-height:1.1}
-  .qb-sub{color:var(--gray-500);margin-bottom:2rem;font-size:1rem}
+    .hero-content { position: relative; z-index: 5; padding: 60px 2.5rem 90px; max-width: 1440px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center; }
+    @media (max-width: 1024px) { .hero-content { grid-template-columns: 1fr; padding: 40px 1.5rem 70px; gap: 40px; } }
 
-  /* option grid */
-  .opt-grid{display:grid;gap:14px}
-  .opt-grid.cols-3{grid-template-columns:repeat(3,1fr)}
-  .opt-grid.cols-2{grid-template-columns:repeat(2,1fr)}
-  @media(max-width:680px){ .opt-grid.cols-3,.opt-grid.cols-2{grid-template-columns:1fr} }
-  .opt{border:2px solid rgba(22,40,74,.12);border-radius:16px;padding:1.4rem 1.2rem;cursor:pointer;text-align:center;transition:all .18s;background:#fff;position:relative}
-  .opt:hover{border-color:var(--navy);transform:translateY(-2px)}
-  .opt.sel{border-color:var(--red);background:var(--blue-pale)}
-  .opt .ic{width:46px;height:46px;border-radius:12px;background:var(--gray-50);display:flex;align-items:center;justify-content:center;margin:0 auto .7rem;font-size:1.4rem}
-  .opt.sel .ic{background:#fff}
-  .opt .t{font-weight:700;font-size:1rem}
-  .opt .d{font-size:.82rem;color:var(--gray-500);margin-top:3px}
-  .opt.multi.sel::after{content:'\2713';position:absolute;top:10px;right:12px;color:var(--red);font-weight:800}
+    .hero-text { color: #16284A; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 10px; background: rgba(22,40,74,0.06); border: 1px solid rgba(22,40,74,0.15); padding: 10px 20px; border-radius: 50px; font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: #16284A; margin-bottom: 28px; backdrop-filter: blur(8px); }
+    .hero-badge-dot { width: 8px; height: 8px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px #22c55e; }
+    .hero-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(46px, 6vw, 78px); font-weight: 700; line-height: 1.0; letter-spacing: -0.03em; margin-bottom: 24px; }
+    .hero-title-accent { color: #C9473A; display: block; font-style: italic; font-weight: 600; }
+    .hero-desc { font-size: 18px; line-height: 1.7; color: #334155; margin-bottom: 28px; max-width: 560px; }
 
-  /* fields */
-  .fld-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
-  @media(max-width:600px){ .fld-grid{grid-template-columns:1fr} }
-  .fld{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
-  .fld label{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-500)}
-  .fld label .req{color:var(--red)}
-  .fld input,.fld textarea{font-family:inherit;font-size:1rem;padding:.85rem 1rem;border:1.5px solid rgba(22,40,74,.15);border-radius:12px;background:#fff;color:var(--navy);transition:border .15s}
-  .fld input:focus,.fld textarea:focus{outline:none;border-color:var(--navy)}
-  .fld textarea{min-height:90px;resize:vertical}
+    /* Google rating badge near CTA */
+    .hero-rating { display: inline-flex; align-items: center; gap: 12px; background: white; border: 1px solid var(--gray-200); border-radius: 14px; padding: 10px 18px; box-shadow: 0 6px 20px rgba(22,40,74,0.08); margin-bottom: 26px; }
+    .hero-rating-stars { color: #fbbf24; font-size: 17px; letter-spacing: 1px; line-height: 1; }
+    .hero-rating-text { font-size: 13px; color: var(--gray-700); font-weight: 600; line-height: 1.3; }
+    .hero-rating-text strong { color: var(--navy); font-weight: 800; }
+    .hero-rating-g { display:inline-flex; align-items:center; justify-content:center; width:30px; height:30px; border-radius:50%; background:#fff; box-shadow:0 1px 4px rgba(0,0,0,.12); flex:0 0 30px; }
 
-  /* plans */
-  .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
-  @media(max-width:760px){ .plan-grid{grid-template-columns:1fr} }
-  .plan{border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.6rem 1.3rem;cursor:pointer;transition:all .18s;background:#fff;position:relative;text-align:center}
-  .plan:hover{transform:translateY(-3px)}
-  .plan.sel{border-color:var(--red);background:var(--blue-pale)}
-  .plan .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;padding:.3rem .8rem;border-radius:20px;text-transform:uppercase}
-  .plan h3{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:.2rem}
-  .plan .freq{font-size:.85rem;color:var(--gray-500);margin-bottom:1rem}
-  .plan .price{font-size:2rem;font-weight:800;color:var(--navy)}
-  .plan .price s{font-size:1.1rem;color:var(--gray-500);font-weight:600;margin-right:.3rem}
-  .plan .per{font-size:.8rem;color:var(--gray-500)}
-  .plan .save{margin-top:.8rem;font-size:.85rem;font-weight:700;color:#1a8a4f}
-  .plan-perks{list-style:none;padding:0;margin:1rem 0 .8rem;text-align:left}
-  .plan-perks li{display:flex;align-items:flex-start;gap:.5rem;font-size:.85rem;line-height:1.35;padding:.35rem 0;color:var(--navy)}
-  .plan-perks li.no{color:#aab1bd}
-  .plan-perks .pi{flex-shrink:0;font-weight:800;font-size:.8rem}
-  .plan-perks li.yes .pi{color:#1a8a4f}
-  .plan-perks li.no .pi{color:#d99}
-  .plan-annual{margin-top:.6rem;padding-top:.7rem;border-top:1px solid rgba(22,40,74,.1);font-size:.85rem;font-weight:700;color:#1a8a4f}
-  .plan-annual.none{color:var(--gray-500)}
-  /* add-ons */
-  .addon-grid{display:flex;flex-direction:column;gap:12px}
-  .addon{display:flex;align-items:center;gap:14px;border:2px solid rgba(22,40,74,.12);border-radius:14px;padding:1.1rem 1.3rem;cursor:pointer;transition:all .15s;background:#fff}
-  .addon:hover{border-color:rgba(201,71,58,.4)}
-  .addon.sel{border-color:var(--red);background:var(--blue-pale)}
-  .addon-check{width:24px;height:24px;border-radius:6px;border:2px solid rgba(22,40,74,.25);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0}
-  .addon.sel .addon-check{background:var(--red);border-color:var(--red)}
-  .addon-body{flex:1}
-  .addon-t{font-weight:700;color:var(--navy)}
-  .addon-d{font-size:.82rem;color:var(--gray-500)}
-  .addon-price{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;color:var(--navy)}
-  /* bundle */
-  .bundle{border:2px solid #1a8a4f;border-radius:18px;padding:1.5rem 1.6rem;background:linear-gradient(180deg,#f3fbf6,#fff);margin-bottom:1.4rem}
-  .bundle-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
-  .bundle-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:800;color:var(--navy)}
-  .bundle-sub{font-size:.9rem;color:var(--gray-500);margin-bottom:.7rem}
-  .bundle-list{list-style:none;padding:0;margin:0}
-  .bundle-list li{display:flex;align-items:center;gap:.5rem;font-size:.95rem;color:var(--navy);padding:.2rem 0}
-  .bundle-list .pi{color:#1a8a4f;font-weight:800}
-  .bundle-price-wrap{text-align:right;flex-shrink:0}
-  .bundle-price{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:800;color:var(--navy)}
-  .bundle-price s{font-size:1.1rem;color:var(--gray-500);font-weight:600;margin-right:.3rem}
-  .bundle-save{display:inline-block;margin-top:.3rem;font-size:.85rem;font-weight:700;color:#1a8a4f;background:#e3f6ec;padding:.2rem .6rem;border-radius:20px}
-  .bundle-actions{display:flex;gap:12px;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid rgba(26,138,79,.2)}
-  .bundle-btn{border:none;border-radius:30px;padding:.7rem 1.4rem;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit}
-  .bundle-btn.add{background:#1a8a4f;color:#fff;width:100%}
-  .bundle-btn.added{background:#eef1f4;color:var(--gray-500);cursor:default}
-  .bundle-btn.remove{background:#fff;color:var(--red);border:1.5px solid rgba(201,71,58,.3)}
-  .addon-or{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:800;color:var(--navy);margin:0 0 .8rem}
+    .hero-buttons { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 28px; }
+    .hero-est-link { color: var(--navy); opacity: 0.85; font-size: 14px; font-weight: 600; text-decoration: underline; display: inline-block; letter-spacing: 0.01em; }
 
-  /* calendar */
-  .cal{border:1.5px solid rgba(22,40,74,.12);border-radius:16px;overflow:hidden;max-width:520px;margin:0 auto}
-  .cal-head{display:flex;align-items:center;justify-content:space-between;padding:.9rem 1.1rem;background:var(--gray-50);font-weight:700}
-  .cal-head button{border:none;background:#fff;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:1rem;box-shadow:var(--shadow)}
-  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;padding:.6rem}
-  .cal-dow{text-align:center;font-size:.7rem;font-weight:700;color:var(--gray-500);padding:.4rem 0}
-  .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:10px;cursor:pointer;font-size:.9rem;font-weight:600;transition:all .12s}
-  .cal-day.empty{cursor:default}
-  .cal-day.dis{color:rgba(22,40,74,.25);cursor:not-allowed}
-  .cal-day:not(.dis):not(.empty):hover{background:var(--blue-pale)}
-  .cal-day.sel{background:var(--navy);color:#fff}
-  .slots{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1.4rem;max-width:520px;margin-left:auto;margin-right:auto}
-  @media(max-width:600px){ .slots{grid-template-columns:1fr 1fr} }
-  .slot{border:1.5px solid rgba(22,40,74,.15);border-radius:12px;padding:.8rem;text-align:center;cursor:pointer;font-weight:600;transition:all .15s}
-  .slot:hover{border-color:var(--navy)}
-  .slot.sel{background:var(--red);color:#fff;border-color:var(--red)}
+    .hero-image-wrap { position: relative; aspect-ratio: 1/1; max-width: 720px; justify-self: end; width: 100%; }
+    @media (max-width: 1024px) { .hero-image-wrap { justify-self: center; max-width: 560px; } }
+    .hero-image { width: 100%; height: 100%; object-fit: cover; border-radius: 32px 0 32px 32px; box-shadow: 0 30px 80px rgba(0,0,0,0.4); }
 
-  /* review */
-  .rev-box{background:var(--gray-50);border-radius:16px;padding:1.5rem;margin-bottom:1.2rem}
-  .rev-row{display:flex;justify-content:space-between;padding:.5rem 0;border-bottom:1px solid rgba(22,40,74,.08);font-size:.95rem}
-  .rev-row:last-child{border-bottom:none}
-  .rev-row .k{color:var(--gray-500)}
-  .rev-row .v{font-weight:600;text-align:right}
-  .rev-total{display:flex;justify-content:space-between;align-items:center;margin-top:1rem;padding-top:1rem;border-top:2px solid rgba(22,40,74,.12)}
-  .rev-total .lbl{font-weight:700}
-  .rev-total .amt{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:800;color:var(--red)}
+    .floating-card { position: absolute; background: white; border-radius: 14px; padding: 14px 20px; box-shadow: 0 16px 40px rgba(0,0,0,0.18); display: flex; align-items: center; gap: 14px; }
+    .floating-card.top { top: 40px; left: -20px; }
+    .floating-card.bottom { bottom: 40px; right: -20px; }
+    @media (max-width: 600px) { .floating-card.top { left: 10px; top: 20px; } .floating-card.bottom { right: 10px; bottom: 20px; } }
+    .floating-card-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .floating-card-icon.star { color: #fbbf24; font-size: 24px; }
+    .floating-card-title { font-size: 11px; color: var(--gray-500); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+    .floating-card-value { font-size: 15px; font-weight: 800; color: var(--navy); }
 
-  /* footer nav */
-  .qb-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;max-width:1180px;margin:1.5rem auto 4rem;padding:0 1.25rem}
-  .btn{font-family:inherit;font-weight:700;font-size:1rem;border-radius:40px;padding:.9rem 1.8rem;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:.5rem}
-  .btn-back{background:#fff;color:var(--navy);box-shadow:var(--shadow);width:52px;height:52px;border-radius:50%;padding:0;justify-content:center;font-size:1.3rem}
-  .btn-back:hover{transform:translateY(-1px);background:var(--blue-pale)}
-  .btn-next{background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(201,71,58,.35)}
-  .btn-next:hover{background:#b23a2e;transform:translateY(-1px)}
-  .btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
-  .hidden{display:none}
-  .info-note{background:#eef4fb;border-radius:12px;padding:.85rem 1.1rem;font-size:.88rem;color:var(--navy);margin-top:1.4rem}
-  .success-wrap{text-align:center;padding:2rem 1rem}
-  .success-wrap .big{font-family:'Playfair Display',serif;font-size:2.2rem;margin:.5rem 0}
-  .err{color:var(--red);font-size:.9rem;margin-top:.6rem;text-align:center}
-  .price-pill{display:inline-block;background:var(--navy);color:#fff;font-weight:700;padding:.5rem 1.1rem;border-radius:30px;margin-top:1rem}
-</style>
+    .section { padding: 7rem 2.5rem; }
+    @media (max-width: 768px) { .section { padding: 5rem 1.5rem; } }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+    .section-header { margin-bottom: 4rem; max-width: 720px; }
+    .section-header.center { margin-left: auto; margin-right: auto; text-align: center; }
+    .eyebrow { display: inline-block; background: var(--blue-pale); color: var(--blue); padding: 8px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 22px; }
+    .section-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(34px, 4.5vw, 52px); font-weight: 700; color: var(--navy); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; }
+    .section-title .blue { color: var(--blue); font-style: italic; font-weight: 600; }
+    .section-subtitle { font-size: 17px; color: var(--gray-500); line-height: 1.7; max-width: 600px; }
+    .section-header.center .section-subtitle { margin-left: auto; margin-right: auto; }
+
+    /* SERVICES — image-tile grid (DirtyMint-style, Clear View colors) */
+    .svc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 22px; }
+    .svc-grid-bottom { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; margin-top: 22px; }
+    .svc-tile.big { aspect-ratio: 16/10; }
+    .svc-tile.small .svc-tile-title { font-size: 1.05rem; }
+    .svc-tile.small .svc-tile-desc { display:none; }
+    @media(max-width:900px){ .svc-grid{ grid-template-columns:1fr; } .svc-grid-bottom{ grid-template-columns:repeat(2,1fr); } }
+    @media(max-width:520px){ .svc-grid-bottom{ grid-template-columns:1fr; } }
+    @media (max-width: 900px) { .svc-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .svc-grid { grid-template-columns: 1fr; } }
+    .svc-tile { cursor:pointer; position: relative; aspect-ratio: 4/3; border-radius: 20px; overflow: hidden; box-shadow: 0 10px 30px rgba(22,40,74,0.10); cursor: pointer; display: block; }
+    .svc-tile-bg { position: absolute; inset: 0; background-size: cover; background-position: center; transition: transform 0.7s ease; }
+    .svc-tile:hover .svc-tile-bg { transform: scale(1.07); }
+    /* color-block fallback tile */
+    .svc-tile.color .svc-tile-bg { background: linear-gradient(140deg, var(--navy) 0%, var(--blue-bright) 130%); }
+    .svc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,24,48,0.92) 0%, rgba(13,24,48,0.45) 42%, rgba(13,24,48,0.10) 75%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 26px; }
+    .svc-tile.color .svc-overlay { background: linear-gradient(to top, rgba(13,24,48,0.55) 0%, rgba(13,24,48,0.15) 60%, transparent 100%); }
+    .svc-icon { width: 46px; height: 46px; border-radius: 12px; background: rgba(255,255,255,0.16); border: 1px solid rgba(255,255,255,0.25); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; color: white; margin-bottom: 14px; }
+    .svc-tile-title { font-family: 'Playfair Display', Georgia, serif; font-size: 23px; font-weight: 700; color: white; letter-spacing: -0.01em; line-height: 1.15; margin-bottom: 6px; }
+    .svc-tile-desc { font-size: 13.5px; color: rgba(255,255,255,0.85); line-height: 1.5; max-width: 92%; }
+
+    /* ESTIMATOR */
+    .estimator-card { background: white; border-radius: 24px; padding: 36px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.06); border: 1px solid rgba(15, 23, 42, 0.06); max-width: 920px; margin: 0 auto; }
+    .estimator-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 28px 32px; margin-bottom: 32px; }
+    .est-field.full { grid-column: 1 / -1; }
+    .est-label { display: block; font-size: 13px; font-weight: 700; color: var(--navy); letter-spacing: -0.01em; margin-bottom: 12px; }
+    .est-input { width: 100%; padding: 12px 16px; border-radius: 12px; border: 1.5px solid var(--gray-200); background: white; font-size: 15px; font-family: inherit; color: var(--gray-900); cursor: pointer; transition: border-color 0.15s; }
+    .est-input:hover, .est-input:focus { border-color: var(--blue-bright); outline: none; }
+    .est-options { display: flex; flex-wrap: wrap; gap: 8px; }
+    .est-opt { flex: 1 1 calc(50% - 4px); min-width: 0; padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--gray-200); background: white; font-size: 14px; font-weight: 600; color: var(--gray-700); cursor: pointer; font-family: inherit; transition: all 0.15s; display: flex; flex-direction: column; align-items: flex-start; text-align: left; line-height: 1.3; }
+    .est-opt small { display: block; font-weight: 400; font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+    .est-opt:hover { border-color: var(--blue-bright); color: var(--navy); }
+    .est-opt.active { border-color: var(--blue-bright); background: var(--blue-bright); color: white; }
+    .est-opt.active small { color: rgba(255,255,255,0.8); }
+    .est-addons { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .est-addon { display: flex; align-items: center; padding: 12px 14px; border: 1.5px solid var(--gray-200); border-radius: 12px; cursor: pointer; transition: all 0.15s; background: white; }
+    .est-addon:hover { border-color: var(--blue-bright); }
+    .est-addon input { margin-right: 12px; width: 18px; height: 18px; cursor: pointer; accent-color: var(--blue-bright); }
+    .est-addon span { font-size: 14px; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
+    .est-addon span small { display: block; font-weight: 500; font-size: 12px; color: var(--blue-bright); margin-top: 1px; }
+    .est-addon input:checked + span { color: var(--navy); }
+    .est-addon:has(input:checked) { border-color: var(--blue-bright); background: rgba(201,71,58,0.04); }
+    .est-result { background: linear-gradient(135deg, var(--navy) 0%, var(--blue-bright) 100%); color: white; padding: 32px; border-radius: 20px; text-align: center; }
+    .est-result-label { font-size: 13px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; margin-bottom: 8px; }
+    .est-result-price { font-family: 'Playfair Display', Georgia, serif; font-size: 56px; font-weight: 700; letter-spacing: -0.03em; line-height: 1; margin-bottom: 14px; }
+    .est-result-note { font-size: 14px; opacity: 0.85; margin-bottom: 24px; max-width: 480px; margin-left: auto; margin-right: auto; line-height: 1.5; }
+    .est-cta { background: white; color: var(--navy); border: none; padding: 16px 32px; border-radius: 14px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; transition: transform 0.15s; letter-spacing: -0.01em; }
+    .est-cta:hover { transform: translateY(-1px); }
+    .est-or { margin-top: 18px; font-size: 14px; opacity: 0.85; }
+    .est-or a { color: white; font-weight: 700; text-decoration: underline; }
+    .est-addon-count { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; border: 1.5px solid var(--gray-200); border-radius: 12px; background: white; transition: all 0.15s; }
+    .est-addon-count:hover { border-color: var(--blue-bright); }
+    .est-addon-count > span { font-size: 14px; font-weight: 600; color: var(--gray-700); line-height: 1.3; }
+    .est-addon-count > span small { display: block; font-weight: 500; font-size: 12px; color: var(--blue-bright); margin-top: 1px; }
+    .est-counter { display: flex; align-items: center; gap: 12px; }
+    .est-step { width: 32px; height: 32px; border-radius: 8px; border: 1.5px solid var(--gray-200); background: white; font-size: 18px; font-weight: 700; color: var(--navy); cursor: pointer; display: flex; align-items: center; justify-content: center; font-family: inherit; transition: all 0.15s; padding: 0; line-height: 1; }
+    .est-step:hover { border-color: var(--blue-bright); background: var(--blue-bright); color: white; }
+    .est-step:disabled { opacity: 0.4; cursor: not-allowed; }
+    .est-count-val { font-size: 16px; font-weight: 700; color: var(--navy); min-width: 24px; text-align: center; }
+    @media (max-width: 720px) {
+      .estimator-card { padding: 24px 20px; }
+      .estimator-grid { grid-template-columns: 1fr; gap: 24px; }
+      .est-opt { flex: 1 1 100%; }
+      .est-addons { grid-template-columns: 1fr; }
+      .est-result-price { font-size: 42px; }
+      .est-result { padding: 24px 20px; }
+    }
+
+    /* TESTIMONIALS */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; max-width: 920px; margin: 0 auto; }
+    @media (max-width: 720px) { .testimonials-grid { grid-template-columns: 1fr; } }
+    .testimonial { background: white; border: 1.5px solid var(--gray-200); border-radius: 20px; padding: 2rem; transition: all 0.3s; }
+    .testimonial:hover { border-color: var(--blue); box-shadow: 0 16px 40px rgba(22,40,74,0.1); transform: translateY(-4px); }
+    .testimonial-stars { display: flex; gap: 4px; margin-bottom: 18px; color: #fbbf24; font-size: 18px; }
+    .testimonial-text { font-size: 15px; color: var(--gray-700); line-height: 1.7; margin-bottom: 24px; }
+    .testimonial-author { padding-top: 20px; border-top: 1px solid var(--gray-200); display: flex; align-items: center; gap: 14px; }
+    .testimonial-avatar { width: 46px; height: 46px; border-radius: 50%; background: linear-gradient(135deg, var(--blue-bright) 0%, var(--navy) 100%); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 17px; font-family: 'Playfair Display', Georgia, serif; flex-shrink: 0; }
+    .testimonial-name { font-family: 'Playfair Display', Georgia, serif; font-size: 16px; font-weight: 700; color: var(--navy); }
+    .testimonial-role { font-size: 12px; color: var(--gray-500); margin-top: 2px; font-weight: 500; }
+    .reviews-cta { text-align: center; margin-top: 2.5rem; }
+
+    /* SERVICE AREA */
+    .service-area-wrap { display: grid; grid-template-columns: 1.3fr 1fr; gap: 48px; align-items: center; max-width: 1100px; margin: 0 auto; }
+    .service-area-map { background: white; border: 1px solid var(--gray-200); border-radius: 20px; padding: 20px; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.04); }
+    .service-area-map svg { width: 100%; height: auto; display: block; }
+    .sa-list-title { font-size: 13px; font-weight: 700; color: var(--navy); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 18px; }
+    .towns-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .town { background: white; border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 16px 20px; font-size: 15px; font-weight: 600; color: var(--navy); display: flex; align-items: center; gap: 12px; transition: all 0.2s; cursor: pointer; }
+    .town:hover { background: var(--blue); color: white; border-color: var(--blue); transform: translateX(4px); box-shadow: 0 8px 20px rgba(22,40,74,0.25); }
+    .town-pin { width: 8px; height: 8px; background: var(--blue); border-radius: 50%; flex-shrink: 0; transition: background 0.2s; }
+    .town:hover .town-pin { background: white; }
+    .sa-note { margin-top: 22px; font-size: 14px; color: var(--gray-600); line-height: 1.6; }
+    @media (max-width: 820px) {
+      .service-area-wrap { grid-template-columns: 1fr; gap: 32px; }
+      .service-area-map { padding: 12px; }
+    }
+
+    /* CTA */
+    .cta-final { padding: 5rem 2.5rem; }
+    @media (max-width: 768px) { .cta-final { padding: 3rem 1.5rem; } }
+    .cta-card { background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 50%, #16284A 100%); border-radius: 32px; padding: 6rem 4rem; color: white; text-align: center; position: relative; overflow: hidden; max-width: 1280px; margin: 0 auto; }
+    @media (max-width: 768px) { .cta-card { padding: 4rem 2rem; } }
+    .cta-card::after { content: ''; position: absolute; top: -30%; right: -15%; width: 50%; height: 160%; border-radius: 50%; background: rgba(201,71,58,0.25); filter: blur(80px); }
+    .cta-content { position: relative; z-index: 2; }
+    .cta-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(36px, 5vw, 60px); font-weight: 700; line-height: 1.05; letter-spacing: -0.025em; margin-bottom: 20px; }
+    .cta-desc { font-size: 18px; color: rgba(255,255,255,0.78); margin-bottom: 44px; max-width: 580px; margin-left: auto; margin-right: auto; line-height: 1.6; }
+    .cta-tagline { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: var(--blue-light); font-size: 17px; margin-bottom: 28px; }
+
+    footer { background: var(--navy-dark); color: rgba(255,255,255,0.65); padding: 4rem 2.5rem 2rem; }
+    @media (max-width: 768px) { footer { padding: 3rem 1.5rem 2rem; } }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    @media (max-width: 767px) { .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+    .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .footer-logo-icon { width: 44px; height: 44px; background: white; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+    .footer-brand-name { font-family: 'Playfair Display', Georgia, serif; font-size: 21px; font-weight: 700; color: white; letter-spacing: -0.01em; }
+    .footer-brand-sub { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.16em; margin-top: 3px; font-weight: 600; }
+    .footer-desc { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.55); max-width: 340px; }
+    .footer-tagline { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: var(--blue-light); font-size: 14px; margin-top: 12px; }
+    .footer-heading { font-size: 12px; color: white; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 22px; }
+    .footer-list { display: flex; flex-direction: column; gap: 12px; }
+    .footer-list a, .footer-list span { font-size: 14px; color: rgba(255,255,255,0.6); transition: color 0.2s; }
+    .footer-list a:hover { color: white; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 13px; color: rgba(255,255,255,0.4); }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10,30,79,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 24px; width: 560px; max-width: 100%; max-height: 94vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.4); }
+    .modal-header { padding: 2.5rem 2.5rem 1.5rem; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    @media (max-width: 600px) { .modal-header { padding: 2rem 1.5rem 1rem; } }
+    .modal-title { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; font-weight: 700; color: var(--navy); line-height: 1.15; letter-spacing: -0.02em; margin-top: 8px; }
+    .modal-sub { font-size: 15px; color: var(--gray-500); margin-top: 10px; }
+    .modal-close { background: var(--gray-100); width: 36px; height: 36px; border-radius: 50%; font-size: 22px; color: var(--gray-500); line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover { background: var(--gray-200); color: var(--navy); }
+    .modal-body { padding: 1.75rem 2.5rem 2.5rem; }
+    @media (max-width: 600px) { .modal-body { padding: 1.5rem; } }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .form-field { display: flex; flex-direction: column; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-label { font-size: 12px; color: var(--gray-500); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .form-input, .form-select, .form-textarea { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 13px 16px; color: var(--gray-900); font-size: 15px; width: 100%; outline: none; transition: all 0.2s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--blue); background: white; }
+    .form-textarea { min-height: 88px; resize: vertical; font-family: inherit; }
+    .form-submit { width: 100%; margin-top: 24px; background: var(--blue-bright); color: white; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(201,71,58,0.4); transition: all 0.2s; }
+    .form-submit:hover { background: #a83a2f; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,71,58,0.5); }
+    .form-submit:disabled { background: var(--gray-500); cursor: wait; transform: none; }
+    .form-call-link { margin-top: 18px; font-size: 13px; color: var(--gray-500); text-align: center; }
+    .form-call-link a { color: var(--blue); font-weight: 700; }
+    .form-status { margin-top: 20px; padding: 14px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; }
+    .form-status.success { background: #f0fdf4; color: var(--green); border: 1px solid rgba(22,163,74,0.3); }
+    .form-status.error { background: #fef2f2; color: #dc2626; border: 1px solid rgba(220,38,38,0.3); }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { animation: fadeUp 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) forwards; opacity: 0; }
+    .fade-up.d1 { animation-delay: 0.12s; }
+    .fade-up.d2 { animation-delay: 0.24s; }
+    .fade-up.d3 { animation-delay: 0.36s; }
+    .fade-up.d4 { animation-delay: 0.48s; }
+
+    /* MOBILE STICKY CTA */
+    .mobile-sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.12); z-index: 999; gap: 10px; align-items: center; border-top: 1px solid var(--gray-200); }
+    .sticky-cta-btn { flex: 1; background: var(--blue-bright); color: white; border: none; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: -0.01em; box-shadow: 0 4px 14px rgba(201,71,58,0.35); }
+    .sticky-cta-call { background: var(--navy); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none; }
+    @media (max-width: 768px) {
+      .mobile-sticky-cta { display: flex; }
+      body { padding-bottom: 80px; }
+    }
+  
+    /* ===== SCROLLING REVIEWS BAR ===== */
+    .rev-marquee-section { background:#fff; padding:4rem 0 4.5rem; overflow:hidden; }
+    .rev-marquee-head { text-align:center; margin-bottom:2.5rem; }
+    .rev-marquee-rating { display:inline-flex; align-items:center; gap:.6rem; margin-top:.6rem; color:var(--navy); font-weight:600; font-size:.95rem; }
+    .rev-marquee-rating .stars { color:#f5a623; letter-spacing:2px; }
+    .rev-marquee { position:relative; width:100%; -webkit-mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent); mask-image:linear-gradient(to right,transparent,#000 8%,#000 92%,transparent); }
+    .rev-track { display:flex; gap:1.25rem; width:max-content; animation:revscroll 40s linear infinite; }
+    .rev-marquee:hover .rev-track { animation-play-state:paused; }
+    @keyframes revscroll { from{transform:translateX(0);} to{transform:translateX(-50%);} }
+    .rev-card { flex:0 0 340px; background:var(--gray-50); border:1px solid rgba(22,40,74,.06); border-radius:18px; padding:1.5rem; box-shadow:0 6px 24px rgba(22,40,74,.05); }
+    .rev-card-top { display:flex; align-items:center; gap:.8rem; margin-bottom:.7rem; }
+    .rev-avatar { width:42px; height:42px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:1.1rem; flex:0 0 42px; }
+    .rev-name { font-weight:700; color:var(--navy); font-size:.95rem; }
+    .rev-date { font-size:.78rem; color:var(--gray-500); }
+    .rev-stars { color:#f5a623; letter-spacing:2px; margin-bottom:.5rem; }
+    .rev-text { color:var(--gray-600,#444); font-size:.9rem; line-height:1.6; }
+    @media(max-width:600px){ .rev-card{ flex-basis:280px; } }
+
+  
+    .rev-marquee-actions { display:flex; align-items:center; justify-content:center; gap:1.5rem; margin-top:.9rem; flex-wrap:wrap; }
+    .rev-divider { width:1px; height:34px; background:rgba(22,40,74,.18); }
+    .rev-share-btn { display:inline-flex; align-items:center; gap:.6rem; background:var(--navy); color:#fff; border:none; border-radius:40px; padding:.75rem 1.4rem; font-weight:600; font-size:.95rem; cursor:pointer; text-decoration:none; transition:all .2s; }
+    .rev-share-btn:hover { background:#0f1d38; transform:translateY(-1px); }
+    .rev-share-g { width:26px; height:26px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; }
+    @media(max-width:520px){ .rev-divider{ display:none; } }
+
+  
+    /* ===== SERVICE AREA MAP ===== */
+    .area-wrap { display:grid; grid-template-columns:1.3fr 1fr; gap:2.5rem; align-items:stretch; margin-top:2.5rem; }
+    @media(max-width:880px){ .area-wrap{ grid-template-columns:1fr; } }
+    .area-map { position:relative; border-radius:22px; overflow:hidden; box-shadow:0 20px 50px rgba(22,40,74,.15); min-height:420px; }
+    .area-map iframe { position:absolute; inset:0; width:100%; height:100%; border:0; }
+    .area-card { background:var(--navy); color:#fff; border-radius:22px; padding:2.2rem; display:flex; flex-direction:column; justify-content:center; }
+    .area-card h3 { font-family:'Playfair Display',Georgia,serif; font-size:1.6rem; margin:0 0 .8rem; }
+    .area-card p { opacity:.85; line-height:1.7; margin-bottom:1.4rem; }
+    .area-towns { display:flex; flex-wrap:wrap; gap:.5rem; margin-bottom:1.6rem; }
+    .area-chip { background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.2); padding:.4rem .85rem; border-radius:30px; font-size:.82rem; font-weight:500; }
+    .area-card .btn { align-self:flex-start; }
+
+  
+    /* ===== NAV DROPDOWN + CALL BTN ===== */
+    .nav-dd { position:relative; }
+    .nav-dd > a { cursor:pointer; display:inline-flex; align-items:center; gap:.3rem; }
+    .nav-dd > a::after { content:'▾'; font-size:.7em; opacity:.7; }
+    .nav-dd-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%) translateY(8px); background:#fff; border-radius:14px; box-shadow:0 20px 50px rgba(22,40,74,.18); padding:.6rem; min-width:240px; opacity:0; visibility:hidden; transition:all .2s; z-index:200; }
+    .nav-dd:hover .nav-dd-menu { opacity:1; visibility:visible; transform:translateX(-50%) translateY(4px); }
+    .nav-dd-menu a { display:block; padding:.7rem .9rem; border-radius:9px; color:var(--navy); font-weight:600; font-size:.92rem; white-space:nowrap; }
+    .nav-dd-menu a:hover { background:var(--gray-50); }
+    .nav-call { display:inline-flex !important; align-items:center; gap:.5rem; background:#C9473A !important; color:#fff !important; padding:.6rem 1.3rem; border-radius:40px; font-weight:700; box-shadow:0 4px 14px rgba(201,71,58,.35); }
+    .nav-call:hover { background:#b23a2e !important; transform:translateY(-1px); }
+    .nav-call svg { fill:#fff; }
+
+  </style>
 </head>
 <body>
 
-<div class="qb-top">
-  <div class="qb-top-inner">
-    <a href="index.html" class="qb-brand"><img src="logo.png" alt="Clear View"><span>CLEAR VIEW<small>WINDOW CO.</small></span></a>
-    <div class="qb-total" id="totalPill">Estimate: <b id="totalAmt">—</b></div>
+<!-- ================= HERO ================= -->
+<section class="hero-section">
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="#top" class="nav-logo">
+        <img src="logo.png" alt="Clear View Window Co. badge logo" class="nav-logo-badge">
+        <div class="nav-logo-wordmark">
+          <div class="nav-logo-text">CLEAR&nbsp;VIEW</div>
+          <div class="nav-logo-sub"><span class="wm-dash"></span>WINDOW&nbsp;CO.<span class="wm-dash"></span></div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="tel:+18609663149" class="nav-call">
+          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+          Call us
+        </a>
+        <a href="about.html">About Us</a>
+        <div class="nav-dd">
+          <a>Our Services</a>
+          <div class="nav-dd-menu">
+            <a href="exterior.html">Exterior Window Cleaning</a>
+            <a href="interior.html">Interior Window Cleaning</a>
+            <a href="tracks.html">Sill &amp; Track Detailing</a>
+            <a href="screens.html">Screen Cleaning</a>
+            <a href="solar.html">Solar Panel Cleaning</a>
+            <a href="pressure.html">Pressure Washing</a>
+          </div>
+        </div>
+        <a href="gallery.html">Our Work</a>
+        <a href="#reviews">Reviews</a>
+        <button class="btn btn-primary btn-nav" onclick="openModal()">Get Free Quote</button>
+      </div>
+      
+      <button class="mobile-btn" onclick="openModal()"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-badge fade-up">
+        <span class="hero-badge-dot"></span>
+        Locally owned · Serving all of Connecticut
+      </div>
+      <h1 class="hero-title fade-up d1">
+        Dirty windows?<br>
+        <span class="hero-title-accent">We'll fix that.</span>
+      </h1>
+      <p class="hero-desc fade-up d2">Reliable residential window cleaning across Connecticut — interior, exterior, screens, tracks, and more. Careful work, honest pricing, a brighter home.</p>
+
+      <a href="https://share.google/CAEY8v003mP2SQPkd" target="_blank" class="hero-rating fade-up d2" style="cursor:pointer;">
+        <span class="hero-rating-g"><svg width="20" height="20" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.3h11.8c-.5 2.7-2 5-4.3 6.6v5.5h7C42.6 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c5.9 0 10.8-2 14.4-5.3l-7-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.3c-.4-1.3-.7-2.7-.7-4.3s.3-3 .7-4.3v-5.7H4.5C3 17 2 20.4 2 24s1 7 2.5 10l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.8 4.1 29.9 2 24 2 15.4 2 8.1 6.9 4.5 14l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg></span>
+        <div>
+          <div class="hero-rating-stars">★★★★★</div>
+          <div class="hero-rating-text"><strong>5.0</strong> on Google · Local Columbia team</div>
+        </div>
+      </a>
+
+      <div class="hero-buttons fade-up d3">
+        <a href="quote.html" class="btn btn-primary btn-lg">Get Instant Quote →</a>
+        <a href="tel:+18609663149" class="btn btn-outline-light btn-lg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="#16284A"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+          Call (860) 966-3149
+        </a>
+      </div>
+    </div>
+
+    <div class="hero-image-wrap fade-up d2">
+      <img src="hero.jpg" alt="Clear View technician cleaning windows with a water-fed pole on a New England home" class="hero-image">
+      <div class="floating-card top">
+        <div class="floating-card-icon star">★</div>
+        <div>
+          <div style="font-size: 13px; color: var(--navy); font-weight: 700;">5-Star Rated</div>
+          <div style="font-size: 11px; color: var(--gray-500); font-weight: 500;">Local Columbia team</div>
+        </div>
+      </div>
+      <div class="floating-card bottom">
+        <div>
+          <div class="floating-card-title">Free</div>
+          <div class="floating-card-value">In-person estimate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= VIDEO SECTION ================= -->
+<section class="section" style="background: var(--navy, #16284A);">
+  <div style="max-width:1000px;margin:0 auto;text-align:center;padding:0 24px;">
+    <div class="eyebrow" style="justify-content:center;background:rgba(246,242,234,0.12);color:#F6F2EA;">Watch</div>
+    <h2 class="section-title" style="color:#F6F2EA;">See the <span class="blue">difference.</span></h2>
+    <p style="font-family:'Inter',sans-serif;color:#F6F2EA;opacity:.85;font-size:1.1rem;margin:12px 0 40px;">Watch our team bring Connecticut windows back to crystal clear.</p>
+    <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+      <iframe src="https://www.youtube.com/embed/1JTZ_ygo_RA?rel=0" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <a href="quote.html" class="btn btn-primary btn-lg" style="margin-top:40px;">Get Instant Quote →</a>
+  </div>
+</section>
+
+<!-- ================= SERVICES (image tiles) ================= -->
+<section class="section" id="services" style="background: var(--gray-50);">
+  <div class="section-inner">
+    <div class="section-header center">
+      <div class="eyebrow">What We Offer</div>
+      <h2 class="section-title">Everything to make your home <span class="blue">shine.</span></h2>
+      <p class="section-subtitle">Residential cleaning done properly — with the equipment, training, and care your home deserves.</p>
+    </div>
+
+    <div class="svc-grid">
+<a class="svc-tile big" href="exterior.html">
+        <div class="svc-tile-bg" style="background-image: url('exterior.jpg');"></div>
+        <div class="svc-overlay">
+          <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 7h4v4H7zm6 0h4v4h-4zM7 13h4v4H7zm6 0h4v4h-4z"/></svg></div>
+          <div class="svc-tile-title">Exterior Windows</div>
+          <p class="svc-tile-desc">Pure-water, water-fed pole cleaning — spotless glass with no streaks, even on high windows.</p>
+        </div>
+      </a>
+<a class="svc-tile big" href="interior.html">
+        <div class="svc-tile-bg" style="background-image: url('interior.jpg');"></div>
+        <div class="svc-overlay">
+          <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 16H5v-6h6v6zm0-8H5V5h6v6zm8 8h-6v-6h6v6zm0-8h-6V5h6v6z"/></svg></div>
+          <div class="svc-tile-title">Interior Windows</div>
+          <p class="svc-tile-desc">Hand-cleaned glass inside the home — including tall foyer and arch windows reached safely.</p>
+        </div>
+      </a>
+      </div>
+      <div class="svc-grid-bottom">
+<a class="svc-tile small" href="tracks.html">
+        <div class="svc-tile-bg" style="background-image: url('tracks.jpg');"></div>
+        <div class="svc-overlay">
+          <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 6h16v2H4zm0 5h16v2H4zm0 5h16v2H4z"/></svg></div>
+          <div class="svc-tile-title">Sill &amp; Track Detailing</div>
+          <p class="svc-tile-desc">Built-up dirt, dead bugs, and grime cleaned out of sills and tracks — often the biggest visible difference.</p>
+        </div>
+      </a>
+<a class="svc-tile small" href="screens.html">
+        <div class="svc-tile-bg" style="background-image: url('screens.jpg');"></div>
+        <div class="svc-overlay">
+          <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v14H3zm2 2v10h14V7zm2 2h10v2H7zm0 4h10v2H7z"/></svg></div>
+          <div class="svc-tile-title">Screen Cleaning</div>
+          <p class="svc-tile-desc">Pulled, deep-washed off-frame, dried, and reinstalled. Airflow restored, appearance like new.</p>
+        </div>
+      </a>
+<a class="svc-tile small" href="solar.html">
+        <div class="svc-tile-bg" style="background-image: url('solar.jpg');"></div>
+        <div class="svc-overlay">
+          <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v12H4zm2 2v8h12V6zm-3 12h18v2H3z"/></svg></div>
+          <div class="svc-tile-title">Solar Panel Cleaning</div>
+          <p class="svc-tile-desc">Dust, pollen, and grime gently removed so your panels run at full efficiency again.</p>
+        </div>
+      </a>
+<a class="svc-tile small" href="pressure.html">
+        <div class="svc-tile-bg" style="background-image: url('pressure.jpg');"></div>
+        <div class="svc-overlay">
+          <div class="svc-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 3h-2v2h2v2h-6V3h-2v4H9V5H7v2H5v2h14zm-7 6v12h-2v-5H7v5H5V11h7zm7 0v6h-5v-6z"/></svg></div>
+          <div class="svc-tile-title">Pressure Washing</div>
+          <p class="svc-tile-desc">Decks, patios, and walkways restored — years of grime and algae blasted away.</p>
+        </div>
+      </a>
+      </div>
+  </div>
+</section>
+
+
+
+<!-- ================= RECURRING PLANS ================= -->
+<section class="section" id="plans" style="background: var(--cream, #F6F2EA);">
+  <div class="section-inner">
+    <div class="section-header center">
+      <h2 class="section-title">Clean windows, <span class="blue">year round.</span></h2>
+      <p class="section-subtitle" style="margin:16px auto 0;">The more we visit, the more you save. Cancel anytime.</p>
+    </div>
+
+    <div class="plans-grid">
+
+      <!-- BI-ANNUAL -->
+      <div class="plan-card">
+        <div class="plan-name">Bi-Annual</div>
+        <div class="plan-price">$50 OFF</div>
+        <div class="plan-per">Per Cleaning</div>
+        <ul class="plan-list">
+          <li class="no"><span class="pi">✕</span> Unlimited touchups between visits</li>
+          <li class="no"><span class="pi">✕</span> 7-Day Rain Guarantee</li>
+          <li class="no"><span class="pi">✕</span> Free Hard Water &amp; Stain Removal</li>
+          <li class="no"><span class="pi">✕</span> Glass Protectant Treatment</li>
+        </ul>
+        <a href="quote.html" class="btn btn-primary plan-btn">Choose Bi-Annual</a>
+      </div>
+
+      <!-- QUARTERLY (featured) -->
+      <div class="plan-card plan-featured">
+        <div class="plan-flag">★ Most Popular</div>
+        <div class="plan-name">Quarterly</div>
+        <div class="plan-price">$150 OFF</div>
+        <div class="plan-per">Per Cleaning</div>
+        <ul class="plan-list">
+          <li class="yes"><span class="pi">✓</span> Unlimited touchups between visits</li>
+          <li class="yes"><span class="pi">✓</span> 7-Day Rain Guarantee</li>
+          <li class="yes"><span class="pi">✓</span> Free Hard Water &amp; Stain Removal</li>
+          <li class="yes"><span class="pi">✓</span> Glass Protectant Treatment</li>
+        </ul>
+        <a href="quote.html" class="btn btn-primary plan-btn">Choose Quarterly</a>
+      </div>
+
+      <!-- TRI-ANNUAL -->
+      <div class="plan-card">
+        <div class="plan-name">Tri-Annual</div>
+        <div class="plan-price">$100 OFF</div>
+        <div class="plan-per">Per Cleaning</div>
+        <ul class="plan-list">
+          <li class="no"><span class="pi">✕</span> Unlimited touchups between visits</li>
+          <li class="yes"><span class="pi">✓</span> 7-Day Rain Guarantee</li>
+          <li class="yes"><span class="pi">✓</span> Free Hard Water &amp; Stain Removal</li>
+          <li class="no"><span class="pi">✕</span> Glass Protectant Treatment</li>
+        </ul>
+        <a href="quote.html" class="btn btn-primary plan-btn">Choose Tri-Annual</a>
+      </div>
+
+    </div>
+  </div>
+
+  <style>
+    .plans-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 56px; align-items: center; }
+    .plan-card { position: relative; background: #fff; border-radius: 22px; padding: 44px 32px 36px; box-shadow: 0 14px 40px rgba(22,40,74,0.10); display: flex; flex-direction: column; text-align: center; transition: transform 0.2s ease, box-shadow 0.2s ease; }
+    .plan-card:hover { transform: translateY(-6px); box-shadow: 0 22px 54px rgba(22,40,74,0.16); }
+    .plan-featured { background: #fbf7f1; border: 2px solid var(--red, #C9473A); padding-top: 52px; box-shadow: 0 24px 60px rgba(22,40,74,0.16); z-index: 2; }
+    @media (min-width: 901px) { .plan-featured { transform: scale(1.04); } .plan-featured:hover { transform: scale(1.04) translateY(-6px); } }
+    .plan-flag { position: absolute; top: -16px; left: 50%; transform: translateX(-50%); background: var(--red, #C9473A); color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; padding: 8px 20px; border-radius: 999px; white-space: nowrap; box-shadow: 0 6px 16px rgba(201,71,58,0.3); }
+    .plan-name { font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 800; letter-spacing: 0.18em; text-transform: uppercase; color: var(--red, #C9473A); margin-bottom: 14px; }
+    .plan-price { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(42px, 5vw, 56px); font-weight: 800; color: var(--navy, #16284A); line-height: 1; letter-spacing: -0.02em; }
+    .plan-per { font-size: 13px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--navy, #16284A); margin-top: 10px; opacity: 0.6; }
+    .plan-list { list-style: none; padding: 0; margin: 32px 0; text-align: left; flex: 1; }
+    .plan-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 15px; line-height: 1.4; color: var(--navy, #16284A); padding: 12px 0; }
+    .plan-list li.no { color: #9aa3b2; }
+    .plan-list .pi { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-size: 12px; font-weight: 800; flex-shrink: 0; margin-top: 1px; }
+    .plan-list li.yes .pi { background: rgba(201,71,58,0.12); color: var(--red, #C9473A); }
+    .plan-list li.no .pi { background: #f0f2f5; color: #b6bdc8; }
+    .plan-btn { width: 100%; border-radius: 999px; }
+    @media (max-width: 900px) {
+      .plans-grid { grid-template-columns: 1fr; max-width: 440px; margin: 48px auto 0; gap: 32px; }
+      .plan-featured { order: -1; }
+    }
+  </style>
+</section>
+<!-- ================= BEFORE / AFTER SLIDER ================= -->
+<section class="section" id="before-after" style="background:#fff;">
+  <div class="section-inner">
+    <div class="section-header center">
+      <div class="eyebrow">Before &amp; After</div>
+      <h2 class="section-title">See it for <span class="blue">yourself</span>.</h2>
+      <p class="section-subtitle">Same window, same day. Drag the slider to see the difference a professional clean makes.</p>
+    </div>
+
+    <div class="ba-slider" id="baSlider">
+      <img class="ba-img ba-after" src="before-after-1-after.jpg" alt="Window after cleaning by Clear View Window Co. — crystal clear glass">
+      <div class="ba-before-wrap" id="baBeforeWrap">
+        <img class="ba-img ba-before" src="before-after-1-before.jpg" alt="Window before cleaning — dusty, hazy glass">
+      </div>
+      <span class="ba-label ba-label-before">Before</span>
+      <span class="ba-label ba-label-after">After</span>
+      <div class="ba-handle" id="baHandle">
+        <div class="ba-handle-line"></div>
+        <div class="ba-handle-grip">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
+        </div>
+        <div class="ba-handle-line"></div>
+      </div>
+    </div>
+
+    <p class="ba-caption">Connecticut home · exterior clean · pure-water finish</p>
+  </div>
+</section>
+
+<style>
+  .ba-slider { position:relative; max-width:560px; margin:0 auto; aspect-ratio:3/4; border-radius:20px; overflow:hidden; box-shadow:0 20px 50px rgba(22,40,74,.18); cursor:ew-resize; user-select:none; touch-action:none; }
+  .ba-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .ba-before-wrap { position:absolute; inset:0; width:50%; overflow:hidden; }
+  .ba-before-wrap .ba-before { width:auto; height:100%; max-width:none; }
+  /* before image must be sized to the slider width, not the clipped wrapper */
+  .ba-slider .ba-before-wrap .ba-before { width:560px; }
+  @media(max-width:600px){ .ba-slider .ba-before-wrap .ba-before { width:92vw; max-width:560px; } }
+  .ba-label { position:absolute; top:16px; z-index:4; background:rgba(22,40,74,.85); color:#fff; padding:.3rem .85rem; border-radius:20px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; backdrop-filter:blur(4px); }
+  .ba-label-before { left:16px; }
+  .ba-label-after { right:16px; background:var(--red); }
+  .ba-handle { position:absolute; top:0; bottom:0; left:50%; width:44px; transform:translateX(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; pointer-events:none; }
+  .ba-handle-line { flex:1; width:3px; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.3); }
+  .ba-handle-grip { width:44px; height:44px; border-radius:50%; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ba-caption { text-align:center; margin-top:1.2rem; font-size:.9rem; color:var(--gray-500); font-weight:500; }
+</style>
+
+<script>
+(function(){
+  const slider = document.getElementById('baSlider');
+  const wrap = document.getElementById('baBeforeWrap');
+  const handle = document.getElementById('baHandle');
+  if(!slider) return;
+  let dragging = false;
+
+  function setPos(clientX){
+    const rect = slider.getBoundingClientRect();
+    let x = clientX - rect.left;
+    x = Math.max(0, Math.min(x, rect.width));
+    const pct = (x / rect.width) * 100;
+    wrap.style.width = pct + '%';
+    handle.style.left = pct + '%';
+  }
+  function start(e){ dragging = true; setPos(getX(e)); }
+  function move(e){ if(!dragging) return; setPos(getX(e)); e.preventDefault(); }
+  function end(){ dragging = false; }
+  function getX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
+
+  slider.addEventListener('mousedown', start);
+  window.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end);
+  slider.addEventListener('touchstart', start, {passive:true});
+  window.addEventListener('touchmove', move, {passive:false});
+  window.addEventListener('touchend', end);
+
+  // also let clicking anywhere jump the handle there
+  slider.addEventListener('click', e=>{ if(!dragging) setPos(getX(e)); });
+})();
+</script>
+
+
+
+<!-- ================= SCROLLING REVIEWS BAR ================= -->
+<section class="rev-marquee-section" id="reviews">
+  <div class="rev-marquee-head">
+    <div class="eyebrow" style="justify-content:center;">See what your</div>
+    <h2 class="section-title">Neighbors <span class="blue">are saying.</span></h2>
+    <div class="rev-marquee-actions">
+      <div class="rev-marquee-rating"><span class="stars">★★★★★</span> 5.0 rating on Google · 25+ reviews</div>
+      <div class="rev-divider"></div>
+      <a href="https://share.google/CAEY8v003mP2SQPkd" target="_blank" rel="noopener" class="rev-share-btn">
+        <span class="rev-share-g">
+          <svg width="14" height="14" viewBox="0 0 48 48"><path fill="#4285F4" d="M45 24c0-1.6-.1-3.1-.4-4.6H24v9.3h11.8c-.5 2.7-2 5-4.3 6.6v5.5h7C42.6 37 45 31 45 24z"/><path fill="#34A853" d="M24 46c5.9 0 10.8-2 14.4-5.3l-7-5.5c-2 1.3-4.5 2.1-7.4 2.1-5.7 0-10.5-3.8-12.2-9H4.5v5.7C8.1 41.1 15.4 46 24 46z"/><path fill="#FBBC05" d="M11.8 28.3c-.4-1.3-.7-2.7-.7-4.3s.3-3 .7-4.3v-5.7H4.5C3 17 2 20.4 2 24s1 7 2.5 10l7.3-5.7z"/><path fill="#EA4335" d="M24 10.7c3.2 0 6.1 1.1 8.4 3.3l6.3-6.3C34.8 4.1 29.9 2 24 2 15.4 2 8.1 6.9 4.5 14l7.3 5.7c1.7-5.2 6.5-9 12.2-9z"/></svg>
+        </span>
+        Share your review
+      </a>
+    </div>
+  </div>
+  <div class="rev-marquee">
+    <div class="rev-track">
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Joanne Buck</div><div class="rev-date">18 hours ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison and his co-worker did an amazing job on our house. Very professional, super courteous, arrived on time and gave us a very fair price. We highly recommend them!!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">H</div>
+          <div><div class="rev-name">Holly Sawtelle</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Very pleased with the professionalism as well as the quality of final product. My windows shine!!! Definitely recommend Garrison and co.!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">D</div>
+          <div><div class="rev-name">Diane Sauer</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Our windows were beautiful after being cleaned by Garrison and his coworker. They took great care in the work they did, were respectful of our property, and the results were great.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Scott Majek</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">We hired Clear View to clean our church windows. They were prompt, professional, and did a great job! They even cleaned the screens. Very efficient!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">K</div>
+          <div><div class="rev-name">Kathleen Joppru</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Wonderful job! Windows look terrific. We will have Garrison come every year to do our windows.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Jackson Simms</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Great working with kids their age, always stayed on task and truly thoughtful with their work. They put a lot of effort in and made sure I was happy with their job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">O</div>
+          <div><div class="rev-name">Oscar Flores</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I used Clear View Window Cleaning to tidy up the exterior of my home prior to selling. They did an amazing job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">A</div>
+          <div><div class="rev-name">Ann Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I have washed windows for years. Due to my medical issues, Garrison came by & gave me a quote. Reliable! On time! Great result! Will use him every year. He deserves a 5 star review.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">M</div>
+          <div><div class="rev-name">Mike Burke</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">They did a great job cleaning the windows and screens. They were on time and a good price as well.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Steve Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison was great - on time and work was excellent. The technology utilized in his method is also impressive in that it leaves no water marks on the glass. Will do this annually. Thanks!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Joanne Buck</div><div class="rev-date">18 hours ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison and his co-worker did an amazing job on our house. Very professional, super courteous, arrived on time and gave us a very fair price. We highly recommend them!!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">H</div>
+          <div><div class="rev-name">Holly Sawtelle</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Very pleased with the professionalism as well as the quality of final product. My windows shine!!! Definitely recommend Garrison and co.!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">D</div>
+          <div><div class="rev-name">Diane Sauer</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Our windows were beautiful after being cleaned by Garrison and his coworker. They took great care in the work they did, were respectful of our property, and the results were great.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Scott Majek</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">We hired Clear View to clean our church windows. They were prompt, professional, and did a great job! They even cleaned the screens. Very efficient!</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">K</div>
+          <div><div class="rev-name">Kathleen Joppru</div><div class="rev-date">1 week ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Wonderful job! Windows look terrific. We will have Garrison come every year to do our windows.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">J</div>
+          <div><div class="rev-name">Jackson Simms</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Great working with kids their age, always stayed on task and truly thoughtful with their work. They put a lot of effort in and made sure I was happy with their job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">O</div>
+          <div><div class="rev-name">Oscar Flores</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I used Clear View Window Cleaning to tidy up the exterior of my home prior to selling. They did an amazing job.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">A</div>
+          <div><div class="rev-name">Ann Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">I have washed windows for years. Due to my medical issues, Garrison came by & gave me a quote. Reliable! On time! Great result! Will use him every year. He deserves a 5 star review.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">M</div>
+          <div><div class="rev-name">Mike Burke</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">They did a great job cleaning the windows and screens. They were on time and a good price as well.</p>
+      </div>
+      <div class="rev-card">
+        <div class="rev-card-top">
+          <div class="rev-avatar">S</div>
+          <div><div class="rev-name">Steve Hudd</div><div class="rev-date">2 weeks ago</div></div>
+        </div>
+        <div class="rev-stars">★★★★★</div>
+        <p class="rev-text">Garrison was great - on time and work was excellent. The technology utilized in his method is also impressive in that it leaves no water marks on the glass. Will do this annually. Thanks!</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<!-- ================= SERVICE AREA ================= -->
+<section class="section" id="service-area">
+  <div class="section-inner">
+    <div class="section-header center">
+      <div class="eyebrow">Service Area</div>
+      <h2 class="section-title">Proudly serving <span class="blue">all of Connecticut.</span></h2>
+      <p class="section-subtitle" style="margin-top:16px;">Clear View Window Cleaning is based in Columbia, CT and serves homeowners statewide — from the shoreline to the hills.</p>
+    </div>
+
+    <div class="area-wrap">
+      <div class="area-map">
+        <iframe src="https://www.google.com/maps?q=Connecticut&output=embed&z=8" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Clear View Window Co. Connecticut service area" allowfullscreen></iframe>
+      </div>
+      <div class="area-card">
+        <h3>Statewide coverage</h3>
+        <p>We travel across Connecticut for residential window cleaning. A few of the towns we regularly serve:</p>
+        <div class="area-towns">
+        <span class="area-chip">Hartford</span>
+        <span class="area-chip">New Haven</span>
+        <span class="area-chip">Stamford</span>
+        <span class="area-chip">Waterbury</span>
+        <span class="area-chip">Norwalk</span>
+        <span class="area-chip">Danbury</span>
+        <span class="area-chip">New London</span>
+        <span class="area-chip">Bristol</span>
+        <span class="area-chip">Meriden</span>
+        <span class="area-chip">Middletown</span>
+        <span class="area-chip">Manchester</span>
+        <span class="area-chip">Glastonbury</span>
+        <span class="area-chip">West Hartford</span>
+        <span class="area-chip">Storrs</span>
+        <span class="area-chip">Mansfield</span>
+        <span class="area-chip">Columbia</span>
+        <span class="area-chip">Tolland</span>
+        <span class="area-chip">Coventry</span>
+        <span class="area-chip">Farmington</span>
+        <span class="area-chip">Avon</span>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="openModal()">Check your address →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FINAL CTA ================= -->
+<section class="cta-final">
+  <div class="cta-card">
+    <div class="cta-content">
+      <p class="cta-tagline">Cleaner windows. Brighter homes. A better view.</p>
+      <h2 class="cta-title">Ready to see your home brighter?</h2>
+      <p class="cta-desc">Free estimates throughout Connecticut. We'll come look, we'll quote upfront, and you decide from there.</p>
+      <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap;">
+        <button class="btn btn-primary btn-lg" onclick="openModal()">Get a Free Quote</button>
+        <a href="tel:+18609663149" class="btn btn-outline-light btn-lg">Call (860) 966-3149</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <div class="footer-logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="#C9473A"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1c.55 0 1-.45 1-1s-.45-1-1-1L12 2 2 11c-.55 0-1 .45-1 1s.45 1 1 1z"/></svg></div>
+          <div><div class="footer-brand-name">Clear View</div><div class="footer-brand-sub">Window Cleaning · CT</div></div>
+        </div>
+        <p class="footer-desc">Reliable residential window cleaning across Connecticut. Locally owned, $1M general liability insured through Hiscox, and committed to careful work and clear communication.</p>
+        <p class="footer-tagline">Cleaner windows. Brighter homes. A better view.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Services</div>
+        <div class="footer-list">
+          <a href="#services">Exterior Windows</a>
+          <a href="#services">Interior Windows</a>
+          <a href="#services">Sill &amp; Track Detailing</a>
+          <a href="#services">Screen Cleaning</a>
+          <a href="#services">Solar Panel Cleaning</a>
+          <a href="#services">Pressure Washing</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">Service Area</div>
+        <div class="footer-list">
+          <span>Columbia, CT</span><span>Coventry, CT</span><span>Mansfield, CT</span><span>Andover, CT</span>
+          <span>Tolland, CT</span><span>Storrs, CT</span><span>Manchester, CT</span><span>Glastonbury, CT</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <div class="footer-list">
+          <a href="tel:+18609663149" style="font-size: 17px; color: white; font-weight: 700;">(860) 966-3149</a>
+          <a href="mailto:clearviewwindowsct@gmail.com">clearviewwindowsct@gmail.com</a>
+          <a href="https://www.instagram.com/clearviewwindowsct/" target="_blank">Instagram</a>
+          <a href="https://www.facebook.com/clearviewwindowsct" target="_blank">Facebook</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Clear View Window Cleaning, LLC. All rights reserved.</div>
+      <div>$1M Insured · Hiscox · Connecticut</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= QUOTE MODAL ================= -->
+<div class="modal-overlay" id="quoteModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="eyebrow">Free Quote</div>
+        <h3 class="modal-title">Tell us about your project.</h3>
+        <p class="modal-sub">We'll respond within 24 hours with a detailed quote. Fully insured · $1M coverage · Free estimates.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Name *</label><input class="form-input" id="f_name" type="text" placeholder="Jane Smith"></div>
+        <div class="form-field"><label class="form-label">Phone *</label><input class="form-input" id="f_phone" type="tel" placeholder="860-000-0000"></div>
+        <div class="form-field full"><label class="form-label">Email</label><input class="form-input" id="f_email" type="email" placeholder="you@email.com"></div>
+        <div class="form-field full"><label class="form-label">Property Address</label><input class="form-input" id="f_address" type="text" placeholder="123 Main St, Columbia CT"></div>
+        <div class="form-field full"><label class="form-label">Service</label>
+          <select class="form-select" id="f_service">
+            <option>Exterior Windows</option><option>Interior Windows</option>
+            <option>Sill &amp; Track Detailing</option><option>Screen Cleaning</option>
+            <option>Solar Panel Cleaning</option><option>Pressure Washing</option>
+            <option>Multiple Services</option>
+          </select>
+        </div>
+        <div class="form-field full"><label class="form-label">Preferred Date</label><input class="form-input" id="f_date" type="date"></div>
+        <div class="form-field full"><label class="form-label">Notes</label><textarea class="form-textarea" id="f_notes" placeholder="Approximate window count, special requests, gate codes, etc."></textarea></div>
+      </div>
+      <div id="formStatus"></div>
+      <button class="form-submit" id="submitBtn" onclick="submitForm()">Submit Request</button>
+      <div class="form-call-link">Or call directly: <a href="tel:+18609663149">(860) 966-3149</a></div>
+    </div>
   </div>
 </div>
 
-<div class="qb-progress" id="progress"></div>
-
-<div class="qb-layout">
-  <div class="qb-card" id="card"><!-- steps injected --></div>
-  <aside class="qb-side" id="sidebar">
-    <h2>Property Details</h2>
-    <div id="sideRows"></div>
-  </aside>
+<!-- ================= STICKY MOBILE CTA ================= -->
+<div class="mobile-sticky-cta" id="stickyCta">
+  <button onclick="openModal()" class="sticky-cta-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.06L2 22l5.06-1.38C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm3.5 14.5L12 15l-3.5 1.5L9 13l-3-2.5h4l1.5-3.5L13 10.5h4l-3 2.5.5 3.5z"/></svg>
+    Get Free Quote
+  </button>
+  <a href="tel:+18609663149" class="sticky-cta-call" aria-label="Call us">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+  </a>
 </div>
 
-<div class="qb-nav">
-  <button class="btn btn-back" id="backBtn" onclick="prev()" aria-label="Back">←</button>
-  <button class="btn btn-next" id="nextBtn" onclick="next()">Continue →</button>
-</div>
+<!-- ================= SCRIPTS ================= -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://xenmysvxfydcbyrlwlfm.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlbm15c3Z4ZnlkY2J5cmx3bGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTExMjIsImV4cCI6MjA5MzkyNzEyMn0.KkloIssWfOnvMDRZ0h4CsvK5--QsA1iA_luTH5Pg_PI';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function openModal() { document.getElementById('quoteModal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeModal() {
+    document.getElementById('quoteModal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('formStatus').innerHTML = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  async function submitForm() {
+    const name = document.getElementById('f_name').value.trim();
+    const phone = document.getElementById('f_phone').value.trim();
+    const email = document.getElementById('f_email').value.trim();
+    const address = document.getElementById('f_address').value.trim();
+    const service = document.getElementById('f_service').value;
+    const date = document.getElementById('f_date').value;
+    const notes = document.getElementById('f_notes').value.trim();
+    const status = document.getElementById('formStatus');
+    const btn = document.getElementById('submitBtn');
+    if (!name || !phone) {
+      status.innerHTML = '<div class="form-status error">Please enter your name and phone number.</div>';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.innerHTML = '';
+    try {
+      const { error } = await sb.from('leads').insert([{
+        name, phone,
+        email: email || null,
+        address: address || null,
+        service,
+        preferred_date: date || null,
+        notes: notes || null,
+        source: 'website',
+        status: 'new'
+      }]);
+      if (error) {
+        console.error(error);
+        status.innerHTML = '<div class="form-status error">Could not save your request. Please call us at (860) 966-3149</div>';
+      } else {
+        status.innerHTML = '<div class="form-status success">Thank you! We will respond within 24 hours.</div>';
+        setTimeout(() => {
+          closeModal();
+          ['f_name','f_phone','f_email','f_address','f_date','f_notes'].forEach(id => document.getElementById(id).value = '');
+        }, 2800);
+      }
+    } catch (e) {
+      console.error(e);
+      status.innerHTML = '<div class="form-status error">Something went wrong. Please call us at (860) 966-3149</div>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Request';
+    }
+  }
+</script>
+
 
 <script>
-  // ---------- CONFIG: real Clear View pricing ----------
-  const SUPABASE_URL='https://xenmysvxfydcbyrlwlfm.supabase.co';
-  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlbm15c3Z4ZnlkY2J5cmx3bGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTExMjIsImV4cCI6MjA5MzkyNzEyMn0.KkloIssWfOnvMDRZ0h4CsvK5--QsA1iA_luTH5Pg_PI';
-  let _sb=null; function getSB(){ if(!_sb && window.supabase){ _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); } return _sb; }
-
-  // Pricing is per exterior pane of glass. Each size bracket maps to an
-  // estimated pane count (confirmed exactly at the in-person walkthrough).
-  // Pricing is per exterior pane of glass; the per-pane RATE scales with how
-  // dirty the windows are ($6 recently cleaned → $9 never cleaned).
-  const MIN_JOB = 150;         // minimum job price floor
-  // Brackets mirror the price book: each tier = a pane count (the value v),
-  // mapped to a sq ft range. Pricing = panes × per-pane rate (set by dirtiness).
-  const SIZE = [
-    {v:28, label:'Up to 2,499 sq ft'},
-    {v:43, label:'2,500 – 3,499 sq ft'},
-    {v:60, label:'3,500 – 4,999 sq ft'},
-    {v:78, label:'5,000 – 6,499 sq ft'},
-    {v:96, label:'6,500 – 7,999 sq ft'},
-    {v:114,label:'8,000 – 8,999 sq ft'},
-    {v:132,label:'9,000 – 9,999 sq ft'},
-    {v:-1, label:'10,000+ sq ft (custom quote)'},
-  ];
-  // Last cleaned sets the per-pane EXTERIOR rate (dirtier = higher rate).
-  const LASTCLEANED = [
-    {v:7.00,t:'Less than a year',d:'Recently cleaned'},
-    {v:8.00,t:'1–2 years',d:'Moderate buildup'},
-    {v:9.00,t:'3–5 years',d:'Significant buildup'},
-    {v:10.00,t:'Never',d:'First professional cleaning'},
-  ];
-  // French panes — small % upcharge (grids take a little longer)
-  const FRENCH = [
-    {v:0,   t:'No',d:'No french pane windows'},
-    {v:0.05,t:'Yes, less than 25%',d:'A few french pane windows'},
-    {v:0.08,t:'Yes, about 50%',d:'Half of windows are french pane'},
-    {v:0.12,t:'Yes, all of them',d:'All windows are french pane style'},
-  ];
-  // Stories barely matter — only a small bump at 3+
-  const STORIES = [{v:1.0,t:'1 Story'},{v:1.0,t:'2 Stories'},{v:1.10,t:'3+ Stories'}];
-  // Interior is priced at 3/4 of exterior. Tracks are INCLUDED FREE (no toggle).
-  // Screens = $4/screen (count ≈ panes). Solar = $10/panel.
-  const INT_FACTOR = 0.75;     // interior = 0.75 × exterior
-  const SCREEN_RATE = 4;       // $ per screen
-  const SOLAR_RATE = 10;       // $ per solar panel
-  const SERVICES = [
-    {id:'exterior',t:'Exterior Windows',base:true,d:'Outside glass, pure-water'},
-    {id:'interior',t:'Interior Windows',base:true,d:'Inside glass, hand-cleaned'},
-    {id:'screens',t:'Screen Cleaning',perScreen:true,d:'$4 per screen, removed & washed'},
-    {id:'solar',t:'Solar Panel Cleaning',perPanel:true,d:'$10 per panel, pure-water'},
-  ];
-  // Flat-dollar discount per visit, with a hard floor so small jobs never
-  // drop below PLAN_FLOOR. off = $ off each cleaning; floor = min paid/visit.
-  const PLAN_FLOOR = 200;      // post-discount price can never fall below this
-  const PLANS = [
-    {id:'quarterly',t:'Quarterly',freq:'4 cleanings / year',off:150,save:'$150 off every cleaning',popular:true},
-    {id:'biannual',t:'Biannual',freq:'2 cleanings / year',off:50,save:'$50 off every cleaning'},
-    {id:'onetime',t:'One-Time',freq:'Single cleaning',off:0,save:'Flexible · no commitment'},
-  ];
-  // Plan card perks (RainShield = our deionized pure-water tech, our own name).
-  const PLAN_PERKS = ['RainShield Technology','7-Day Rain Guarantee','Free Hard Water Removal (5 panes)'];
-  const PLAN_PERK_COUNT = { quarterly:3, biannual:1, onetime:0 };
-
-  // ---------- STATE ----------
-  const S = {
-    propType:null, size:null, sizeLabel:null, cleaned:null, cleanedLabel:null,
-    french:null, frenchLabel:null,
-    stories:null, storiesLabel:null, services:['exterior'], solarPanels:0, plan:null,
-    name:'',phone:'',email:'',address:'',notes:'',
-    date:null, time:null
-  };
-
-  // ---------- PRICE ENGINE ----------
-  // BASE = exterior only = panes × rate × (1+french).
-  // Add-ons (priced separately, NOT discounted by the plan):
-  //   interior = INT_FACTOR × exterior base
-  //   screens  = panes × SCREEN_RATE
-  //   solar    = panels × SOLAR_RATE
-  // Plan discount applies to the exterior base only; add-ons stack on after.
-  function paneRate(){ return S.cleaned ?? 7.00; }
-  function extMultiplier(){
-    if(S.size===null) return null;
-    if(S.size===-1) return -1; // custom
-    const french=S.french??0;
-    return (1+french);
-  }
-  // Exterior base price (before plan discount, before add-ons).
-  function extBase(){
-    const m=extMultiplier();
-    if(m===null) return null;
-    if(m===-1) return -1;
-    return Math.max(S.size*paneRate()*m, MIN_JOB);
-  }
-  // Total of selected add-ons (interior, screens, solar). 15% off if bundled.
-  // Screens ≈ half the panes (most windows = 2 panes but 1 screen) × $4 each.
-  function screenCount(){ return Math.round(S.size/2); }
-  const BUNDLE_PCT = 0.15;     // 15% off when interior + screens are bundled
-  function addOnTotal(){
-    let a=0;
-    const eb = S.size*paneRate()*extMultiplier();
-    const hasInt=S.services.includes('interior'), hasScr=S.services.includes('screens');
-    const intAmt = (hasInt && S.size>0) ? eb*INT_FACTOR : 0;
-    const scrAmt = (hasScr && S.size>0) ? screenCount()*SCREEN_RATE : 0;
-    a += intAmt + scrAmt;
-    if(S.services.includes('solar')) a+=(S.solarPanels||0)*SOLAR_RATE;
-    if(hasInt && hasScr) a -= (intAmt+scrAmt)*BUNDLE_PCT;   // 15% bundle discount
-    return a;
-  }
-  // Full price = exterior base + add-ons (used when no plan context).
-  function priceBase(){
-    const b=extBase();
-    if(b===null) return null;
-    if(b===-1) return -1;
-    return b + addOnTotal();
-  }
-  // Apply flat $ discount to the EXTERIOR BASE only (floored), then add add-ons.
-  function applyPlan(base, off){
-    if(base===null) return null;
-    if(base===-1) return -1;
-    if(!off) return base;
-    return Math.max(base - off, PLAN_FLOOR);
-  }
-  // Plan price: discount hits exterior base, add-ons stack on top undiscounted.
-  function priceForPlan(off){
-    const b=extBase();
-    if(b===null) return null;
-    if(b===-1) return -1;
-    return applyPlan(b, off) + addOnTotal();
-  }
-  // Single firm estimate (rounded to nearest $5), after plan off + add-ons.
-  function fmtRange(v, planOff){
-    const m=extMultiplier();
-    if(m===null) return '—';
-    if(m===-1) return 'Custom quote';
-    const off = (planOff!==undefined ? planOff : (S.plan ? (PLANS.find(p=>p.id===S.plan)?.off||0) : 0));
-    const price = Math.round(priceForPlan(off)/5)*5;
-    return '$'+price;
-  }
-  function updateTotal(){
-    const pill = document.getElementById('totalPill');
-    // Price stays hidden until the customer reaches the plan step.
-    const planIdx = steps.findIndex(s=>s.key==='plan');
-    if(cur < planIdx){ pill.style.display='none'; return; }
-    pill.style.display='';
-    const off = S.plan ? (PLANS.find(p=>p.id===S.plan)?.off||0) : 0;
-    document.getElementById('totalAmt').textContent = fmtRange(null, off);
-  }
-
-  // ---------- STEPS ----------
-  // PHASE 1 (intake): property questions + contact. No price shown.
-  // PHASE 2 (quote): plan -> add-ons -> schedule. Price appears here.
-  const steps = [
-    {key:'propType', render:stepPropType, valid:()=>!!S.propType,        phase:1},
-    {key:'cleaned',  render:stepCleaned,  valid:()=>S.cleaned!==null,    phase:1},
-    {key:'french',   render:stepFrench,   valid:()=>S.french!==null,     phase:1},
-    {key:'size',     render:stepSize,     valid:()=>S.size!==null,       phase:1},
-    {key:'contact',  render:stepContact,  valid:validContact,            phase:1, last1:true},
-    {key:'plan',     render:stepPlan,     valid:()=>!!S.plan,            phase:2},
-    {key:'addons',   render:stepAddons,   valid:()=>true,                phase:2},
-    {key:'schedule', render:stepSchedule, valid:()=>!!S.date && !!S.time,phase:2},
-    {key:'review',   render:stepReview,   valid:()=>true,                phase:2},
-  ];
-  const TOTAL_STEPS = steps.length;
-  let cur=0;
-
-  function renderProgress(){
-    const p=document.getElementById('progress'); p.innerHTML='';
-    steps.forEach((_,i)=>{ const seg=document.createElement('div'); seg.className='seg '+(i<cur?'done':i===cur?'cur':''); p.appendChild(seg); });
-  }
-  function renderStep(){
-    renderProgress();
-    document.getElementById('card').innerHTML = steps[cur].render();
-    document.getElementById('backBtn').style.visibility = cur===0?'hidden':'visible';
-    const nb=document.getElementById('nextBtn');
-    if(cur===steps.length-1){ nb.textContent='Submit Request →'; }
-    else if(steps[cur].last1){ nb.textContent='Create My Quote →'; }
-    else { nb.textContent='Continue →'; }
-    refreshNext();
-    if(steps[cur].after) steps[cur].after();
-    updateTotal();
-    renderSidebar();
-    window.scrollTo({top:0,behavior:'smooth'});
-  }
-
-  function renderSidebar(){
-    const rows=[
-      {k:'Property Type', v:S.propType?cap(S.propType):null},
-      {k:'Last Cleaned',  v:S.cleanedLabel},
-      {k:'French Panes',  v:S.frenchLabel},
-      {k:'Property Size', v:S.sizeLabel},
-    ];
-    document.getElementById('sideRows').innerHTML = rows.map(r=>
-      `<div class="qb-side-row"><div class="qb-side-k">${r.k}</div><div class="qb-side-v ${r.v?'set':'empty'}">${r.v||'—'}</div></div>`
-    ).join('');
-  }
-  function refreshNext(){ document.getElementById('nextBtn').disabled = !steps[cur].valid(); }
-  // Dynamic step number by key, so reordering never breaks the labels.
-  function stepNum(key){ return steps.findIndex(s=>s.key===key)+1; }
-
-  function next(){
-    if(!steps[cur].valid()) return;
-    if(cur===steps.length-1){ submit(); return; }
-    cur++; renderStep();
-  }
-  function prev(){ if(cur>0){cur--;renderStep();} }
-
-  // ---- step renderers ----
-  function optCard(sel,onclick,ic,t,d,multi){
-    return `<div class="opt ${multi?'multi':''} ${sel?'sel':''}" onclick="${onclick}">${ic?`<div class="ic">${ic}</div>`:''}<div class="t">${t}</div>${d?`<div class="d">${d}</div>`:''}</div>`;
-  }
-
-  function stepPropType(){
-    const ICO = {
-      house:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M10 20v-5h4v5"/></svg>',
-      townhome:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l5-4 5 4v12"/><path d="M13 21V11l4-3 4 3v10"/><path d="M6 21v-4h3v4"/><path d="M17 21v-3h2v3"/></svg>',
-      condo:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h0M12 7h0M15 7h0M9 11h0M12 11h0M15 11h0M9 15h0M15 15h0"/><path d="M11 21v-3h2v3"/></svg>'
-    };
-    const types=[{id:'house',ic:ICO.house,t:'House',d:'Single or multi-level home'},{id:'townhome',ic:ICO.townhome,t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:ICO.condo,t:'Condo',d:'Unit in a shared building'}];
-    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 5 · About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
-    <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
-  }
-  function stepCleaned(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 5 · About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
-    <div class="opt-grid cols-3">${LASTCLEANED.map(x=>optCard(S.cleanedLabel===x.t,`pickCleaned(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
-  }
-  function stepFrench(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 5 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
-    <div class="opt-grid cols-2">${FRENCH.map(x=>optCard(S.frenchLabel===x.t,`pickFrench(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
-    <div class="info-note"><b>Info:</b> French pane windows require additional cleaning time due to their grid patterns and multiple glass sections.</div>`;
-  }
-  function stepSize(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 5 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
-    <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
-  }
-  function stepPlan(){
-    if(!S.plan) S.plan='quarterly';   // recurring plan is the default path
-    const cards = PLANS.map(p=>{
-      const m=extMultiplier();
-      let priceHtml;
-      if(m===-1){ priceHtml='<div class="price">Custom</div>'; }
-      else {
-        const full = fmtRange(null,0);          // undiscounted price (anchor)
-        const disc = fmtRange(null,p.off);       // after flat off + floor
-        const showStrike = p.off>0 && full!==disc;
-        priceHtml = `<div class="price">${showStrike?`<s>${full}</s>`:''}${disc}<span class="per"> / cleaning</span></div>`;
-      }
-      const nPerks = PLAN_PERK_COUNT[p.id] ?? 0;
-      const perks = PLAN_PERKS.map((perk,i)=>{
-        const on = i < nPerks;
-        return `<li class="${on?'yes':'no'}"><span class="pi">${on?'✓':'✕'}</span> ${perk}</li>`;
-      }).join('');
-      const annual = p.off>0 ? `<div class="plan-annual">Annual savings: $${p.off * (p.id==='quarterly'?4:2)}</div>` : `<div class="plan-annual none">No savings</div>`;
-      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}</div>`;
-    }).join('');
-    return `<div class="qb-step-eyebrow">Step 1 of 3 · Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
-    <div class="plan-grid">${cards}</div>
-    <div class="info-note">Recurring plans lock in your discount on every visit. Final price confirmed at your free in-person walkthrough.</div>`;
-  }
-  function stepAddons(){
-    const eb = S.size*paneRate()*extMultiplier();
-    const intPrice = Math.round(eb*INT_FACTOR/5)*5;
-    const scrPrice = screenCount()*SCREEN_RATE;
-    const bundleFull = intPrice + scrPrice;
-    const bundleSave = Math.round(bundleFull*BUNDLE_PCT/5)*5;
-    const bundlePrice = bundleFull - bundleSave;
-    const bundleActive = S.services.includes('interior') && S.services.includes('screens');
-
-    // ----- bundle card (Interior + Screens, 15% off) -----
-    const bundleCard = `
-      <div class="bundle ${bundleActive?'sel':''}">
-        <div class="bundle-top">
-          <div>
-            <div class="bundle-name">ClearView Bundle</div>
-            <div class="bundle-sub">Bundle &amp; save 15%!</div>
-            <ul class="bundle-list">
-              <li><span class="pi">✓</span> Interior Window Cleaning</li>
-              <li><span class="pi">✓</span> Screen Cleaning</li>
-            </ul>
-          </div>
-          <div class="bundle-price-wrap">
-            <div class="bundle-price"><s>$${bundleFull}</s> $${bundlePrice}</div>
-            <div class="bundle-save">Save $${bundleSave}</div>
-          </div>
-        </div>
-        <div class="bundle-actions">
-          ${bundleActive
-            ? `<button type="button" class="bundle-btn added" disabled>✓ Bundle Added</button>
-               <button type="button" class="bundle-btn remove" onclick="setBundle(false)">✕ Remove Bundle</button>`
-            : `<button type="button" class="bundle-btn add" onclick="setBundle(true)">+ Add Bundle &amp; Save 15%</button>`}
-        </div>
-      </div>`;
-
-    // ----- individual add-on rows -----
-    const items=[
-      {id:'interior',t:'Interior Window Cleaning',price:'$'+intPrice},
-      {id:'screens', t:'Screen Cleaning',price:'$'+scrPrice},
-      {id:'solar',   t:'Solar Panel Cleaning',price:(S.solarPanels?('$'+(S.solarPanels*SOLAR_RATE)):'$10/panel')},
-    ];
-    const rows=items.map(x=>{
-      const on=S.services.includes(x.id);
-      return `<div class="addon ${on?'sel':''}" onclick="toggleSvc('${x.id}')">
-        <div class="addon-check">${on?'✓':''}</div>
-        <div class="addon-body"><div class="addon-t">${x.t}</div></div>
-        <div class="addon-price">${x.price}</div>
-      </div>`;
-    }).join('');
-
-    const solarInput = S.services.includes('solar')
-      ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();updateTotal()" placeholder="e.g. 12"></div>`
-      : '';
-
-    return `<div class="qb-step-eyebrow">Step 2 of 3 · Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Add-ons are optional. Sill &amp; track detailing is always included free.</p>
-    ${bundleCard}
-    <div class="addon-or">Or choose individual add-ons</div>
-    <div class="addon-grid">${rows}</div>
-    ${solarInput}
-    <div class="info-note">Add-ons apply to your initial visit and can be added to future visits anytime.</div>`;
-  }
-  function stepContact(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 5 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
-    <div class="fld-grid">
-      <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
-      <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
-    </div>
-    <div class="fld"><label>Email</label><input id="f_email" value="${S.email}" oninput="S.email=this.value" placeholder="you@email.com"></div>
-    <div class="fld"><label>Property Address <span class="req">*</span></label><input id="f_addr" value="${S.address}" oninput="S.address=this.value;refreshNext()" placeholder="Street, Town, CT"></div>
-    <div class="fld"><label>Notes (optional)</label><textarea id="f_notes" oninput="S.notes=this.value" placeholder="Gate codes, pets, special requests, approx window count...">${S.notes}</textarea></div>`;
-  }
-  // calendar state
-  let calView=new Date(); calView.setDate(1);
-  function stepSchedule(){
-    return `<div class="qb-step-eyebrow">Step 3 of 3 · Your Quote</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
-    <div id="calMount"></div>
-    <div id="slotMount"></div>
-    <div class="info-note">This is a <b>request</b>, not a locked booking — we'll text or call to confirm your exact time.</div>`;
-  }
-  function stepReview(){
-    const addonNames={interior:'Interior Windows',screens:'Screen Cleaning',solar:'Solar Panels'};
-    const addons = S.services.filter(id=>id!=='exterior').map(id=>addonNames[id]||id);
-    const svc = ['Exterior Windows'].concat(addons).join(', ');
-    const plan = PLANS.find(p=>p.id===S.plan);
-    const off = plan?plan.off:0;
-    return `<div class="qb-step-eyebrow">Review &amp; Confirm</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Please review your details below. We'll follow up shortly to confirm.</p>
-    <div class="rev-box">
-      <div class="rev-row"><span class="k">Property</span><span class="v">${cap(S.propType)} · ${S.sizeLabel}</span></div>
-      <div class="rev-row"><span class="k">Last cleaned</span><span class="v">${S.cleanedLabel}</span></div>
-      <div class="rev-row"><span class="k">French panes</span><span class="v">${S.frenchLabel}</span></div>
-      <div class="rev-row"><span class="k">Services</span><span class="v">${svc}</span></div>
-      <div class="rev-row"><span class="k">Plan</span><span class="v">${plan.t} (${plan.freq})</span></div>
-      <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} · ${S.phone}</span></div>
-      <div class="rev-row"><span class="k">Address</span><span class="v">${S.address}</span></div>
-      <div class="rev-row"><span class="k">Requested</span><span class="v">${S.date} · ${S.time}</span></div>
-      <div class="rev-total"><span class="lbl">Estimated price${off>0?` ($${off} off / visit)`:''}</span><span class="amt">${fmtRange(null, off)}</span></div>
-    </div>
-    <div class="info-note">Final price confirmed at your free in-person walkthrough. Fully insured · $1M coverage.</div>
-    <div id="submitErr" class="err"></div>`;
-  }
-
-  // ---- pick handlers ----
-  // No auto-advance: selecting an option just updates state + UI.
-  // The customer moves forward with the Continue button.
-  function advance(){ /* auto-advance disabled — use Next button */ }
-  function pick(key,val){ S[key]=val; if(key==='propType'){} renderStep(); advance(); }
-  function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); advance(); }
-  function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
-  function pickFrench(v,t){ S.french=v; S.frenchLabel=t; renderStep(); advance(); }
-  function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); advance(); }
-  function pickPlan(id){ S.plan=id; renderStep(); advance(); }
-  function toggleSvc(id){
-    const i=S.services.indexOf(id);
-    if(i>=0) S.services.splice(i,1); else S.services.push(id);
-    if(id==='solar' && i>=0) S.solarPanels=0;   // reset count if solar removed
-    document.getElementById('card').innerHTML=stepAddons();
-    refreshNext(); updateTotal();
-  }
-  function setBundle(on){
-    ['interior','screens'].forEach(id=>{
-      const i=S.services.indexOf(id);
-      if(on && i<0) S.services.push(id);
-      if(!on && i>=0) S.services.splice(i,1);
+  // Hide sticky CTA when quote modal is open
+  (function() {
+    const sticky = document.getElementById('stickyCta');
+    const modal = document.getElementById('quoteModal');
+    if (!sticky || !modal) return;
+    const obs = new MutationObserver(() => {
+      sticky.style.display = modal.classList.contains('open') ? 'none' : '';
     });
-    document.getElementById('card').innerHTML=stepAddons();
-    refreshNext(); updateTotal();
-  }
-  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim(); }
-  function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1):''; }
-
-  // ---- calendar ----
-  function renderCal(){
-    const mount=document.getElementById('calMount'); if(!mount) return;
-    const today=new Date(); today.setHours(0,0,0,0);
-    const y=calView.getFullYear(), m=calView.getMonth();
-    const first=new Date(y,m,1).getDay();
-    const days=new Date(y,m+1,0).getDate();
-    const monthName=calView.toLocaleString('en-US',{month:'long',year:'numeric'});
-    let cells='';
-    ['Su','Mo','Tu','We','Th','Fr','Sa'].forEach(d=>cells+=`<div class="cal-dow">${d}</div>`);
-    for(let i=0;i<first;i++) cells+='<div class="cal-day empty"></div>';
-    for(let d=1;d<=days;d++){
-      const date=new Date(y,m,d);
-      const iso=date.toISOString().slice(0,10);
-      const past=date<today;
-      const sun=date.getDay()===0;
-      const dis=past||sun;
-      const sel=S.date===prettyDate(date);
-      cells+=`<div class="cal-day ${dis?'dis':''} ${sel?'sel':''}" ${dis?'':`onclick="pickDate('${iso}')"`}>${d}</div>`;
-    }
-    mount.innerHTML=`<div class="cal"><div class="cal-head"><button onclick="calMove(-1)">‹</button><span>${monthName}</span><button onclick="calMove(1)">›</button></div><div class="cal-grid">${cells}</div></div>`;
-    renderSlots();
-  }
-  function prettyDate(date){ return date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}); }
-  function calMove(n){ calView.setMonth(calView.getMonth()+n); renderCal(); }
-  function pickDate(iso){ const d=new Date(iso+'T00:00'); S.date=prettyDate(d); S.time=null; renderCal(); refreshNext(); }
-  function renderSlots(){
-    const mount=document.getElementById('slotMount'); if(!mount) return;
-    if(!S.date){ mount.innerHTML=''; return; }
-    const times=['8:00 AM','9:00 AM','10:00 AM','11:00 AM','1:00 PM','2:00 PM','3:00 PM','4:00 PM'];
-    mount.innerHTML=`<div style="text-align:center;font-weight:700;margin-top:1.4rem">${S.date}</div><div class="slots">${times.map(t=>`<div class="slot ${S.time===t?'sel':''}" onclick="pickTime('${t}')">${t}</div>`).join('')}</div>`;
-  }
-  function pickTime(t){ S.time=t; renderSlots(); refreshNext(); }
-
-  // attach calendar render after schedule step
-  steps.find(s=>s.key==='schedule').after=renderCal;
-
-  // ---- submit ----
-  async function submit(){
-    const btn=document.getElementById('nextBtn'); btn.disabled=true; btn.textContent='Sending...';
-    const plan=PLANS.find(p=>p.id===S.plan);
-    const off=plan?plan.off:0;
-    const svcList=S.services.map(id=>SERVICES.find(s=>s.id===id).t).join(', ');
-    const notes=[
-      `Quote Builder lead`,
-      `Property: ${cap(S.propType)}, ${S.sizeLabel}`,
-      `Condition: last cleaned ${S.cleanedLabel}`,
-      `French panes: ${S.frenchLabel}`,
-      `Services: ${svcList}`,
-      `Plan: ${plan.t} (${plan.freq})`,
-      `Est. price: ${fmtRange(null, off)}`,
-      `Requested: ${S.date} at ${S.time}`,
-      S.notes?`Customer notes: ${S.notes}`:''
-    ].filter(Boolean).join('\n');
-    try{
-      const client=getSB(); if(!client){ throw new Error('offline'); } const {error}=await client.from('leads').insert([{
-        name:S.name, phone:S.phone, email:S.email||null, address:S.address||null,
-        service:svcList, preferred_date:null, notes:notes, source:'website-quote-builder', status:'new'
-      }]);
-      if(error){ throw error; }
-      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} — we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(null, off)}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
-      document.querySelector('.qb-nav').style.display='none';
-      document.getElementById('progress').style.display='none';
-      window.scrollTo({top:0,behavior:'smooth'});
-    }catch(e){
-      console.error(e);
-      btn.disabled=false; btn.textContent='Submit Request →';
-      const el=document.getElementById('submitErr'); if(el) el.textContent='Could not submit — please call us at (860) 966-3149 and we\'ll take care of it.';
-    }
-  }
-
-  renderStep();
+    obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+  })();
 </script>
+
 </body>
 </html>
