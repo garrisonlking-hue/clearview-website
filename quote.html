@@ -611,7 +611,7 @@
   }
   function prettyDate(date){ return date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}); }
   function calMove(n){ calView.setMonth(calView.getMonth()+n); renderCal(); }
-  function pickDate(iso){ const d=new Date(iso+'T00:00'); S.date=prettyDate(d); S.time=null; renderCal(); refreshNext(); }
+  function pickDate(iso){ const d=new Date(iso+'T00:00'); S.date=prettyDate(d); S.dateISO=iso; S.time=null; renderCal(); refreshNext(); }
   function renderSlots(){
     const mount=document.getElementById('slotMount'); if(!mount) return;
     if(!S.date){ mount.innerHTML=''; return; }
@@ -640,12 +640,38 @@
       `Requested: ${S.date} at ${S.time}`,
       S.notes?`Customer notes: ${S.notes}`:''
     ].filter(Boolean).join('\n');
+    // Build ISO start/end from the picked date + time slot (2hr window).
+    function toISO(dateISO, timeStr){
+      if(!dateISO || !timeStr) return null;
+      const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if(!m) return null;
+      let h = parseInt(m[1],10); const min = parseInt(m[2],10);
+      const pm = /PM/i.test(m[3]);
+      if(pm && h!==12) h+=12; if(!pm && h===12) h=0;
+      // Local time → ISO. Treated as the customer's requested wall-clock time.
+      return `${dateISO}T${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:00`;
+    }
+    const startISO = toISO(S.dateISO, S.time);
+    const endISO = startISO ? (function(){ const d=new Date(startISO); d.setHours(d.getHours()+2); return d.toISOString().slice(0,19); })() : null;
+    const estDollars = (function(){ const p=priceForPlan(off); return (p===null||p===-1)?null:Math.round(p/5)*5; })();
+    const fullNotes = notes + (S.address?`\nAddress: ${S.address}`:'');
     try{
-      const client=getSB(); if(!client){ throw new Error('offline'); } const {error}=await client.from('leads').insert([{
-        name:S.name, phone:S.phone, email:S.email||null, address:S.address||null,
-        service:svcList, preferred_date:null, notes:notes, source:'website-quote-builder', status:'new'
-      }]);
-      if(error){ throw error; }
+      const r = await fetch('/api/lead', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          name: S.name,
+          phone: S.phone,
+          email: S.email||null,
+          address: S.address||null,
+          service: svcList,
+          notes: fullNotes,
+          scheduled_start: startISO,
+          scheduled_end: endISO,
+          price: estDollars
+        })
+      });
+      if(!r.ok){ throw new Error('lead post failed: '+r.status); }
       document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} — we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(null, off)}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
       document.querySelector('.qb-nav').style.display='none';
       document.getElementById('progress').style.display='none';
