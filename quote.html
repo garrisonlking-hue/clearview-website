@@ -85,24 +85,24 @@
   .plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
   @media(max-width:900px){ .plan-grid{grid-template-columns:repeat(2,1fr)} }
   @media(max-width:760px){ .plan-grid{grid-template-columns:1fr} }
-  .plan{border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.6rem 1.3rem;cursor:pointer;transition:all .18s;background:#fff;position:relative;text-align:center}
+  .plan{border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.4rem 1.1rem;cursor:pointer;transition:all .18s;background:#fff;position:relative;text-align:center;display:flex;flex-direction:column}
   .plan:hover{transform:translateY(-3px)}
   .plan.sel{border-color:var(--red);background:var(--blue-pale)}
   .plan .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;padding:.3rem .8rem;border-radius:20px;text-transform:uppercase}
   .plan h3{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:.2rem}
-  .plan .freq{font-size:.85rem;color:var(--gray-500);margin-bottom:1rem}
+  .plan .freq{font-size:.85rem;color:var(--gray-500);margin-bottom:1rem;min-height:2.7em}
   .plan .price{font-size:2rem;font-weight:800;color:var(--navy)}
   .plan .price s{font-size:1.1rem;color:var(--gray-500);font-weight:600;margin-right:.3rem}
   .plan .per{font-size:.8rem;color:var(--gray-500)}
   .plan .save{margin-top:.8rem;font-size:.85rem;font-weight:700;color:#1a8a4f}
-  .plan-perks{list-style:none;padding:0;margin:1rem 0 .8rem;text-align:left}
+  .plan-perks{list-style:none;padding:0;margin:1rem 0 .8rem;text-align:left;flex:1}
   .plan-perks li{display:flex;align-items:flex-start;gap:.5rem;font-size:.85rem;line-height:1.35;padding:.35rem 0;color:var(--navy)}
   .plan-perks li.no{color:#aab1bd}
   .plan-perks .pi{flex-shrink:0;font-weight:800;font-size:.8rem}
   .plan-perks li.yes .pi{color:#1a8a4f}
   .plan-perks li.no .pi{color:#d99}
-  .plan-annual{margin-top:.6rem;padding-top:.7rem;border-top:1px solid rgba(22,40,74,.1);font-size:.85rem;font-weight:700;color:#1a8a4f}
-  .plan-annual.none{color:var(--gray-500)}
+  .plan-annual{margin-top:.6rem;padding:.5rem;background:#fdf0ee;color:#993c1d;border-radius:10px;font-size:.85rem;font-weight:700}
+  .plan-annual.none{background:transparent;color:var(--gray-500);font-weight:600}
   .plan-choose{margin-top:1rem;border:2px solid var(--navy);color:var(--navy);border-radius:999px;padding:.55rem;font-weight:700;font-size:.85rem}
   .plan-choose.sel{background:var(--red);border-color:var(--red);color:#fff}
   .plan-nudge{background:#fff;border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.1rem 1.3rem;margin-top:1.2rem;max-width:480px;margin-left:auto}
@@ -260,7 +260,7 @@
   const PLAN_FLOOR = 200;      // post-discount price can never fall below this
   const PLANS = [
     {id:'quarterly',t:'Quarterly',freq:'4 cleanings / year',off:150,save:'$150 off every cleaning',popular:true},
-    {id:'triannual',t:'Tri-Annual',freq:'3 cleanings / year · winter visit cleans interiors',off:100,save:'$100 off every cleaning'},
+    {id:'triannual',t:'Tri-Annual',freq:'3 cleanings / year · winter interiors',off:100,save:'$100 off every cleaning'},
     {id:'biannual',t:'Biannual',freq:'2 cleanings / year',off:50,save:'$50 off every cleaning'},
     {id:'onetime',t:'One-Time',freq:'Single cleaning',off:0,save:'Flexible · no commitment'},
   ];
@@ -457,7 +457,7 @@
         const on = i < nPerks;
         return `<li class="${on?'yes':'no'}"><span class="pi">${on?'✓':'✕'}</span> ${perk}</li>`;
       }).join('');
-      const annual = p.off>0 ? `<div class="plan-annual">Annual savings: $${p.off * (PLAN_VISITS[p.id]||1)}</div>` : `<div class="plan-annual none">No savings</div>`;
+      const annual = p.off>0 ? `<div class="plan-annual">Save $${p.off * (PLAN_VISITS[p.id]||1)} / year</div>` : `<div class="plan-annual none">No savings</div>`;
       const sel = S.plan===p.id;
       const btn = `<div class="plan-choose ${sel?'sel':''}">${sel?'✓ Selected':'Choose '+p.t}</div>`;
       return `<div class="plan ${sel?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}${btn}</div>`;
@@ -578,7 +578,7 @@
   function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
   function pickFrench(v,t){ S.french=v; S.frenchLabel=t; renderStep(); advance(); }
   function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); advance(); }
-  function pickPlan(id){ S.plan=id; renderStep(); if(id!=='onetime') advance(); }
+  function pickPlan(id){ S.plan=id; renderStep(); if(id!=='onetime'){ advance(); } else { const n=document.querySelector('.plan-nudge'); if(n) n.scrollIntoView({behavior:'smooth',block:'center'}); } }
   function toggleSvc(id){
     const i=S.services.indexOf(id);
     if(i>=0) S.services.splice(i,1); else S.services.push(id);
