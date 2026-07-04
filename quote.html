@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="icon-192.png">
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --navy:#16284A; --red:#C9473A; --blue:#C8362F; --blue-pale:#FBEEEC;
@@ -44,7 +43,7 @@
   .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;min-width:0}
   @media(max-width:600px){ .qb-card{padding:1.5rem} }
 
-  /* sidebar — Property Details */
+  /* sidebar ‚Äî Property Details */
   .qb-side{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:1.6rem 1.5rem;position:sticky;top:90px}
   @media(max-width:920px){ .qb-side{position:static;order:-1} }
   .qb-side h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.1rem}
@@ -181,7 +180,7 @@
 <div class="qb-top">
   <div class="qb-top-inner">
     <a href="index.html" class="qb-brand"><img src="logo.png" alt="Clear View"><span>CLEAR VIEW<small>WINDOW CO.</small></span></a>
-    <div class="qb-total" id="totalPill">Estimate: <b id="totalAmt">—</b></div>
+    <div class="qb-total" id="totalPill">Estimate: <b id="totalAmt">‚Äî</b></div>
   </div>
 </div>
 
@@ -196,52 +195,48 @@
 </div>
 
 <div class="qb-nav">
-  <button class="btn btn-back" id="backBtn" onclick="prev()" aria-label="Back">←</button>
-  <button class="btn btn-next" id="nextBtn" onclick="next()">Continue →</button>
+  <button class="btn btn-back" id="backBtn" onclick="prev()" aria-label="Back">‚Üê</button>
+  <button class="btn btn-next" id="nextBtn" onclick="next()">Continue ‚Üí</button>
 </div>
 
 <script>
   // ---------- CONFIG: real Clear View pricing ----------
-  const SUPABASE_URL='https://xenmysvxfydcbyrlwlfm.supabase.co';
-  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlbm15c3Z4ZnlkY2J5cmx3bGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTExMjIsImV4cCI6MjA5MzkyNzEyMn0.KkloIssWfOnvMDRZ0h4CsvK5--QsA1iA_luTH5Pg_PI';
-  let _sb=null; function getSB(){ if(!_sb && window.supabase){ _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); } return _sb; }
-
   // Pricing is per exterior pane of glass. Each size bracket maps to an
   // estimated pane count (confirmed exactly at the in-person walkthrough).
   // Pricing is per exterior pane of glass; the per-pane RATE scales with how
-  // dirty the windows are ($6 recently cleaned → $9 never cleaned).
+  // dirty the windows are ($6 recently cleaned ‚Üí $9 never cleaned).
   const MIN_JOB = 150;         // minimum job price floor
   // Brackets mirror the price book: each tier = a pane count (the value v),
-  // mapped to a sq ft range. Pricing = panes × per-pane rate (set by dirtiness).
+  // mapped to a sq ft range. Pricing = panes √ó per-pane rate (set by dirtiness).
   const SIZE = [
     {v:28, label:'Up to 2,499 sq ft'},
-    {v:43, label:'2,500 – 3,499 sq ft'},
-    {v:60, label:'3,500 – 4,999 sq ft'},
-    {v:78, label:'5,000 – 6,499 sq ft'},
-    {v:96, label:'6,500 – 7,999 sq ft'},
-    {v:114,label:'8,000 – 8,999 sq ft'},
-    {v:132,label:'9,000 – 9,999 sq ft'},
+    {v:43, label:'2,500 ‚Äì 3,499 sq ft'},
+    {v:60, label:'3,500 ‚Äì 4,999 sq ft'},
+    {v:78, label:'5,000 ‚Äì 6,499 sq ft'},
+    {v:96, label:'6,500 ‚Äì 7,999 sq ft'},
+    {v:114,label:'8,000 ‚Äì 8,999 sq ft'},
+    {v:132,label:'9,000 ‚Äì 9,999 sq ft'},
     {v:-1, label:'10,000+ sq ft (custom quote)'},
   ];
   // Last cleaned sets the per-pane EXTERIOR rate (dirtier = higher rate).
   const LASTCLEANED = [
     {v:7.00,t:'Less than a year',d:'Recently cleaned'},
-    {v:8.00,t:'1–2 years',d:'Moderate buildup'},
-    {v:9.00,t:'3–5 years',d:'Significant buildup'},
+    {v:8.00,t:'1‚Äì2 years',d:'Moderate buildup'},
+    {v:9.00,t:'3‚Äì5 years',d:'Significant buildup'},
     {v:10.00,t:'Never',d:'First professional cleaning'},
   ];
-  // French panes — small % upcharge (grids take a little longer)
+  // French panes ‚Äî small % upcharge (grids take a little longer)
   const FRENCH = [
     {v:0,   t:'No',d:'No french pane windows'},
     {v:0.05,t:'Yes, less than 25%',d:'A few french pane windows'},
     {v:0.08,t:'Yes, about 50%',d:'Half of windows are french pane'},
     {v:0.12,t:'Yes, all of them',d:'All windows are french pane style'},
   ];
-  // Stories barely matter — only a small bump at 3+
+  // Stories barely matter ‚Äî only a small bump at 3+
   const STORIES = [{v:1.0,t:'1 Story'},{v:1.0,t:'2 Stories'},{v:1.10,t:'3+ Stories'}];
   // Interior is priced at 3/4 of exterior. Tracks are INCLUDED FREE (no toggle).
-  // Screens = $4/screen (count ≈ panes). Solar = $10/panel.
-  const INT_FACTOR = 0.75;     // interior = 0.75 × exterior
+  // Screens = $4/screen (count ‚âà panes). Solar = $10/panel.
+  const INT_FACTOR = 0.75;     // interior = 0.75 √ó exterior
   const SCREEN_RATE = 4;       // $ per screen
   const SOLAR_RATE = 10;       // $ per solar panel
   const SERVICES = [
@@ -256,7 +251,7 @@
   const PLANS = [
     {id:'quarterly',t:'Quarterly',freq:'4 cleanings / year',off:150,save:'$150 off every cleaning',popular:true},
     {id:'biannual',t:'Biannual',freq:'2 cleanings / year',off:50,save:'$50 off every cleaning'},
-    {id:'onetime',t:'One-Time',freq:'Single cleaning',off:0,save:'Flexible · no commitment'},
+    {id:'onetime',t:'One-Time',freq:'Single cleaning',off:0,save:'Flexible ¬∑ no commitment'},
   ];
   // Plan card perks (RainShield = our deionized pure-water tech, our own name).
   const PLAN_PERKS = ['RainShield Technology','7-Day Rain Guarantee','Free Hard Water Removal (5 panes)'];
@@ -272,11 +267,11 @@
   };
 
   // ---------- PRICE ENGINE ----------
-  // BASE = exterior only = panes × rate × (1+french).
+  // BASE = exterior only = panes √ó rate √ó (1+french).
   // Add-ons (priced separately, NOT discounted by the plan):
-  //   interior = INT_FACTOR × exterior base
-  //   screens  = panes × SCREEN_RATE
-  //   solar    = panels × SOLAR_RATE
+  //   interior = INT_FACTOR √ó exterior base
+  //   screens  = panes √ó SCREEN_RATE
+  //   solar    = panels √ó SOLAR_RATE
   // Plan discount applies to the exterior base only; add-ons stack on after.
   function paneRate(){ return S.cleaned ?? 7.00; }
   function extMultiplier(){
@@ -293,7 +288,7 @@
     return Math.max(S.size*paneRate()*m, MIN_JOB);
   }
   // Total of selected add-ons (interior, screens, solar). 15% off if bundled.
-  // Screens ≈ half the panes (most windows = 2 panes but 1 screen) × $4 each.
+  // Screens ‚âà half the panes (most windows = 2 panes but 1 screen) √ó $4 each.
   function screenCount(){ return Math.round(S.size/2); }
   const BUNDLE_PCT = 0.15;     // 15% off when interior + screens are bundled
   function addOnTotal(){
@@ -331,7 +326,7 @@
   // Single firm estimate (rounded to nearest $5), after plan off + add-ons.
   function fmtRange(v, planOff){
     const m=extMultiplier();
-    if(m===null) return '—';
+    if(m===null) return '‚Äî';
     if(m===-1) return 'Custom quote';
     const off = (planOff!==undefined ? planOff : (S.plan ? (PLANS.find(p=>p.id===S.plan)?.off||0) : 0));
     const price = Math.round(priceForPlan(off)/5)*5;
@@ -373,9 +368,9 @@
     document.getElementById('card').innerHTML = steps[cur].render();
     document.getElementById('backBtn').style.visibility = cur===0?'hidden':'visible';
     const nb=document.getElementById('nextBtn');
-    if(cur===steps.length-1){ nb.textContent='Submit Request →'; }
-    else if(steps[cur].last1){ nb.textContent='Create My Quote →'; }
-    else { nb.textContent='Continue →'; }
+    if(cur===steps.length-1){ nb.textContent='Submit Request ‚Üí'; }
+    else if(steps[cur].last1){ nb.textContent='Create My Quote ‚Üí'; }
+    else { nb.textContent='Continue ‚Üí'; }
     refreshNext();
     if(steps[cur].after) steps[cur].after();
     updateTotal();
@@ -391,7 +386,7 @@
       {k:'Property Size', v:S.sizeLabel},
     ];
     document.getElementById('sideRows').innerHTML = rows.map(r=>
-      `<div class="qb-side-row"><div class="qb-side-k">${r.k}</div><div class="qb-side-v ${r.v?'set':'empty'}">${r.v||'—'}</div></div>`
+      `<div class="qb-side-row"><div class="qb-side-k">${r.k}</div><div class="qb-side-v ${r.v?'set':'empty'}">${r.v||'‚Äî'}</div></div>`
     ).join('');
   }
   function refreshNext(){ document.getElementById('nextBtn').disabled = !steps[cur].valid(); }
@@ -417,20 +412,20 @@
       condo:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h0M12 7h0M15 7h0M9 11h0M12 11h0M15 11h0M9 15h0M15 15h0"/><path d="M11 21v-3h2v3"/></svg>'
     };
     const types=[{id:'house',ic:ICO.house,t:'House',d:'Single or multi-level home'},{id:'townhome',ic:ICO.townhome,t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:ICO.condo,t:'Condo',d:'Unit in a shared building'}];
-    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 5 · About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 5 ¬∑ About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
     <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
   }
   function stepCleaned(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 5 · About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 5 ¬∑ About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
     <div class="opt-grid cols-3">${LASTCLEANED.map(x=>optCard(S.cleanedLabel===x.t,`pickCleaned(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
   }
   function stepFrench(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 5 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 5 ¬∑ About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean ‚Äî this keeps your quote accurate.</p>
     <div class="opt-grid cols-2">${FRENCH.map(x=>optCard(S.frenchLabel===x.t,`pickFrench(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
     <div class="info-note"><b>Info:</b> French pane windows require additional cleaning time due to their grid patterns and multiple glass sections.</div>`;
   }
   function stepSize(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 5 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 5 ¬∑ About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
     <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
   }
   function stepPlan(){
@@ -448,12 +443,12 @@
       const nPerks = PLAN_PERK_COUNT[p.id] ?? 0;
       const perks = PLAN_PERKS.map((perk,i)=>{
         const on = i < nPerks;
-        return `<li class="${on?'yes':'no'}"><span class="pi">${on?'✓':'✕'}</span> ${perk}</li>`;
+        return `<li class="${on?'yes':'no'}"><span class="pi">${on?'‚úì':'‚úï'}</span> ${perk}</li>`;
       }).join('');
       const annual = p.off>0 ? `<div class="plan-annual">Annual savings: $${p.off * (p.id==='quarterly'?4:2)}</div>` : `<div class="plan-annual none">No savings</div>`;
-      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}</div>`;
+      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">‚òÖ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}</div>`;
     }).join('');
-    return `<div class="qb-step-eyebrow">Step 1 of 3 · Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
+    return `<div class="qb-step-eyebrow">Step 1 of 3 ¬∑ Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
     <div class="plan-grid">${cards}</div>
     <div class="info-note">Recurring plans lock in your discount on every visit. Final price confirmed at your free in-person walkthrough.</div>`;
   }
@@ -474,8 +469,8 @@
             <div class="bundle-name">ClearView Bundle</div>
             <div class="bundle-sub">Bundle &amp; save 15%!</div>
             <ul class="bundle-list">
-              <li><span class="pi">✓</span> Interior Window Cleaning</li>
-              <li><span class="pi">✓</span> Screen Cleaning</li>
+              <li><span class="pi">‚úì</span> Interior Window Cleaning</li>
+              <li><span class="pi">‚úì</span> Screen Cleaning</li>
             </ul>
           </div>
           <div class="bundle-price-wrap">
@@ -485,8 +480,8 @@
         </div>
         <div class="bundle-actions">
           ${bundleActive
-            ? `<button type="button" class="bundle-btn added" disabled>✓ Bundle Added</button>
-               <button type="button" class="bundle-btn remove" onclick="setBundle(false)">✕ Remove Bundle</button>`
+            ? `<button type="button" class="bundle-btn added" disabled>‚úì Bundle Added</button>
+               <button type="button" class="bundle-btn remove" onclick="setBundle(false)">‚úï Remove Bundle</button>`
             : `<button type="button" class="bundle-btn add" onclick="setBundle(true)">+ Add Bundle &amp; Save 15%</button>`}
         </div>
       </div>`;
@@ -500,7 +495,7 @@
     const rows=items.map(x=>{
       const on=S.services.includes(x.id);
       return `<div class="addon ${on?'sel':''}" onclick="toggleSvc('${x.id}')">
-        <div class="addon-check">${on?'✓':''}</div>
+        <div class="addon-check">${on?'‚úì':''}</div>
         <div class="addon-body"><div class="addon-t">${x.t}</div></div>
         <div class="addon-price">${x.price}</div>
       </div>`;
@@ -510,7 +505,7 @@
       ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();updateTotal()" placeholder="e.g. 12"></div>`
       : '';
 
-    return `<div class="qb-step-eyebrow">Step 2 of 3 · Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Add-ons are optional. Sill &amp; track detailing is always included free.</p>
+    return `<div class="qb-step-eyebrow">Step 2 of 3 ¬∑ Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Add-ons are optional. Sill &amp; track detailing is always included free.</p>
     ${bundleCard}
     <div class="addon-or">Or choose individual add-ons</div>
     <div class="addon-grid">${rows}</div>
@@ -518,7 +513,7 @@
     <div class="info-note">Add-ons apply to your initial visit and can be added to future visits anytime.</div>`;
   }
   function stepContact(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 5 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 5 ¬∑ About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
     <div class="fld-grid">
       <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
       <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
@@ -530,10 +525,10 @@
   // calendar state
   let calView=new Date(); calView.setDate(1);
   function stepSchedule(){
-    return `<div class="qb-step-eyebrow">Step 3 of 3 · Your Quote</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
+    return `<div class="qb-step-eyebrow">Step 3 of 3 ¬∑ Your Quote</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time ‚Äî we'll confirm availability and lock it in.</p>
     <div id="calMount"></div>
     <div id="slotMount"></div>
-    <div class="info-note">This is a <b>request</b>, not a locked booking — we'll text or call to confirm your exact time.</div>`;
+    <div class="info-note">This is a <b>request</b>, not a locked booking ‚Äî we'll text or call to confirm your exact time.</div>`;
   }
   function stepReview(){
     const addonNames={interior:'Interior Windows',screens:'Screen Cleaning',solar:'Solar Panels'};
@@ -543,24 +538,24 @@
     const off = plan?plan.off:0;
     return `<div class="qb-step-eyebrow">Review &amp; Confirm</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Please review your details below. We'll follow up shortly to confirm.</p>
     <div class="rev-box">
-      <div class="rev-row"><span class="k">Property</span><span class="v">${cap(S.propType)} · ${S.sizeLabel}</span></div>
+      <div class="rev-row"><span class="k">Property</span><span class="v">${cap(S.propType)} ¬∑ ${S.sizeLabel}</span></div>
       <div class="rev-row"><span class="k">Last cleaned</span><span class="v">${S.cleanedLabel}</span></div>
       <div class="rev-row"><span class="k">French panes</span><span class="v">${S.frenchLabel}</span></div>
       <div class="rev-row"><span class="k">Services</span><span class="v">${svc}</span></div>
       <div class="rev-row"><span class="k">Plan</span><span class="v">${plan.t} (${plan.freq})</span></div>
-      <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} · ${S.phone}</span></div>
+      <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} ¬∑ ${S.phone}</span></div>
       <div class="rev-row"><span class="k">Address</span><span class="v">${S.address}</span></div>
-      <div class="rev-row"><span class="k">Requested</span><span class="v">${S.date} · ${S.time}</span></div>
+      <div class="rev-row"><span class="k">Requested</span><span class="v">${S.date} ¬∑ ${S.time}</span></div>
       <div class="rev-total"><span class="lbl">Estimated price${off>0?` ($${off} off / visit)`:''}</span><span class="amt">${fmtRange(null, off)}</span></div>
     </div>
-    <div class="info-note">Final price confirmed at your free in-person walkthrough. Fully insured · $1M coverage.</div>
+    <div class="info-note">Final price confirmed at your free in-person walkthrough. Fully insured ¬∑ $1M coverage.</div>
     <div id="submitErr" class="err"></div>`;
   }
 
   // ---- pick handlers ----
   // No auto-advance: selecting an option just updates state + UI.
   // The customer moves forward with the Continue button.
-  function advance(){ /* auto-advance disabled — use Next button */ }
+  function advance(){ /* auto-advance disabled ‚Äî use Next button */ }
   function pick(key,val){ S[key]=val; if(key==='propType'){} renderStep(); advance(); }
   function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); advance(); }
   function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
@@ -606,7 +601,7 @@
       const sel=S.date===prettyDate(date);
       cells+=`<div class="cal-day ${dis?'dis':''} ${sel?'sel':''}" ${dis?'':`onclick="pickDate('${iso}')"`}>${d}</div>`;
     }
-    mount.innerHTML=`<div class="cal"><div class="cal-head"><button onclick="calMove(-1)">‹</button><span>${monthName}</span><button onclick="calMove(1)">›</button></div><div class="cal-grid">${cells}</div></div>`;
+    mount.innerHTML=`<div class="cal"><div class="cal-head"><button onclick="calMove(-1)">‚Äπ</button><span>${monthName}</span><button onclick="calMove(1)">‚Ä∫</button></div><div class="cal-grid">${cells}</div></div>`;
     renderSlots();
   }
   function prettyDate(date){ return date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}); }
@@ -648,11 +643,13 @@
       let h = parseInt(m[1],10); const min = parseInt(m[2],10);
       const pm = /PM/i.test(m[3]);
       if(pm && h!==12) h+=12; if(!pm && h===12) h=0;
-      // Local time → ISO. Treated as the customer's requested wall-clock time.
-      return `${dateISO}T${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:00`;
+      // Build a Date from the customer's local wall-clock time, then send true UTC ‚Äî
+      // Flyra parses these as UTC, so naive local strings showed jobs 4h early.
+      const d = new Date(`${dateISO}T${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:00`);
+      return d.toISOString();
     }
     const startISO = toISO(S.dateISO, S.time);
-    const endISO = startISO ? (function(){ const d=new Date(startISO); d.setHours(d.getHours()+2); return d.toISOString().slice(0,19); })() : null;
+    const endISO = startISO ? new Date(new Date(startISO).getTime() + 2*60*60*1000).toISOString() : null;
     const estDollars = (function(){ const p=priceForPlan(off); return (p===null||p===-1)?null:Math.round(p/5)*5; })();
     const fullNotes = notes + (S.address?`\nAddress: ${S.address}`:'');
     try{
@@ -672,14 +669,14 @@
         })
       });
       if(!r.ok){ throw new Error('lead post failed: '+r.status); }
-      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} — we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(null, off)}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
+      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">‚úì</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} ‚Äî we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(null, off)}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home ‚Üí</a></div></div>`;
       document.querySelector('.qb-nav').style.display='none';
       document.getElementById('progress').style.display='none';
       window.scrollTo({top:0,behavior:'smooth'});
     }catch(e){
       console.error(e);
-      btn.disabled=false; btn.textContent='Submit Request →';
-      const el=document.getElementById('submitErr'); if(el) el.textContent='Could not submit — please call us at (860) 966-3149 and we\'ll take care of it.';
+      btn.disabled=false; btn.textContent='Submit Request ‚Üí';
+      const el=document.getElementById('submitErr'); if(el) el.textContent='Could not submit ‚Äî please call us at (860) 966-3149 and we\'ll take care of it.';
     }
   }
 
