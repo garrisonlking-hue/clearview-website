@@ -103,6 +103,15 @@
   .plan-perks li.no .pi{color:#d99}
   .plan-annual{margin-top:.6rem;padding-top:.7rem;border-top:1px solid rgba(22,40,74,.1);font-size:.85rem;font-weight:700;color:#1a8a4f}
   .plan-annual.none{color:var(--gray-500)}
+  .plan-choose{margin-top:1rem;border:2px solid var(--navy);color:var(--navy);border-radius:999px;padding:.55rem;font-weight:700;font-size:.85rem}
+  .plan-choose.sel{background:var(--red);border-color:var(--red);color:#fff}
+  .plan-nudge{background:#fff;border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.1rem 1.3rem;margin-top:1.2rem;max-width:480px;margin-left:auto}
+  .plan-nudge-title{font-weight:800;color:var(--navy);font-size:1rem}
+  .plan-nudge p{font-size:.85rem;color:var(--gray-500);margin:.3rem 0 .8rem}
+  .plan-nudge-btns{display:flex;gap:.6rem}
+  .plan-nudge-btns button{flex:1;border-radius:999px;padding:.6rem;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit}
+  .btn-keep{background:#fff;border:2px solid rgba(22,40,74,.25);color:var(--gray-500)}
+  .btn-upgrade{background:var(--navy);border:2px solid var(--navy);color:#fff}
   /* add-ons */
   .addon-grid{display:flex;flex-direction:column;gap:12px}
   .addon{display:flex;align-items:center;gap:14px;border:2px solid rgba(22,40,74,.12);border-radius:14px;padding:1.1rem 1.3rem;cursor:pointer;transition:all .15s;background:#fff}
@@ -251,13 +260,14 @@
   const PLAN_FLOOR = 200;      // post-discount price can never fall below this
   const PLANS = [
     {id:'quarterly',t:'Quarterly',freq:'4 cleanings / year',off:150,save:'$150 off every cleaning',popular:true},
-    {id:'triannual',t:'Tri-Annual',freq:'3 cleanings / year',off:100,save:'$100 off every cleaning'},
+    {id:'triannual',t:'Tri-Annual',freq:'3 cleanings / year · winter visit cleans interiors',off:100,save:'$100 off every cleaning'},
     {id:'biannual',t:'Biannual',freq:'2 cleanings / year',off:50,save:'$50 off every cleaning'},
     {id:'onetime',t:'One-Time',freq:'Single cleaning',off:0,save:'Flexible · no commitment'},
   ];
   // Plan card perks (RainShield = our deionized pure-water tech, our own name).
-  const PLAN_PERKS = ['RainShield Technology','7-Day Rain Guarantee','Free Hard Water Removal (5 panes)'];
-  const PLAN_PERK_COUNT = { quarterly:3, biannual:1, onetime:0 };
+  const PLAN_PERKS = ['7-Day Rain Guarantee','Free Hard Water Removal (5 panes)','RainShield Technology'];
+  const PLAN_PERK_COUNT = { quarterly:3, triannual:2, biannual:1, onetime:0 };
+  const PLAN_VISITS = { quarterly:4, triannual:3, biannual:2, onetime:1 };
 
   // ---------- STATE ----------
   const S = {
@@ -447,11 +457,16 @@
         const on = i < nPerks;
         return `<li class="${on?'yes':'no'}"><span class="pi">${on?'✓':'✕'}</span> ${perk}</li>`;
       }).join('');
-      const annual = p.off>0 ? `<div class="plan-annual">Annual savings: $${p.off * (p.id==='quarterly'?4:2)}</div>` : `<div class="plan-annual none">No savings</div>`;
-      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}</div>`;
+      const annual = p.off>0 ? `<div class="plan-annual">Annual savings: $${p.off * (PLAN_VISITS[p.id]||1)}</div>` : `<div class="plan-annual none">No savings</div>`;
+      const sel = S.plan===p.id;
+      const btn = `<div class="plan-choose ${sel?'sel':''}">${sel?'✓ Selected':'Choose '+p.t}</div>`;
+      return `<div class="plan ${sel?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}${btn}</div>`;
     }).join('');
+    const biSave = 50 * PLAN_VISITS.biannual;
+    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save $${biSave}/year with Biannual</div><p>Two cleanings a year keeps the shine — and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="advance()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save $${biSave}</button></div></div>` : '';
     return `<div class="qb-step-eyebrow">Step 1 of 3 · Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
     <div class="plan-grid">${cards}</div>
+    ${nudge}
     <div class="info-note">Recurring plans lock in your discount on every visit. Final price confirmed at your free in-person walkthrough.</div>`;
   }
   function stepAddons(){
@@ -563,7 +578,7 @@
   function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
   function pickFrench(v,t){ S.french=v; S.frenchLabel=t; renderStep(); advance(); }
   function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); advance(); }
-  function pickPlan(id){ S.plan=id; renderStep(); advance(); }
+  function pickPlan(id){ S.plan=id; renderStep(); if(id!=='onetime') advance(); }
   function toggleSvc(id){
     const i=S.services.indexOf(id);
     if(i>=0) S.services.splice(i,1); else S.services.push(id);
