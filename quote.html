@@ -77,6 +77,9 @@
   .fld{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
   .fld label{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-500)}
   .fld label .req{color:var(--red)}
+  .consent-row{display:flex;gap:.6rem;align-items:flex-start;font-size:.85rem;color:var(--gray-500);margin-top:.2rem;cursor:pointer;text-align:left}
+  .consent-row input{margin-top:.2rem;accent-color:var(--red);width:16px;height:16px;flex-shrink:0}
+  .consent-row .req{color:var(--red)}
   .fld input,.fld textarea{font-family:inherit;font-size:1rem;padding:.85rem 1rem;border:1.5px solid rgba(22,40,74,.15);border-radius:12px;background:#fff;color:var(--navy);transition:border .15s}
   .fld input:focus,.fld textarea:focus{outline:none;border-color:var(--navy)}
   .fld textarea{min-height:90px;resize:vertical}
@@ -274,7 +277,7 @@
     propType:null, size:null, sizeLabel:null, cleaned:null, cleanedLabel:null,
     french:null, frenchLabel:null,
     stories:null, storiesLabel:null, services:['exterior'], solarPanels:0, plan:null,
-    name:'',phone:'',email:'',address:'',notes:'',
+    name:'',phone:'',email:'',address:'',notes:'',smsConsent:false,
     date:null, time:null
   };
 
@@ -537,7 +540,8 @@
     </div>
     <div class="fld"><label>Email</label><input id="f_email" value="${S.email}" oninput="S.email=this.value" placeholder="you@email.com"></div>
     <div class="fld"><label>Property Address <span class="req">*</span></label><input id="f_addr" value="${S.address}" oninput="S.address=this.value;refreshNext()" placeholder="Street, Town, CT"></div>
-    <div class="fld"><label>Notes (optional)</label><textarea id="f_notes" oninput="S.notes=this.value" placeholder="Gate codes, pets, special requests, approx window count...">${S.notes}</textarea></div>`;
+    <div class="fld"><label>Notes (optional)</label><textarea id="f_notes" oninput="S.notes=this.value" placeholder="Gate codes, pets, special requests, approx window count...">${S.notes}</textarea></div>
+    <label class="consent-row"><input type="checkbox" id="f_consent" ${S.smsConsent?'checked':''} onchange="S.smsConsent=this.checked;refreshNext()"> <span>Text me updates about my quote and service. Reply STOP to opt out. <span class="req">*</span></span></label>`;
   }
   // calendar state
   let calView=new Date(); calView.setDate(1);
@@ -595,7 +599,7 @@
     document.getElementById('card').innerHTML=stepAddons();
     refreshNext(); updateTotal();
   }
-  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim(); }
+  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim() && S.smsConsent; }
   function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1):''; }
 
   // ---- calendar ----
@@ -682,7 +686,8 @@
           notes: fullNotes,
           scheduled_start: startISO,
           scheduled_end: endISO,
-          price: estDollars
+          price: estDollars,
+          sms_consent: S.smsConsent
         })
       });
       if(!r.ok){ throw new Error('lead post failed: '+r.status); }
