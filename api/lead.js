@@ -1,11 +1,22 @@
-
 // api/lead.js  —  Vercel serverless function
-// Receives quote-builder submissions and creates a JOB in Flyra
-// (customer + scheduled job + price) via the public REST API.
-//
-// The Flyra key NEVER touches the browser — it lives only in Vercel
-// env vars. Set it in: Vercel → Project → Settings → Environment
-// Variables → FLYRA_API_KEY = flr_live_...
+// Receives quote-builder submissions and creates a LEAD in Flyra by
+// submitting to the org's public lead form. Nothing is booked or
+// scheduled — the requested time lives in the lead notes, and we
+// call/text to confirm before putting anything on the schedule.
+// The form submission also triggers Flyra's new-lead automations
+// (auto-text to the customer + a follow-up task for us).
+
+const FORM_ID = 'rappydf6';
+
+const SERVICE_VALUES = {
+  'exterior windows': 'exterior_windows',
+  'interior windows': 'interior_windows',
+  'sill & track detailing': 'sill_track_detailing',
+  'screen cleaning': 'screen_cleaning',
+  'solar panel cleaning': 'solar_panel_cleaning',
+  'solar panels': 'solar_panel_cleaning',
+  'pressure washing': 'pressure_washing',
+};
 
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,9 +24,6 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
-
-  const KEY = process.env.FLYRA_API_KEY;
-  if (!KEY) return res.status(500).json({ error: 'Server not configured' });
 
   let b = req.body;
   if (typeof b === 'string') { try { b = JSON.parse(b); } catch { b = {}; } }
@@ -25,11 +33,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Phone or email required' });
   }
 
-  // Split "Jane Doe" -> first / last (Flyra needs at least one)
-  const parts = String(b.name || '').trim().split(/\s+/);
-  const first_name = parts.shift() || '';
-  const last_name = parts.join(' ') || '';
-
   // Normalize US phone to a clean form
   let phone = String(b.phone || '').replace(/[^\d+]/g, '');
   if (phone && !phone.startsWith('+')) {
@@ -38,40 +41,38 @@ export default async function handler(req, res) {
     else if (digits.length === 11 && digits.startsWith('1')) phone = '+' + digits;
   }
 
-  // Build the job payload per Flyra's POST /api/public/jobs spec.
+  // Map the builder's service list onto the lead form's select values
+  const rawService = String(b.service || '').toLowerCase().trim();
+  let service_type = 'other';
+  if (rawService.includes(',')) service_type = 'multiple_services';
+  else if (SERVICE_VALUES[rawService]) service_type = SERVICE_VALUES[rawService];
+
   const payload = {
-    customer: {
-      first_name: first_name || (last_name ? '' : 'Website'),
-      last_name,
-      email: b.email || undefined,
-      mobile_phone: phone || undefined,
-      address: b.address || undefined,
-    },
-    service: b.service || 'Window Cleaning',
+    first_name: String(b.name || '').trim() || 'Website Lead',
+    phone: phone || undefined,
+    email: b.email || undefined,
+    address: b.address || undefined,
+    service_type,
+    preferred_date: b.scheduled_start ? String(b.scheduled_start).slice(0, 10) : undefined,
     notes: b.notes || undefined,
+    sms_consent: !!b.sms_consent,
   };
-  if (b.scheduled_start) payload.scheduled_start = b.scheduled_start;
-  if (b.scheduled_end) payload.scheduled_end = b.scheduled_end;
-  if (b.price != null && !isNaN(b.price)) payload.price = Number(b.price);
 
   try {
-    const r = await fetch('https://app.flyra.io/api/public/jobs', {
+    const r = await fetch(`https://app.flyra.io/api/forms/public/${FORM_ID}/submit`, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ payload }),
     });
 
     const text = await r.text();
     if (!r.ok) {
-      console.error('Flyra error', r.status, text);
-      return res.status(502).json({ error: 'Flyra rejected the job', detail: text });
+      console.error('Flyra form error', r.status, text);
+      return res.status(502).json({ error: 'Flyra rejected the lead', detail: text });
     }
     return res.status(200).json({ ok: true });
   } catch (e) {
-    console.error('Job create failed', e);
+    console.error('Lead create failed', e);
     return res.status(500).json({ error: 'Could not reach Flyra' });
   }
 }
