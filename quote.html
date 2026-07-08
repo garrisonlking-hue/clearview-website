@@ -466,7 +466,7 @@
       return `<div class="plan ${sel?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}${btn}</div>`;
     }).join('');
     const biSave = 50 * PLAN_VISITS.biannual;
-    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save $${biSave}/year with Biannual</div><p>Two cleanings a year keeps the shine — and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="advance()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save $${biSave}</button></div></div>` : '';
+    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save $${biSave}/year with Biannual</div><p>Two cleanings a year keeps the shine — and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="next()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save $${biSave}</button></div></div>` : '';
     return `<div class="qb-step-eyebrow">Step 1 of 3 · Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
     <div class="plan-grid">${cards}</div>
     ${nudge}
