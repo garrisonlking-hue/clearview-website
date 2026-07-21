@@ -238,6 +238,12 @@
     {v:9.00,t:'3–5 years',d:'Significant buildup'},
     {v:10.00,t:'Never',d:'First professional cleaning'},
   ];
+  // Storm windows — a second layer of glass over the primary window.
+  // Cleaning inside & out means double the surfaces, so it doubles the base.
+  const STORM = [
+    {v:0,t:'No',d:'Standard single-pane windows'},
+    {v:1,t:'Yes',d:'Storm windows over the glass — double the surfaces to clean'},
+  ];
   // French panes — small % upcharge (grids take a little longer)
   const FRENCH = [
     {v:0,   t:'No',d:'No french pane windows'},
@@ -275,6 +281,7 @@
   // ---------- STATE ----------
   const S = {
     propType:null, size:null, sizeLabel:null, cleaned:null, cleanedLabel:null,
+    storm:null, stormLabel:null,
     french:null, frenchLabel:null,
     stories:null, storiesLabel:null, services:['exterior'], solarPanels:0, plan:null,
     name:'',phone:'',email:'',address:'',notes:'',smsConsent:false,
@@ -289,11 +296,13 @@
   //   solar    = panels × SOLAR_RATE
   // Plan discount applies to the exterior base only; add-ons stack on after.
   function paneRate(){ return S.cleaned ?? 7.00; }
+  // Storm windows double the glass (storm panel + primary, inside & out).
+  function stormMult(){ return 1 + (S.storm ?? 0); }   // No→×1, Yes→×2
   function extMultiplier(){
     if(S.size===null) return null;
     if(S.size===-1) return -1; // custom
     const french=S.french??0;
-    return (1+french);
+    return (1+french)*stormMult();
   }
   // Exterior base price (before plan discount, before add-ons).
   function extBase(){
@@ -364,6 +373,7 @@
     {key:'propType', render:stepPropType, valid:()=>!!S.propType,        phase:1},
     {key:'cleaned',  render:stepCleaned,  valid:()=>S.cleaned!==null,    phase:1},
     {key:'french',   render:stepFrench,   valid:()=>S.french!==null,     phase:1},
+    {key:'storm',    render:stepStorm,    valid:()=>S.storm!==null,      phase:1},
     {key:'size',     render:stepSize,     valid:()=>S.size!==null,       phase:1},
     {key:'contact',  render:stepContact,  valid:validContact,            phase:1, last1:true},
     {key:'plan',     render:stepPlan,     valid:()=>!!S.plan,            phase:2},
@@ -398,6 +408,7 @@
       {k:'Property Type', v:S.propType?cap(S.propType):null},
       {k:'Last Cleaned',  v:S.cleanedLabel},
       {k:'French Panes',  v:S.frenchLabel},
+      {k:'Storm Windows', v:S.stormLabel},
       {k:'Property Size', v:S.sizeLabel},
     ];
     document.getElementById('sideRows').innerHTML = rows.map(r=>
@@ -427,20 +438,25 @@
       condo:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h0M12 7h0M15 7h0M9 11h0M12 11h0M15 11h0M9 15h0M15 15h0"/><path d="M11 21v-3h2v3"/></svg>'
     };
     const types=[{id:'house',ic:ICO.house,t:'House',d:'Single or multi-level home'},{id:'townhome',ic:ICO.townhome,t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:ICO.condo,t:'Condo',d:'Unit in a shared building'}];
-    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 5 · About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 6 · About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
     <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
   }
   function stepCleaned(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 5 · About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 6 · About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
     <div class="opt-grid cols-3">${LASTCLEANED.map(x=>optCard(S.cleanedLabel===x.t,`pickCleaned(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
   }
   function stepFrench(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 5 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 6 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
     <div class="opt-grid cols-2">${FRENCH.map(x=>optCard(S.frenchLabel===x.t,`pickFrench(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
     <div class="info-note"><b>Info:</b> French pane windows require additional cleaning time due to their grid patterns and multiple glass sections.</div>`;
   }
+  function stepStorm(){
+    return `<div class="qb-step-eyebrow">Step ${stepNum('storm')} of 6 · About Your Home</div><h1 class="qb-h">Do you have storm windows?</h1><p class="qb-sub">Storm windows add a second layer of glass over each window.</p>
+    <div class="opt-grid cols-2">${STORM.map(x=>optCard(S.stormLabel===x.t,`pickStorm(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
+    <div class="info-note"><b>Info:</b> With storm windows we clean the storm panel and the primary window, inside and out — double the glass — so the quote is priced accordingly.</div>`;
+  }
   function stepSize(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 5 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 6 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
     <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
   }
   function stepPlan(){
@@ -533,7 +549,7 @@
     <div class="info-note">Add-ons apply to your initial visit and can be added to future visits anytime.</div>`;
   }
   function stepContact(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 5 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 6 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
     <div class="fld-grid">
       <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
       <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
@@ -562,6 +578,7 @@
       <div class="rev-row"><span class="k">Property</span><span class="v">${cap(S.propType)} · ${S.sizeLabel}</span></div>
       <div class="rev-row"><span class="k">Last cleaned</span><span class="v">${S.cleanedLabel}</span></div>
       <div class="rev-row"><span class="k">French panes</span><span class="v">${S.frenchLabel}</span></div>
+      <div class="rev-row"><span class="k">Storm windows</span><span class="v">${S.stormLabel}</span></div>
       <div class="rev-row"><span class="k">Services</span><span class="v">${svc}</span></div>
       <div class="rev-row"><span class="k">Plan</span><span class="v">${plan.t} (${plan.freq})</span></div>
       <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} · ${S.phone}</span></div>
@@ -581,6 +598,7 @@
   function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); advance(); }
   function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
   function pickFrench(v,t){ S.french=v; S.frenchLabel=t; renderStep(); advance(); }
+  function pickStorm(v,t){ S.storm=v; S.stormLabel=t; renderStep(); advance(); }
   function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); advance(); }
   function pickPlan(id){ S.plan=id; renderStep(); if(id!=='onetime'){ advance(); } else { const n=document.querySelector('.plan-nudge'); if(n) n.scrollIntoView({behavior:'smooth',block:'center'}); } }
   function toggleSvc(id){
@@ -650,6 +668,7 @@
       `Property: ${cap(S.propType)}, ${S.sizeLabel}`,
       `Condition: last cleaned ${S.cleanedLabel}`,
       `French panes: ${S.frenchLabel}`,
+      `Storm windows: ${S.stormLabel}`,
       `Services: ${svcList}`,
       `Plan: ${plan.t} (${plan.freq})`,
       `Est. price: ${fmtRange(null, off)}`,
