@@ -266,6 +266,13 @@
     {id:'screens',t:'Screen Cleaning',perScreen:true,d:'$4 per screen, removed & washed'},
     {id:'solar',t:'Solar Panel Cleaning',perPanel:true,d:'$10 per panel, pure-water'},
   ];
+  // What the customer wants cleaned. Interior lives HERE now (not as an add-on),
+  // so nothing double-counts against the storm-window surcharge.
+  const SCOPE = [
+    {v:'both',    t:'Inside & Out', d:'Most popular'},
+    {v:'outside', t:'Outside only', d:'Exterior glass'},
+    {v:'inside',  t:'Inside only',  d:'Interior glass'},
+  ];
   // Flat-dollar discount per visit, with a hard floor so small jobs never
   // drop below PLAN_FLOOR. off = $ off each cleaning; floor = min paid/visit.
   const PLAN_FLOOR = 200;      // post-discount price can never fall below this
@@ -283,77 +290,64 @@
   // ---------- STATE ----------
   const S = {
     propType:null, size:null, sizeLabel:null, cleaned:null, cleanedLabel:null,
+    scope:'both',
     storm:null, stormLabel:null,
     french:null, frenchLabel:null,
-    stories:null, storiesLabel:null, services:['exterior'], solarPanels:0, plan:null,
+    stories:null, storiesLabel:null, services:[], solarPanels:0, plan:null,
     name:'',phone:'',email:'',address:'',notes:'',smsConsent:false,
     date:null, time:null
   };
 
   // ---------- PRICE ENGINE ----------
-  // BASE = exterior only = panes × rate × (1+french).
-  // Add-ons (priced separately, NOT discounted by the plan):
-  //   interior = INT_FACTOR × exterior base
-  //   screens  = panes × SCREEN_RATE
-  //   solar    = panels × SOLAR_RATE
-  // Plan discount applies to the exterior base only; add-ons stack on after.
+  // The customer picks a SCOPE (outside / inside / both). Interior is priced at
+  // INT_FACTOR of exterior. Storm windows add glass, so the storm surcharge
+  // (×1 … ×2) loads onto any scope that includes the OUTSIDE (outside / both) —
+  // inside-only isn't surcharged since storm windows sit on the exterior.
+  // Add-ons (screens, solar) stack on after, and are NOT discounted by the plan.
   function paneRate(){ return S.cleaned ?? 7.00; }
-  // Storm windows double the glass (storm panel + primary, inside & out).
-  function stormMult(){ return 1 + (S.storm ?? 0); }   // No→×1, Yes→×2
-  function extMultiplier(){
+  function stormMult(){ return 1 + (S.storm ?? 0); }   // No→×1 … All→×2
+  function isCustom(){ return S.size===-1; }
+  // Exterior glass (before storm). Interior = INT_FACTOR of it.
+  function outsidePart(){ return S.size*paneRate()*(1+(S.french??0)); }
+  function insidePart(){ return outsidePart()*INT_FACTOR; }
+  // Price for the chosen scope, after storm surcharge, floored at MIN_JOB.
+  function scopeBase(){
     if(S.size===null) return null;
-    if(S.size===-1) return -1; // custom
-    const french=S.french??0;
-    return (1+french)*stormMult();
+    if(S.size===-1) return -1;   // custom quote
+    let p;
+    if(S.scope==='inside')       p = insidePart();                    // no storm
+    else if(S.scope==='outside') p = outsidePart()*stormMult();
+    else                         p = (outsidePart()+insidePart())*stormMult();  // both
+    return Math.max(p, MIN_JOB);
   }
-  // Exterior base price (before plan discount, before add-ons).
-  function extBase(){
-    const m=extMultiplier();
-    if(m===null) return null;
-    if(m===-1) return -1;
-    return Math.max(S.size*paneRate()*m, MIN_JOB);
-  }
-  // Total of selected add-ons (interior, screens, solar). 15% off if bundled.
   // Screens ≈ half the panes (most windows = 2 panes but 1 screen) × $4 each.
   function screenCount(){ return Math.round(S.size/2); }
-  const BUNDLE_PCT = 0.15;     // 15% off when interior + screens are bundled
+  // Optional add-ons only: screens + solar. No interior here (it's in the scope).
   function addOnTotal(){
     let a=0;
-    const eb = S.size*paneRate()*extMultiplier();
-    const hasInt=S.services.includes('interior'), hasScr=S.services.includes('screens');
-    const intAmt = (hasInt && S.size>0) ? eb*INT_FACTOR : 0;
-    const scrAmt = (hasScr && S.size>0) ? screenCount()*SCREEN_RATE : 0;
-    a += intAmt + scrAmt;
-    if(S.services.includes('solar')) a+=(S.solarPanels||0)*SOLAR_RATE;
-    if(hasInt && hasScr) a -= (intAmt+scrAmt)*BUNDLE_PCT;   // 15% bundle discount
+    if(S.services.includes('screens') && S.size>0) a += screenCount()*SCREEN_RATE;
+    if(S.services.includes('solar')) a += (S.solarPanels||0)*SOLAR_RATE;
     return a;
   }
-  // Full price = exterior base + add-ons (used when no plan context).
-  function priceBase(){
-    const b=extBase();
-    if(b===null) return null;
-    if(b===-1) return -1;
-    return b + addOnTotal();
-  }
-  // Apply flat $ discount to the EXTERIOR BASE only (floored), then add add-ons.
+  // Apply flat $ discount to the scope base only (floored), then add add-ons.
   function applyPlan(base, off){
     if(base===null) return null;
     if(base===-1) return -1;
     if(!off) return base;
     return Math.max(base - off, PLAN_FLOOR);
   }
-  // Plan price: discount hits exterior base, add-ons stack on top undiscounted.
+  // Plan price: discount hits the scope base, add-ons stack on top undiscounted.
   function priceForPlan(off){
-    const b=extBase();
+    const b=scopeBase();
     if(b===null) return null;
     if(b===-1) return -1;
     return applyPlan(b, off) + addOnTotal();
   }
   // Single firm estimate (rounded to nearest $5), after plan off + add-ons.
   function fmtRange(v, planOff){
-    const m=extMultiplier();
-    if(m===null) return '—';
-    if(m===-1) return 'Custom quote';
+    const b=scopeBase();
+    if(b===null) return '—';
+    if(b===-1) return 'Custom quote';
     const off = (planOff!==undefined ? planOff : (S.plan ? (PLANS.find(p=>p.id===S.plan)?.off||0) : 0));
     const price = Math.round(priceForPlan(off)/5)*5;
     return '$'+price;
@@ -373,6 +367,7 @@
   // PHASE 2 (quote): plan -> add-ons -> schedule. Price appears here.
   const steps = [
     {key:'propType', render:stepPropType, valid:()=>!!S.propType,        phase:1},
+    {key:'scope',    render:stepScope,    valid:()=>!!S.scope,           phase:1},
     {key:'cleaned',  render:stepCleaned,  valid:()=>S.cleaned!==null,    phase:1},
     {key:'french',   render:stepFrench,   valid:()=>S.french!==null,     phase:1},
     {key:'storm',    render:stepStorm,    valid:()=>S.storm!==null,      phase:1},
@@ -408,6 +403,7 @@
   function renderSidebar(){
     const rows=[
       {k:'Property Type', v:S.propType?cap(S.propType):null},
+      {k:'Cleaning',      v:scopeName()},
       {k:'Last Cleaned',  v:S.cleanedLabel},
       {k:'French Panes',  v:S.frenchLabel},
       {k:'Storm Windows', v:S.stormLabel},
@@ -440,33 +436,36 @@
       condo:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h0M12 7h0M15 7h0M9 11h0M12 11h0M15 11h0M9 15h0M15 15h0"/><path d="M11 21v-3h2v3"/></svg>'
     };
     const types=[{id:'house',ic:ICO.house,t:'House',d:'Single or multi-level home'},{id:'townhome',ic:ICO.townhome,t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:ICO.condo,t:'Condo',d:'Unit in a shared building'}];
-    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 6 · About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 7 · About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
     <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
   }
+  function stepScope(){
+    return `<div class="qb-step-eyebrow">Step ${stepNum('scope')} of 7 · About Your Home</div><h1 class="qb-h">What do you want cleaned?</h1><p class="qb-sub">Pick the glass you'd like done — most folks do both.</p>
+    <div class="opt-grid cols-3">${SCOPE.map(x=>optCard(S.scope===x.v,`pickScope('${x.v}')`,'',x.t,x.d)).join('')}</div>`;
+  }
   function stepCleaned(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 6 · About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 7 · About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
     <div class="opt-grid cols-3">${LASTCLEANED.map(x=>optCard(S.cleanedLabel===x.t,`pickCleaned(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
   }
   function stepFrench(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 6 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 7 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
     <div class="opt-grid cols-2">${FRENCH.map(x=>optCard(S.frenchLabel===x.t,`pickFrench(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
     <div class="info-note"><b>Info:</b> French pane windows require additional cleaning time due to their grid patterns and multiple glass sections.</div>`;
   }
   function stepStorm(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('storm')} of 6 · About Your Home</div><h1 class="qb-h">Do you have storm windows?</h1><p class="qb-sub">Storm windows add a second layer of glass over each window.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('storm')} of 7 · About Your Home</div><h1 class="qb-h">Do you have storm windows?</h1><p class="qb-sub">Storm windows add a second layer of glass over each window.</p>
     <div class="opt-grid cols-2">${STORM.map(x=>optCard(S.stormLabel===x.t,`pickStorm(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
     <div class="info-note"><b>Info:</b> Each storm window means cleaning the storm panel and the primary window, inside and out — so the quote scales with how many of your windows have storms.</div>`;
   }
   function stepSize(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 6 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 7 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
     <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
   }
   function stepPlan(){
     if(!S.plan) S.plan='quarterly';   // recurring plan is the default path
     const cards = PLANS.map(p=>{
-      const m=extMultiplier();
       let priceHtml;
-      if(m===-1){ priceHtml='<div class="price">Custom</div>'; }
+      if(isCustom()){ priceHtml='<div class="price">Custom</div>'; }
       else {
         const full = fmtRange(null,0);          // undiscounted price (anchor)
         const disc = fmtRange(null,p.off);       // after flat off + floor
@@ -491,42 +490,9 @@
     <div class="info-note">Recurring plans lock in your discount on every visit. Final price confirmed at your free in-person walkthrough.</div>`;
   }
   function stepAddons(){
-    const eb = S.size*paneRate()*extMultiplier();
-    const intPrice = Math.round(eb*INT_FACTOR/5)*5;
     const scrPrice = screenCount()*SCREEN_RATE;
-    const bundleFull = intPrice + scrPrice;
-    const bundleSave = Math.round(bundleFull*BUNDLE_PCT/5)*5;
-    const bundlePrice = bundleFull - bundleSave;
-    const bundleActive = S.services.includes('interior') && S.services.includes('screens');
-
-    // ----- bundle card (Interior + Screens, 15% off) -----
-    const bundleCard = `
-      <div class="bundle ${bundleActive?'sel':''}">
-        <div class="bundle-top">
-          <div>
-            <div class="bundle-name">ClearView Bundle</div>
-            <div class="bundle-sub">Bundle &amp; save 15%!</div>
-            <ul class="bundle-list">
-              <li><span class="pi">✓</span> Interior Window Cleaning</li>
-              <li><span class="pi">✓</span> Screen Cleaning</li>
-            </ul>
-          </div>
-          <div class="bundle-price-wrap">
-            <div class="bundle-price"><s>$${bundleFull}</s> $${bundlePrice}</div>
-            <div class="bundle-save">Save $${bundleSave}</div>
-          </div>
-        </div>
-        <div class="bundle-actions">
-          ${bundleActive
-            ? `<button type="button" class="bundle-btn added" disabled>✓ Bundle Added</button>
-               <button type="button" class="bundle-btn remove" onclick="setBundle(false)">✕ Remove Bundle</button>`
-            : `<button type="button" class="bundle-btn add" onclick="setBundle(true)">+ Add Bundle &amp; Save 15%</button>`}
-        </div>
-      </div>`;
-
-    // ----- individual add-on rows -----
+    // Optional extras only — inside/outside is chosen back on the scope step.
     const items=[
-      {id:'interior',t:'Interior Window Cleaning',price:'$'+intPrice},
       {id:'screens', t:'Screen Cleaning',price:'$'+scrPrice},
       {id:'solar',   t:'Solar Panel Cleaning',price:(S.solarPanels?('$'+(S.solarPanels*SOLAR_RATE)):'$10/panel')},
     ];
@@ -543,15 +509,13 @@
       ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();updateTotal()" placeholder="e.g. 12"></div>`
       : '';
 
-    return `<div class="qb-step-eyebrow">Step 2 of 3 · Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Add-ons are optional. Sill &amp; track detailing is always included free.</p>
-    ${bundleCard}
-    <div class="addon-or">Or choose individual add-ons</div>
+    return `<div class="qb-step-eyebrow">Step 2 of 3 · Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Optional extras. Sill &amp; track detailing is always included free.</p>
     <div class="addon-grid">${rows}</div>
     ${solarInput}
     <div class="info-note">Add-ons apply to your initial visit and can be added to future visits anytime.</div>`;
   }
   function stepContact(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 6 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 7 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
     <div class="fld-grid">
       <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
       <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
@@ -570,9 +534,9 @@
     <div class="info-note">This is a <b>request</b>, not a locked booking — we'll text or call to confirm your exact time.</div>`;
   }
   function stepReview(){
-    const addonNames={interior:'Interior Windows',screens:'Screen Cleaning',solar:'Solar Panels'};
-    const addons = S.services.filter(id=>id!=='exterior').map(id=>addonNames[id]||id);
-    const svc = ['Exterior Windows'].concat(addons).join(', ');
+    const addonNames={screens:'Screen Cleaning',solar:'Solar Panels'};
+    const addons = S.services.map(id=>addonNames[id]||id);
+    const svc = [scopeName()||'—'].concat(addons).join(', ');
     const plan = PLANS.find(p=>p.id===S.plan);
     const off = plan?plan.off:0;
     return `<div class="qb-step-eyebrow">Review &amp; Confirm</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Please review your details below. We'll follow up shortly to confirm.</p>
@@ -601,21 +565,14 @@
   function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
   function pickFrench(v,t){ S.french=v; S.frenchLabel=t; renderStep(); advance(); }
   function pickStorm(v,t){ S.storm=v; S.stormLabel=t; renderStep(); advance(); }
+  function pickScope(v){ S.scope=v; renderStep(); advance(); }
+  function scopeName(){ return {outside:'Outside only',inside:'Inside only',both:'Inside & Out'}[S.scope]||null; }
   function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); advance(); }
   function pickPlan(id){ S.plan=id; renderStep(); if(id!=='onetime'){ advance(); } else { const n=document.querySelector('.plan-nudge'); if(n) n.scrollIntoView({behavior:'smooth',block:'center'}); } }
   function toggleSvc(id){
     const i=S.services.indexOf(id);
     if(i>=0) S.services.splice(i,1); else S.services.push(id);
     if(id==='solar' && i>=0) S.solarPanels=0;   // reset count if solar removed
-    document.getElementById('card').innerHTML=stepAddons();
-    refreshNext(); updateTotal();
-  }
-  function setBundle(on){
-    ['interior','screens'].forEach(id=>{
-      const i=S.services.indexOf(id);
-      if(on && i<0) S.services.push(id);
-      if(!on && i>=0) S.services.splice(i,1);
-    });
     document.getElementById('card').innerHTML=stepAddons();
     refreshNext(); updateTotal();
   }
@@ -664,7 +621,11 @@
     const btn=document.getElementById('nextBtn'); btn.disabled=true; btn.textContent='Sending...';
     const plan=PLANS.find(p=>p.id===S.plan);
     const off=plan?plan.off:0;
-    const svcList=S.services.map(id=>SERVICES.find(s=>s.id===id).t).join(', ');
+    // Expand the scope into service names the lead API maps to Flyra, then add-ons.
+    const scopeSvc = S.scope==='outside' ? ['Exterior Windows']
+                   : S.scope==='inside'  ? ['Interior Windows']
+                   : ['Exterior Windows','Interior Windows'];
+    const svcList=scopeSvc.concat(S.services.map(id=>SERVICES.find(s=>s.id===id).t)).join(', ');
     const notes=[
       `Quote Builder lead`,
       `Property: ${cap(S.propType)}, ${S.sizeLabel}`,
