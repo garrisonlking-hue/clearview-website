@@ -241,8 +241,10 @@
   // Storm windows — a second layer of glass over the primary window.
   // Cleaning inside & out means double the surfaces, so it doubles the base.
   const STORM = [
-    {v:0,t:'No',d:'Standard single-pane windows'},
-    {v:1,t:'Yes',d:'Storm windows over the glass — double the surfaces to clean'},
+    {v:0,   t:'No',d:'No storm windows'},
+    {v:0.25,t:'Yes, less than 25%',d:'A few windows have storms'},
+    {v:0.50,t:'Yes, about 50%',d:'Half the windows have storms'},
+    {v:1.0, t:'Yes, all of them',d:'Every window has a storm window'},
   ];
   // French panes — small % upcharge (grids take a little longer)
   const FRENCH = [
@@ -453,7 +455,7 @@
   function stepStorm(){
     return `<div class="qb-step-eyebrow">Step ${stepNum('storm')} of 6 · About Your Home</div><h1 class="qb-h">Do you have storm windows?</h1><p class="qb-sub">Storm windows add a second layer of glass over each window.</p>
     <div class="opt-grid cols-2">${STORM.map(x=>optCard(S.stormLabel===x.t,`pickStorm(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
-    <div class="info-note"><b>Info:</b> With storm windows we clean the storm panel and the primary window, inside and out — double the glass — so the quote is priced accordingly.</div>`;
+    <div class="info-note"><b>Info:</b> Each storm window means cleaning the storm panel and the primary window, inside and out — so the quote scales with how many of your windows have storms.</div>`;
   }
   function stepSize(){
     return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 6 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
