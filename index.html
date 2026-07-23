@@ -383,6 +383,7 @@
             <a href="tracks.html">Sill &amp; Track Detailing</a>
             <a href="screens.html">Screen Cleaning</a>
             <a href="solar.html">Solar Panel Cleaning</a>
+            <a href="skylights.html">Skylight Cleaning</a>
             <a href="pressure.html">Pressure Washing</a>
           </div>
         </div>
@@ -612,26 +613,48 @@
     <div class="section-header center">
       <div class="eyebrow">Before &amp; After</div>
       <h2 class="section-title">See it for <span class="blue">yourself</span>.</h2>
-      <p class="section-subtitle">Same window, same day. Drag the slider to see the difference a professional clean makes.</p>
+      <p class="section-subtitle">Same window, same day. Drag either slider to see the difference a professional clean makes.</p>
     </div>
 
-    <div class="ba-slider" id="baSlider">
-      <img class="ba-img ba-after" src="before-after-1-after.jpg" alt="Window after cleaning by Clear View Window Co. — crystal clear glass">
-      <div class="ba-before-wrap" id="baBeforeWrap">
-        <img class="ba-img ba-before" src="before-after-1-before.jpg" alt="Window before cleaning — dusty, hazy glass">
-      </div>
-      <span class="ba-label ba-label-before">Before</span>
-      <span class="ba-label ba-label-after">After</span>
-      <div class="ba-handle" id="baHandle">
-        <div class="ba-handle-line"></div>
-        <div class="ba-handle-grip">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
+    <div class="ba-stack">
+      <div class="ba-unit">
+        <div class="ba-slider">
+          <img class="ba-img ba-after" src="before-after-1-after.jpg" alt="Window after cleaning by Clear View Window Co. — crystal clear glass">
+          <div class="ba-before-wrap">
+            <img class="ba-img ba-before" src="before-after-1-before.jpg" alt="Window before cleaning — dusty, hazy glass">
+          </div>
+          <span class="ba-label ba-label-before">Before</span>
+          <span class="ba-label ba-label-after">After</span>
+          <div class="ba-handle">
+            <div class="ba-handle-line"></div>
+            <div class="ba-handle-grip">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
+            </div>
+            <div class="ba-handle-line"></div>
+          </div>
         </div>
-        <div class="ba-handle-line"></div>
+        <p class="ba-caption">Exterior glass · pure-water finish</p>
+      </div>
+
+      <div class="ba-unit">
+        <div class="ba-slider">
+          <img class="ba-img ba-after" src="ba-2-after.jpg" alt="Window frame, sill and glass after a full detail clean by Clear View Window Co.">
+          <div class="ba-before-wrap">
+            <img class="ba-img ba-before" src="ba-2-before.jpg" alt="Window before cleaning — mildewed sill and water-spotted frame">
+          </div>
+          <span class="ba-label ba-label-before">Before</span>
+          <span class="ba-label ba-label-after">After</span>
+          <div class="ba-handle">
+            <div class="ba-handle-line"></div>
+            <div class="ba-handle-grip">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
+            </div>
+            <div class="ba-handle-line"></div>
+          </div>
+        </div>
+        <p class="ba-caption">Full detail · frame, sill &amp; glass restored</p>
       </div>
     </div>
-
-    <p class="ba-caption">Connecticut home · exterior clean · pure-water finish</p>
   </div>
 </section>
 
@@ -650,38 +673,41 @@
   .ba-handle-line { flex:1; width:3px; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.3); }
   .ba-handle-grip { width:44px; height:44px; border-radius:50%; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .ba-caption { text-align:center; margin-top:1.2rem; font-size:.9rem; color:var(--gray-500); font-weight:500; }
+  .ba-stack { display:flex; flex-direction:column; align-items:center; gap:2.8rem; }
+  .ba-unit { width:100%; max-width:560px; }
 </style>
 
 <script>
 (function(){
-  const slider = document.getElementById('baSlider');
-  const wrap = document.getElementById('baBeforeWrap');
-  const handle = document.getElementById('baHandle');
-  if(!slider) return;
-  let dragging = false;
+  document.querySelectorAll('.ba-slider').forEach(function(slider){
+    const wrap = slider.querySelector('.ba-before-wrap');
+    const handle = slider.querySelector('.ba-handle');
+    if(!wrap || !handle) return;
+    let dragging = false;
 
-  function setPos(clientX){
-    const rect = slider.getBoundingClientRect();
-    let x = clientX - rect.left;
-    x = Math.max(0, Math.min(x, rect.width));
-    const pct = (x / rect.width) * 100;
-    wrap.style.width = pct + '%';
-    handle.style.left = pct + '%';
-  }
-  function start(e){ dragging = true; setPos(getX(e)); }
-  function move(e){ if(!dragging) return; setPos(getX(e)); e.preventDefault(); }
-  function end(){ dragging = false; }
-  function getX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
+    function setPos(clientX){
+      const rect = slider.getBoundingClientRect();
+      let x = clientX - rect.left;
+      x = Math.max(0, Math.min(x, rect.width));
+      const pct = (x / rect.width) * 100;
+      wrap.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+    function start(e){ dragging = true; setPos(getX(e)); }
+    function move(e){ if(!dragging) return; setPos(getX(e)); e.preventDefault(); }
+    function end(){ dragging = false; }
+    function getX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
 
-  slider.addEventListener('mousedown', start);
-  window.addEventListener('mousemove', move);
-  window.addEventListener('mouseup', end);
-  slider.addEventListener('touchstart', start, {passive:true});
-  window.addEventListener('touchmove', move, {passive:false});
-  window.addEventListener('touchend', end);
+    slider.addEventListener('mousedown', start);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    slider.addEventListener('touchstart', start, {passive:true});
+    window.addEventListener('touchmove', move, {passive:false});
+    window.addEventListener('touchend', end);
 
-  // also let clicking anywhere jump the handle there
-  slider.addEventListener('click', e=>{ if(!dragging) setPos(getX(e)); });
+    // also let clicking anywhere jump the handle there
+    slider.addEventListener('click', e=>{ if(!dragging) setPos(getX(e)); });
+  });
 })();
 </script>
 
