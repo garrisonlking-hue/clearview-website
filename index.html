@@ -384,6 +384,8 @@
             <a href="screens.html">Screen Cleaning</a>
             <a href="solar.html">Solar Panel Cleaning</a>
             <a href="skylights.html">Skylight Cleaning</a>
+            <a href="storms.html">Storm Window Cleaning</a>
+            <a href="hardwater.html">Hard Water Removal</a>
             <a href="pressure.html">Pressure Washing</a>
           </div>
         </div>
@@ -654,6 +656,16 @@
         </div>
         <p class="ba-caption">Full detail · frame, sill &amp; glass restored</p>
       </div>
+      <div class="ba-unit">
+        <div class="ba-slider">
+          <img class="ba-img ba-after" src="ba-sill-after.jpg" alt="Casement window sill and track after Clear View detailing — clean white channel">
+          <div class="ba-before-wrap"><img class="ba-img ba-before" src="ba-sill-before.jpg" alt="Window sill and track before cleaning — channel packed with dirt and debris"></div>
+          <span class="ba-label ba-label-before">Before</span>
+          <span class="ba-label ba-label-after">After</span>
+          <div class="ba-handle"><div class="ba-handle-line"></div><div class="ba-handle-grip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg></div><div class="ba-handle-line"></div></div>
+        </div>
+        <p class="ba-caption">Sill &amp; track detailing &middot; the difference up close</p>
+      </div>
     </div>
   </div>
 </section>
@@ -673,8 +685,9 @@
   .ba-handle-line { flex:1; width:3px; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.3); }
   .ba-handle-grip { width:44px; height:44px; border-radius:50%; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
   .ba-caption { text-align:center; margin-top:1.2rem; font-size:.9rem; color:var(--gray-500); font-weight:500; }
-  .ba-stack { display:flex; flex-direction:column; align-items:center; gap:2.8rem; }
-  .ba-unit { width:100%; max-width:560px; }
+  .ba-stack { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:2rem 2.4rem; }
+  .ba-unit { flex:1 1 360px; max-width:460px; }
+  @media(max-width:520px){ .ba-unit { flex-basis:100%; max-width:560px; } }
 </style>
 
 <script>
@@ -682,8 +695,15 @@
   document.querySelectorAll('.ba-slider').forEach(function(slider){
     const wrap = slider.querySelector('.ba-before-wrap');
     const handle = slider.querySelector('.ba-handle');
+    const beforeImg = slider.querySelector('.ba-before');
     if(!wrap || !handle) return;
     let dragging = false;
+
+    // keep the "before" image exactly as wide as the slider so the two halves line up at any size
+    function sizeBefore(){ if(beforeImg) beforeImg.style.width = slider.getBoundingClientRect().width + 'px'; }
+    sizeBefore();
+    window.addEventListener('resize', sizeBefore);
+    window.addEventListener('load', sizeBefore);
 
     function setPos(clientX){
       const rect = slider.getBoundingClientRect();
@@ -977,6 +997,8 @@
           <a href="screens.html">Screen Cleaning</a>
           <a href="solar.html">Solar Panel Cleaning</a>
           <a href="skylights.html">Skylight Cleaning</a>
+            <a href="storms.html">Storm Window Cleaning</a>
+            <a href="hardwater.html">Hard Water Removal</a>
           <a href="pressure.html">Pressure Washing</a>
         </div>
       </div>
