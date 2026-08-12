@@ -429,7 +429,7 @@
     </div>
 
     <div class="hero-image-wrap fade-up d2">
-      <img src="hero.jpg" alt="Clear View technician cleaning windows with a water-fed pole on a New England home" class="hero-image">
+      <img src="hero.jpg" alt="Clear View technician cleaning the windows of a shingle-style Connecticut shoreline estate with a water-fed pole" class="hero-image">
       <div class="floating-card top">
         <div class="floating-card-icon star">★</div>
         <div>
@@ -459,6 +459,61 @@
     <a href="quote.html" class="btn btn-primary btn-lg" style="margin-top:40px;">Get Instant Quote →</a>
   </div>
 </section>
+
+<!-- ================= RECENT WORK ================= -->
+<section class="section" id="recent-work" style="background:#fff;">
+  <div class="section-inner">
+    <div class="section-header center">
+      <div class="eyebrow">Recent Work</div>
+      <h2 class="section-title">Homes we've made <span class="blue">shine.</span></h2>
+      <p class="section-subtitle">A few recent jobs along the Connecticut shoreline — every pane cleaned by hand and pure water.</p>
+    </div>
+
+    <div class="work-band">
+      <figure class="work-tile wide">
+        <img src="cv-work-estate.jpg" alt="Wide view of a Connecticut shoreline home with wraparound porch and seawall, windows cleaned by Clear View" loading="lazy">
+        <figcaption>Shoreline colonial</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-arch.jpg" alt="Stone archway framing a poolside view of Long Island Sound at a Connecticut shoreline home cleaned by Clear View" loading="lazy">
+        <figcaption>Poolside &amp; waterfront glass</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-turret.jpg" alt="Cedar-shingle Connecticut estate with a turret and hydrangea beds, windows cleaned by Clear View" loading="lazy">
+        <figcaption>Shingle-style estate</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-rocks.jpg" alt="Connecticut home built on the rocks above the water, freshly cleaned windows by Clear View" loading="lazy">
+        <figcaption>Waterfront cottage</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-pool.jpg" alt="Poolside stone archways and balconies of a Connecticut shoreline home cleaned by Clear View" loading="lazy">
+        <figcaption>Pool house &amp; balconies</figcaption>
+      </figure>
+      <figure class="work-tile wide">
+        <img src="cv-ext-rear.jpg" alt="Full rear elevation of a cedar-shingle Connecticut estate with freshly cleaned windows by Clear View" loading="lazy">
+        <figcaption>Full-house exterior</figcaption>
+      </figure>
+    </div>
+
+    <div style="text-align:center;margin-top:36px;">
+      <a href="gallery.html" class="btn btn-primary btn-lg">See the full gallery →</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .work-band { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .work-tile { position:relative; margin:0; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(22,40,74,.12); }
+  .work-tile.wide { grid-column:span 2; }
+  .work-tile img { width:100%; height:340px; object-fit:cover; display:block; transition:transform .5s ease; }
+  .work-tile:hover img { transform:scale(1.05); }
+  .work-tile figcaption { position:absolute; left:0; right:0; bottom:0; padding:28px 16px 14px;
+    background:linear-gradient(to top, rgba(13,24,48,.82), rgba(13,24,48,0));
+    color:#F6F2EA; font-family:'Inter',sans-serif; font-size:.92rem; font-weight:600; letter-spacing:.01em; }
+  @media(max-width:900px){ .work-band { grid-template-columns:repeat(2,1fr); } .work-tile.wide { grid-column:span 2; } .work-tile img { height:240px; } }
+  @media(max-width:560px){ .work-band { grid-template-columns:1fr; } .work-tile.wide { grid-column:span 1; } .work-tile img { height:260px; } }
+</style>
 
 <!-- ================= SERVICES (image tiles) ================= -->
 <section class="section" id="services" style="background: var(--gray-50);">
