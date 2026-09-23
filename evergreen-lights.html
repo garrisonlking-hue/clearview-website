@@ -728,7 +728,7 @@
             <option selected>Christmas Light Installation (Evergreen)</option>
             <option>Exterior Windows</option><option>Interior Windows</option>
             <option>Sill &amp; Track Detailing</option><option>Screen Cleaning</option>
-            <option>Solar Panel Cleaning</option><option>Pressure Washing</option>
+            <option>Solar Panel Cleaning</option><option>Commercial Cleaning</option>
             <option>Multiple Services</option>
           </select>
         </div>
@@ -754,12 +754,7 @@
 </div>
 
 <!-- ================= SCRIPTS ================= -->
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <script>
-  const SUPABASE_URL = 'https://xenmysvxfydcbyrlwlfm.supabase.co';
-  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlbm15c3Z4ZnlkY2J5cmx3bGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTExMjIsImV4cCI6MjA5MzkyNzEyMn0.KkloIssWfOnvMDRZ0h4CsvK5--QsA1iA_luTH5Pg_PI';
-  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
   function openModal() { document.getElementById('quoteModal').classList.add('open'); document.body.style.overflow = 'hidden'; closeMobileMenu(); }
   function closeModal() {
     document.getElementById('quoteModal').classList.remove('open');
@@ -786,18 +781,20 @@
     btn.textContent = 'Sending...';
     status.innerHTML = '';
     try {
-      const { error } = await sb.from('leads').insert([{
-        name, phone,
-        email: email || null,
-        address: address || null,
-        service,
-        preferred_date: date || null,
-        notes: notes || null,
-        source: 'website-evergreen-lights',
-        status: 'new'
-      }]);
-      if (error) {
-        console.error(error);
+      const r = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, phone,
+          email: email || null,
+          address: address || null,
+          service,
+          notes: notes || null,
+          scheduled_start: date ? new Date(date + 'T12:00:00').toISOString() : null,
+          sms_consent: true
+        })
+      });
+      if (!r.ok) {
         status.innerHTML = '<div class="form-status error">Could not save your request. Please call us at (860) 966-3149</div>';
       } else {
         status.innerHTML = '<div class="form-status success">Thank you! We will respond within 24 hours.</div>';

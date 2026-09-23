@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Commercial Window Cleaning in Connecticut | Clear View Window Co.</title>
+  <meta name="description" content="Clear View provides reliable commercial window and glass cleaning for offices, storefronts, restaurants, churches, and multi-tenant properties across Connecticut. Flexible scheduling, fully insured, recurring service plans." />
+  <meta name="theme-color" content="#16284A" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Playfair+Display:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; -webkit-font-smoothing: antialiased; color: #0f172a; background: #FFFFFF; line-height: 1.6; overflow-x: hidden; }
+    img { max-width: 100%; display: block; }
+    button { font-family: inherit; cursor: pointer; border: none; }
+    input, textarea, select { font-family: inherit; }
+    a { color: inherit; text-decoration: none; }
+    ::selection { background: #C9473A; color: white; }
+
+    :root {
+      --navy: #16284A;
+      --navy-dark: #0d1830;
+      --blue: #C9473A;
+      --blue-bright: #C9473A;
+      --blue-light: #E8B4AE;
+      --blue-pale: #F6F2EA;
+      --green: #16a34a;
+      --gray-50: #f8fafc;
+      --gray-100: #f1f5f9;
+      --gray-200: #e2e8f0;
+      --gray-500: #64748b;
+      --gray-600: #475569;
+      --gray-700: #334155;
+      --gray-900: #0f172a;
+    }
+
+    .hero-section { background: #FFFFFF; position: relative; overflow: hidden; }
+    .hero-section::before { content: ''; position: absolute; top: 0; right: 0; width: 60%; height: 100%; background: radial-gradient(circle at top right, rgba(201,71,58,0.06) 0%, transparent 60%); pointer-events: none; }
+
+    .nav { position: relative; z-index: 10; padding: 24px 2.5rem; }
+    @media (max-width: 768px) { .nav { padding: 20px 1.25rem; } }
+    .nav-inner { max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+    .nav-logo { display: flex; align-items: center; gap: 14px; }
+    .nav-logo-badge { width: 56px; height: 56px; object-fit: contain; }
+    .nav-logo-wordmark { display: flex; flex-direction: column; }
+    .nav-logo-text { font-family: 'Playfair Display', Georgia, serif; font-size: 23px; font-weight: 800; color: #16284A; letter-spacing: 0.04em; line-height: 1; text-transform: uppercase; }
+    .nav-logo-sub { display: flex; align-items: center; gap: 7px; font-family: 'Inter', sans-serif; font-size: 11px; color: #C9473A; text-transform: uppercase; letter-spacing: 0.28em; margin-top: 5px; font-weight: 700; }
+    .wm-dash { display: inline-block; width: 14px; height: 1.5px; background: #16284A; opacity: 0.5; }
+    .nav-links { display: flex; gap: 38px; align-items: center; }
+    .nav-links a { font-size: 15px; font-weight: 500; color: #16284A; transition: color 0.2s; }
+    .nav-links a:hover { color: #C9473A; }
+    .nav-phone { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: #16284A; }
+    .nav-phone-icon { width: 28px; height: 28px; border: 1.5px solid rgba(22,40,74,0.4); border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+    @media (max-width: 1024px) { .nav-links { display: none; } }
+    .mobile-btn { display: none; background: transparent; padding: 8px; flex-direction: column; gap: 5px; cursor: pointer; }
+    .mobile-btn span { width: 24px; height: 2px; background: #16284A; }
+    @media (max-width: 1024px) { .mobile-btn { display: flex; } }
+
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 16px 28px; font-size: 15px; font-weight: 600; transition: all 0.2s ease; cursor: pointer; text-decoration: none; border: none; }
+    .btn-primary { background: #F6F2EA; color: #16284A; border: 1.5px solid #16284A; border-radius: 12px; box-shadow: 0 4px 14px rgba(22,40,74,0.12); }
+    .btn-primary:hover { background: #ece4d3; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,40,74,0.18); }
+    .btn-outline-light { background: transparent; color: #16284A; border-radius: 12px; border: 1.5px solid rgba(22,40,74,0.35); }
+    .btn-outline-light:hover { background: rgba(22,40,74,0.06); border-color: rgba(22,40,74,0.6); }
+    .btn-nav { padding: 12px 24px; font-size: 14px; border-radius: 10px; }
+    .btn-lg { padding: 18px 32px; font-size: 16px; }
+
+    .section { padding: 7rem 2.5rem; }
+    @media (max-width: 768px) { .section { padding: 5rem 1.5rem; } }
+    .section-inner { max-width: 1280px; margin: 0 auto; }
+    .eyebrow { display: inline-block; background: var(--blue-pale); color: var(--blue); padding: 8px 16px; border-radius: 30px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 22px; }
+    .section-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(34px, 4.5vw, 52px); font-weight: 700; color: var(--navy); line-height: 1.1; letter-spacing: -0.02em; margin-bottom: 20px; }
+    .section-title .blue { color: var(--blue); font-style: italic; font-weight: 600; }
+
+    footer { background: var(--navy-dark); color: rgba(255,255,255,0.65); padding: 4rem 2.5rem 2rem; }
+    @media (max-width: 768px) { footer { padding: 3rem 1.5rem 2rem; } }
+    .footer-inner { max-width: 1280px; margin: 0 auto; }
+    .footer-grid { display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; gap: 3rem; margin-bottom: 3rem; }
+    @media (max-width: 767px) { .footer-grid { grid-template-columns: 1fr; gap: 2.5rem; } }
+    .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+    .footer-logo-icon { width: 44px; height: 44px; background: white; border-radius: 11px; display: flex; align-items: center; justify-content: center; }
+    .footer-brand-name { font-family: 'Playfair Display', Georgia, serif; font-size: 21px; font-weight: 700; color: white; letter-spacing: -0.01em; }
+    .footer-brand-sub { font-size: 11px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.16em; margin-top: 3px; font-weight: 600; }
+    .footer-desc { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.55); max-width: 340px; }
+    .footer-tagline { font-family: 'Playfair Display', Georgia, serif; font-style: italic; color: var(--blue-light); font-size: 14px; margin-top: 12px; }
+    .footer-heading { font-size: 12px; color: white; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 22px; }
+    .footer-list { display: flex; flex-direction: column; gap: 12px; }
+    .footer-list a, .footer-list span { font-size: 14px; color: rgba(255,255,255,0.6); transition: color 0.2s; }
+    .footer-list a:hover { color: white; }
+    .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; font-size: 13px; color: rgba(255,255,255,0.4); }
+
+    .modal-overlay { position: fixed; inset: 0; background: rgba(10,30,79,0.7); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 200; padding: 16px; }
+    .modal-overlay.open { display: flex; }
+    .modal { background: white; border-radius: 24px; width: 560px; max-width: 100%; max-height: 94vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.4); }
+    .modal-header { padding: 2.5rem 2.5rem 1.5rem; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+    @media (max-width: 600px) { .modal-header { padding: 2rem 1.5rem 1rem; } }
+    .modal-title { font-family: 'Playfair Display', Georgia, serif; font-size: 30px; font-weight: 700; color: var(--navy); line-height: 1.15; letter-spacing: -0.02em; margin-top: 8px; }
+    .modal-sub { font-size: 15px; color: var(--gray-500); margin-top: 10px; }
+    .modal-close { background: var(--gray-100); width: 36px; height: 36px; border-radius: 50%; font-size: 22px; color: var(--gray-500); line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .modal-close:hover { background: var(--gray-200); color: var(--navy); }
+    .modal-body { padding: 1.75rem 2.5rem 2.5rem; }
+    @media (max-width: 600px) { .modal-body { padding: 1.5rem; } }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .form-field { display: flex; flex-direction: column; }
+    .form-field.full { grid-column: 1 / -1; }
+    .form-label { font-size: 12px; color: var(--gray-500); font-weight: 700; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.06em; }
+    .form-input, .form-select, .form-textarea { background: var(--gray-50); border: 1.5px solid var(--gray-200); border-radius: 12px; padding: 13px 16px; color: var(--gray-900); font-size: 15px; width: 100%; outline: none; transition: all 0.2s; }
+    .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--blue); background: white; }
+    .form-textarea { min-height: 88px; resize: vertical; font-family: inherit; }
+    .form-submit { width: 100%; margin-top: 24px; background: var(--blue-bright); color: white; border-radius: 12px; padding: 16px; font-size: 16px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 14px rgba(201,71,58,0.4); transition: all 0.2s; }
+    .form-submit:hover { background: #a83a2f; transform: translateY(-1px); box-shadow: 0 8px 24px rgba(201,71,58,0.5); }
+    .form-submit:disabled { background: var(--gray-500); cursor: wait; transform: none; }
+    .form-call-link { margin-top: 18px; font-size: 13px; color: var(--gray-500); text-align: center; }
+    .form-call-link a { color: var(--blue); font-weight: 700; }
+    .form-status { margin-top: 20px; padding: 14px 18px; border-radius: 12px; font-size: 14px; font-weight: 600; }
+    .form-status.success { background: #f0fdf4; color: var(--green); border: 1px solid rgba(22,163,74,0.3); }
+    .form-status.error { background: #fef2f2; color: #dc2626; border: 1px solid rgba(220,38,38,0.3); }
+
+    .mobile-sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: white; padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.12); z-index: 999; gap: 10px; align-items: center; border-top: 1px solid var(--gray-200); }
+    .sticky-cta-btn { flex: 1; background: var(--blue-bright); color: white; border: none; padding: 14px 18px; border-radius: 12px; font-family: inherit; font-size: 15px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; letter-spacing: -0.01em; box-shadow: 0 4px 14px rgba(201,71,58,0.35); }
+    .sticky-cta-call { background: var(--navy); color: white; width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; text-decoration: none; }
+    @media (max-width: 768px) { .mobile-sticky-cta { display: flex; } body { padding-bottom: 80px; } }
+
+    /* ===== NAV DROPDOWN ===== */
+    .nav-dd { position:relative; }
+    .nav-dd > a { cursor:pointer; display:inline-flex; align-items:center; gap:.3rem; }
+    .nav-dd > a::after { content:'▾'; font-size:.7em; opacity:.7; }
+    .nav-dd-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%) translateY(8px); background:#fff; border-radius:14px; box-shadow:0 20px 50px rgba(22,40,74,.18); padding:.6rem; min-width:240px; opacity:0; visibility:hidden; transition:all .2s; z-index:200; }
+    .nav-dd:hover .nav-dd-menu { opacity:1; visibility:visible; transform:translateX(-50%) translateY(4px); }
+    .nav-dd-menu a { display:block; padding:.7rem .9rem; border-radius:9px; color:var(--navy); font-weight:600; font-size:.92rem; white-space:nowrap; }
+    .nav-dd-menu a:hover { background:var(--gray-50); }
+
+    /* ===== SERVICE PAGE ===== */
+    .svc-hero { background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #16284A 100%); color:#fff; padding: 8rem 1.5rem 3.5rem; text-align:center; position:relative; overflow:hidden; }
+    .svc-hero::after { content:''; position:absolute; top:-30%; right:-10%; width:50%; height:160%; border-radius:50%; background:rgba(201,71,58,0.2); filter:blur(80px); }
+    .svc-hero .eyebrow { color: var(--blue); background: rgba(246,242,234,0.1); justify-content:center; position:relative; z-index:1; }
+    .svc-hero h1 { font-family:'Playfair Display',Georgia,serif; font-size:clamp(2.2rem,6vw,3.6rem); margin:.4rem 0 .8rem; position:relative; z-index:1; }
+    .svc-hero p { opacity:.88; max-width:620px; margin:0 auto; font-size:1.1rem; position:relative; z-index:1; }
+
+    .svc-layout { display:grid; grid-template-columns: 1fr 300px; gap:3rem; align-items:start; }
+    @media(max-width:900px){ .svc-layout{ grid-template-columns:1fr; } }
+
+    .svc-body h2 { font-family:'Playfair Display',Georgia,serif; color:var(--navy); font-size:1.9rem; margin:0 0 1rem; }
+    .svc-body p { color:var(--gray-500); line-height:1.8; margin-bottom:1.1rem; font-size:1.02rem; }
+    .svc-incl { list-style:none; padding:0; margin:1.5rem 0 2.5rem; display:grid; gap:.8rem; }
+    .svc-incl li { display:flex; gap:.7rem; align-items:flex-start; color:var(--navy); font-weight:500; }
+    .svc-incl li::before { content:'✓'; color:var(--red,var(--blue)); font-weight:800; }
+
+    /* property-type chips */
+    .prop-chips { display:flex; flex-wrap:wrap; gap:.6rem; margin:1.5rem 0 2.5rem; }
+    .prop-chip { background:var(--gray-50); border:1.5px solid var(--gray-200); color:var(--navy); font-weight:600; font-size:.88rem; padding:.6rem 1.1rem; border-radius:30px; }
+
+    /* FAQ accordion */
+    .svc-faq { margin-top:1rem; }
+    .faq-item { border-bottom:1px solid rgba(22,40,74,.1); }
+    .faq-q { width:100%; background:none; border:none; text-align:left; cursor:pointer; padding:1.2rem 2.5rem 1.2rem 2.8rem; font-size:1.02rem; font-weight:600; color:var(--navy); position:relative; font-family:inherit; }
+    .faq-num { position:absolute; left:0; top:1.2rem; color:var(--blue); font-weight:700; font-size:.85rem; }
+    .faq-q::after { content:'+'; position:absolute; right:.5rem; top:1rem; font-size:1.4rem; color:var(--blue); transition:transform .2s; }
+    .faq-item.open .faq-q::after { content:'−'; }
+    .faq-a { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+    .faq-a-inner { padding:0 2.8rem 1.3rem; color:var(--gray-500); line-height:1.75; font-size:.97rem; }
+    .faq-item.open .faq-a { max-height:400px; }
+
+    /* Sidebar */
+    .svc-side { position:sticky; top:90px; }
+    .svc-side h3 { font-size:.8rem; text-transform:uppercase; letter-spacing:.12em; color:var(--gray-500); margin:0 0 1rem; }
+    .svc-side-links { display:flex; flex-direction:column; gap:.4rem; margin-bottom:2rem; }
+    .svc-side-links a { display:flex; align-items:center; justify-content:space-between; padding:.85rem 1.1rem; border-radius:12px; background:var(--gray-50); color:var(--navy); text-decoration:none; font-weight:600; font-size:.92rem; transition:all .2s; border:1px solid transparent; }
+    .svc-side-links a:hover { background:#fff; border-color:rgba(22,40,74,.12); transform:translateX(3px); }
+    .svc-side-links a.active { background:var(--navy); color:#fff; }
+    .svc-side-links a::after { content:'→'; opacity:.5; }
+    .svc-side-cta { background:var(--navy); color:#fff; border-radius:16px; padding:1.5rem; text-align:center; }
+    .svc-side-cta p { font-size:.95rem; opacity:.9; margin:0 0 1rem; }
+
+    .svc-cta { background:var(--navy); color:#fff; text-align:center; padding:4.5rem 1.5rem; }
+    .svc-cta h2 { font-family:'Playfair Display',Georgia,serif; font-size:clamp(1.8rem,4vw,2.6rem); margin-bottom:1rem; }
+    .svc-cta p { opacity:.85; margin-bottom:1.6rem; }
+
+  </style>
+</head>
+<body>
+<nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">
+        <img src="logo.png" alt="Clear View Window Co. badge logo" class="nav-logo-badge">
+        <div class="nav-logo-wordmark">
+          <div class="nav-logo-text">CLEAR&nbsp;VIEW</div>
+          <div class="nav-logo-sub"><span class="wm-dash"></span>WINDOW&nbsp;CO.<span class="wm-dash"></span></div>
+        </div>
+      </a>
+      <div class="nav-links">
+        <a href="index.html#services">Services</a>
+        <a href="quote.html">Instant Quote</a>
+        <a href="index.html#reviews">Reviews</a>
+        <a href="about.html">About Us</a>
+        <a href="index.html#service-area">Service Area</a>
+        <a href="tel:+18609663149" class="nav-phone">
+          <span class="nav-phone-icon">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="#16284A"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+          </span>
+          (860) 966-3149
+        </a>
+        <button class="btn btn-primary btn-nav" onclick="openModal()">Get Free Quote</button>
+      </div>
+      <button class="mobile-btn" onclick="openModal()"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+<header class="svc-hero">
+  <div class="eyebrow">Commercial Cleaning</div>
+  <h1>Commercial Window &amp; Glass Cleaning</h1>
+  <p>Reliable, insured exterior cleaning for offices, storefronts, restaurants, and multi-tenant properties across Connecticut — scheduled around your business, not the other way around.</p>
+</header>
+
+<section class="section" style="background:#fff;">
+  <div class="section-inner">
+    <div class="svc-layout">
+      <div class="svc-body">
+        <h2>About this service</h2>
+        <p>A clean storefront or office is the first impression your customers get before they ever walk through the door. Clear View works with local businesses and property managers to keep exterior glass — and interior glass on request — looking sharp, without disrupting your day.</p>
+        <p>We schedule around your operating hours, not ours. Early mornings, evenings, or weekends — whatever keeps your staff and customers from ever noticing we were there, except for the windows.</p>
+
+        <h2 style="margin-top:2.5rem;">Property types we serve</h2>
+        <div class="prop-chips">
+          <span class="prop-chip">Offices</span>
+          <span class="prop-chip">Storefronts &amp; Retail</span>
+          <span class="prop-chip">Restaurants</span>
+          <span class="prop-chip">Medical &amp; Dental Offices</span>
+          <span class="prop-chip">Churches</span>
+          <span class="prop-chip">Multi-Tenant Buildings</span>
+          <span class="prop-chip">Property Management</span>
+        </div>
+
+        <ul class="svc-incl">
+          <li>Flexible scheduling — early morning, evening, or weekend service available</li>
+          <li>Exterior storefront and office glass, frames, and sills</li>
+          <li>Interior glass cleaning available on request</li>
+          <li>Recurring service plans — weekly, biweekly, or monthly</li>
+          <li>Certificate of insurance provided for property managers on request</li>
+          <li>One point of contact for multi-location accounts</li>
+        </ul>
+
+        <h2>Frequently asked questions</h2>
+        <p>Common questions from businesses and property managers.</p>
+        <div class="svc-faq">
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')"><span class="faq-num">01</span>What types of commercial properties do you service?</button>
+        <div class="faq-a"><div class="faq-a-inner">Offices, storefronts, restaurants, medical and dental offices, churches, and small multi-tenant buildings across our Connecticut service area. If you're not sure your property qualifies, just call — we're happy to take a look.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')"><span class="faq-num">02</span>Can you work around our business hours?</button>
+        <div class="faq-a"><div class="faq-a-inner">Yes. We regularly schedule early-morning, evening, and weekend visits so cleaning never interrupts customers, staff, or patients.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')"><span class="faq-num">03</span>Do you offer recurring service contracts?</button>
+        <div class="faq-a"><div class="faq-a-inner">Yes — weekly, biweekly, or monthly plans are available, billed on a schedule that works for your business. Just ask about recurring service when you request a quote.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')"><span class="faq-num">04</span>Are you insured for commercial work?</button>
+        <div class="faq-a"><div class="faq-a-inner">Yes. Clear View carries a $1M general liability policy, and we're happy to provide a certificate of insurance to your property manager or landlord on request.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')"><span class="faq-num">05</span>How do I get a quote for my property?</button>
+        <div class="faq-a"><div class="faq-a-inner">Call (860) 966-3149 or request a quote through our site. For larger or multi-tenant properties, we'll typically do a brief on-site walkthrough to give you an accurate price.</div></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q" onclick="this.parentElement.classList.toggle('open')"><span class="faq-num">06</span>Do you clean interior glass too?</button>
+        <div class="faq-a"><div class="faq-a-inner">Yes, interior storefront and office glass can be added to any commercial service — just let us know when you request your quote.</div></div>
+      </div>
+        </div>
+      </div>
+
+      <aside class="svc-side">
+        <h3>Our Services</h3>
+        <div class="svc-side-links">
+      <a href="commercial.html" class="active">Commercial Cleaning</a>
+      <a href="exterior.html" class="">Exterior Window Cleaning</a>
+      <a href="interior.html" class="">Interior Window Cleaning</a>
+      <a href="tracks.html" class="">Sill &amp; Track Detailing</a>
+      <a href="screens.html" class="">Screen Cleaning</a>
+      <a href="solar.html" class="">Solar Panel Cleaning</a>
+      <a href="evergreen-lights.html" class="">Christmas Lights</a>
+        </div>
+        <div class="svc-side-cta">
+          <p>Ready for a quote on your property?</p>
+          <button onclick="openModal()" class="btn btn-primary" style="width:100%;">Get a Free Quote</button>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="svc-cta">
+  <h2>Get your commercial cleaning quote</h2>
+  <p>Fast turnaround, flexible scheduling, and a certificate of insurance on request.</p>
+  <button onclick="openModal()" class="btn btn-primary btn-lg">Get a Free Quote →</button>
+</section>
+
+<!-- ================= FOOTER ================= -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">
+          <div class="footer-logo-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="#C9473A"><path d="M3 13h1v7c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2v-7h1c.55 0 1-.45 1-1s-.45-1-1-1L12 2 2 11c-.55 0-1 .45-1 1s.45 1 1 1z"/></svg></div>
+          <div><div class="footer-brand-name">Clear View</div><div class="footer-brand-sub">Window Cleaning · CT</div></div>
+        </div>
+        <p class="footer-desc">Reliable residential and commercial window cleaning across Connecticut. Locally owned, $1M general liability insured through Hiscox.</p>
+        <p class="footer-tagline">Cleaner windows. Brighter homes. A better view.</p>
+      </div>
+      <div>
+        <div class="footer-heading">Services</div>
+        <div class="footer-list">
+          <a href="commercial.html">Commercial Cleaning</a>
+          <a href="exterior.html">Exterior Windows</a>
+          <a href="interior.html">Interior Windows</a>
+          <a href="tracks.html">Sill &amp; Track Detailing</a>
+          <a href="screens.html">Screen Cleaning</a>
+          <a href="solar.html">Solar Panel Cleaning</a>
+          <a href="evergreen-lights.html">Christmas Lights</a>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">Service Area</div>
+        <div class="footer-list">
+          <span>Columbia, CT</span><span>Coventry, CT</span><span>Mansfield, CT</span><span>Andover, CT</span>
+          <span>Tolland, CT</span><span>Storrs, CT</span><span>Manchester, CT</span><span>Glastonbury, CT</span>
+        </div>
+      </div>
+      <div>
+        <div class="footer-heading">Contact</div>
+        <div class="footer-list">
+          <a href="tel:+18609663149" style="font-size: 17px; color: white; font-weight: 700;">(860) 966-3149</a>
+          <a href="mailto:clearviewwindowsct@gmail.com">clearviewwindowsct@gmail.com</a>
+          <a href="https://www.instagram.com/clearviewwindowsct/" target="_blank">Instagram</a>
+          <a href="https://www.facebook.com/clearviewwindowsct" target="_blank">Facebook</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div>© 2026 Clear View Window Cleaning, LLC. All rights reserved.</div>
+      <div>$1M Insured · Hiscox · Connecticut</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= QUOTE MODAL ================= -->
+<div class="modal-overlay" id="quoteModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="eyebrow">Free Quote</div>
+        <h3 class="modal-title">Tell us about your property.</h3>
+        <p class="modal-sub">We'll respond within 24 hours with a detailed quote. Fully insured · $1M coverage · Free estimates.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Name *</label><input class="form-input" id="f_name" type="text" placeholder="Jane Smith"></div>
+        <div class="form-field"><label class="form-label">Phone *</label><input class="form-input" id="f_phone" type="tel" placeholder="860-000-0000"></div>
+        <div class="form-field full"><label class="form-label">Email</label><input class="form-input" id="f_email" type="email" placeholder="you@email.com"></div>
+        <div class="form-field full"><label class="form-label">Property Address</label><input class="form-input" id="f_address" type="text" placeholder="123 Main St, Columbia CT"></div>
+        <div class="form-field full"><label class="form-label">Service</label>
+          <select class="form-select" id="f_service">
+            <option selected>Commercial Cleaning</option>
+            <option>Exterior Windows</option><option>Interior Windows</option>
+            <option>Sill &amp; Track Detailing</option><option>Screen Cleaning</option>
+            <option>Solar Panel Cleaning</option>
+            <option>Christmas Light Installation (Evergreen)</option>
+            <option>Multiple Services</option>
+          </select>
+        </div>
+        <div class="form-field full"><label class="form-label">Preferred Date</label><input class="form-input" id="f_date" type="date"></div>
+        <div class="form-field full"><label class="form-label">Notes</label><textarea class="form-textarea" id="f_notes" placeholder="Property type, approximate size, preferred scheduling window, etc."></textarea></div>
+      </div>
+      <div id="formStatus"></div>
+      <button class="form-submit" id="submitBtn" onclick="submitForm()">Submit Request</button>
+      <div class="form-call-link">Or call directly: <a href="tel:+18609663149">(860) 966-3149</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= STICKY MOBILE CTA ================= -->
+<div class="mobile-sticky-cta" id="stickyCta">
+  <button onclick="openModal()" class="sticky-cta-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.06L2 22l5.06-1.38C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm3.5 14.5L12 15l-3.5 1.5L9 13l-3-2.5h4l1.5-3.5L13 10.5h4l-3 2.5.5 3.5z"/></svg>
+    Get Free Quote
+  </button>
+  <a href="tel:+18609663149" class="sticky-cta-call" aria-label="Call us">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+  </a>
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script>
+  function openModal() { document.getElementById('quoteModal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeModal() {
+    document.getElementById('quoteModal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('formStatus').innerHTML = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  async function submitForm() {
+    const name = document.getElementById('f_name').value.trim();
+    const phone = document.getElementById('f_phone').value.trim();
+    const email = document.getElementById('f_email').value.trim();
+    const address = document.getElementById('f_address').value.trim();
+    const service = document.getElementById('f_service').value;
+    const date = document.getElementById('f_date').value;
+    const notes = document.getElementById('f_notes').value.trim();
+    const status = document.getElementById('formStatus');
+    const btn = document.getElementById('submitBtn');
+    if (!name || !phone) {
+      status.innerHTML = '<div class="form-status error">Please enter your name and phone number.</div>';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.innerHTML = '';
+    try {
+      const r = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name, phone,
+          email: email || null,
+          address: address || null,
+          service,
+          notes: notes || null,
+          scheduled_start: date ? new Date(date + 'T12:00:00').toISOString() : null,
+          sms_consent: true
+        })
+      });
+      if (!r.ok) {
+        status.innerHTML = '<div class="form-status error">Could not save your request. Please call us at (860) 966-3149</div>';
+      } else {
+        status.innerHTML = '<div class="form-status success">Thank you! We will respond within 24 hours.</div>';
+        setTimeout(() => {
+          closeModal();
+          ['f_name','f_phone','f_email','f_address','f_date','f_notes'].forEach(id => document.getElementById(id).value = '');
+        }, 2800);
+      }
+    } catch (e) {
+      console.error(e);
+      status.innerHTML = '<div class="form-status error">Something went wrong. Please call us at (860) 966-3149</div>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Request';
+    }
+  }
+</script>
+
+<script>
+  (function() {
+    const sticky = document.getElementById('stickyCta');
+    const modal = document.getElementById('quoteModal');
+    if (!sticky || !modal) return;
+    const obs = new MutationObserver(() => {
+      sticky.style.display = modal.classList.contains('open') ? 'none' : '';
+    });
+    obs.observe(modal, { attributes: true, attributeFilter: ['class'] });
+  })();
+</script>
+
+</body>
+</html>

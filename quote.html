@@ -9,7 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,800;1,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="icon" href="icon-192.png">
-<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
   :root{
     --navy:#16284A; --red:#C9473A; --blue:#C8362F; --blue-pale:#FBEEEC;
@@ -31,14 +30,29 @@
   .qb-total b{color:var(--red)}
 
   /* progress */
-  .qb-progress{display:flex;gap:6px;max-width:1100px;margin:1.25rem auto 0;padding:0 1.25rem}
+  .qb-progress{display:flex;gap:6px;max-width:1180px;margin:1.25rem auto 0;padding:0 1.25rem}
   .qb-progress .seg{height:5px;border-radius:5px;background:rgba(22,40,74,.10);flex:1;transition:background .3s}
   .qb-progress .seg.done{background:var(--red)}
   .qb-progress .seg.cur{background:var(--navy)}
 
+  /* layout: card + sidebar */
+  .qb-layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:1.5rem;max-width:1180px;margin:1.5rem auto 0;padding:0 1.25rem;align-items:start}
+  @media(max-width:920px){ .qb-layout{grid-template-columns:1fr} }
+
   /* card */
-  .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;margin:1.5rem auto 0;max-width:1100px}
+  .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;min-width:0}
   @media(max-width:600px){ .qb-card{padding:1.5rem} }
+
+  /* sidebar — Property Details */
+  .qb-side{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:1.6rem 1.5rem;position:sticky;top:90px}
+  @media(max-width:920px){ .qb-side{position:static;order:-1} }
+  .qb-side h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.1rem}
+  .qb-side-row{padding:.85rem 0;border-bottom:1px solid rgba(22,40,74,.08)}
+  .qb-side-row:last-child{border-bottom:none}
+  .qb-side-k{font-size:.7rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gray-500)}
+  .qb-side-v{font-size:.98rem;font-weight:600;margin-top:.35rem;color:var(--navy)}
+  .qb-side-v.empty{color:rgba(22,40,74,.3);font-weight:500}
+  .qb-side-v.set{color:var(--red)}
   .qb-step-eyebrow{font-size:.72rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--red)}
   .qb-h{font-family:'Playfair Display',serif;font-size:clamp(1.7rem,4vw,2.5rem);font-weight:700;margin:.4rem 0 .3rem;line-height:1.1}
   .qb-sub{color:var(--gray-500);margin-bottom:2rem;font-size:1rem}
@@ -63,23 +77,73 @@
   .fld{display:flex;flex-direction:column;gap:.4rem;margin-bottom:1.1rem}
   .fld label{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gray-500)}
   .fld label .req{color:var(--red)}
+  .consent-row{display:flex;gap:.6rem;align-items:flex-start;font-size:.85rem;color:var(--gray-500);margin-top:.2rem;cursor:pointer;text-align:left}
+  .consent-row input{margin-top:.2rem;accent-color:var(--red);width:16px;height:16px;flex-shrink:0}
+  .consent-row .req{color:var(--red)}
   .fld input,.fld textarea{font-family:inherit;font-size:1rem;padding:.85rem 1rem;border:1.5px solid rgba(22,40,74,.15);border-radius:12px;background:#fff;color:var(--navy);transition:border .15s}
   .fld input:focus,.fld textarea:focus{outline:none;border-color:var(--navy)}
   .fld textarea{min-height:90px;resize:vertical}
 
   /* plans */
-  .plan-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media(max-width:900px){ .plan-grid{grid-template-columns:repeat(2,1fr)} }
   @media(max-width:760px){ .plan-grid{grid-template-columns:1fr} }
-  .plan{border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.6rem 1.3rem;cursor:pointer;transition:all .18s;background:#fff;position:relative;text-align:center}
+  .plan{border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.4rem 1.1rem;cursor:pointer;transition:all .18s;background:#fff;position:relative;text-align:center;display:flex;flex-direction:column}
   .plan:hover{transform:translateY(-3px)}
   .plan.sel{border-color:var(--red);background:var(--blue-pale)}
   .plan .badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;font-size:.65rem;font-weight:700;letter-spacing:.08em;padding:.3rem .8rem;border-radius:20px;text-transform:uppercase}
   .plan h3{font-family:'Playfair Display',serif;font-size:1.4rem;margin-bottom:.2rem}
-  .plan .freq{font-size:.85rem;color:var(--gray-500);margin-bottom:1rem}
+  .plan .freq{font-size:.85rem;color:var(--gray-500);margin-bottom:1rem;min-height:2.7em}
   .plan .price{font-size:2rem;font-weight:800;color:var(--navy)}
   .plan .price s{font-size:1.1rem;color:var(--gray-500);font-weight:600;margin-right:.3rem}
   .plan .per{font-size:.8rem;color:var(--gray-500)}
   .plan .save{margin-top:.8rem;font-size:.85rem;font-weight:700;color:#1a8a4f}
+  .plan-perks{list-style:none;padding:0;margin:1rem 0 .8rem;text-align:left;flex:1}
+  .plan-perks li{display:flex;align-items:flex-start;gap:.5rem;font-size:.85rem;line-height:1.35;padding:.35rem 0;color:var(--navy)}
+  .plan-perks li.no{color:#aab1bd}
+  .plan-perks .pi{flex-shrink:0;font-weight:800;font-size:.8rem}
+  .plan-perks li.yes .pi{color:#1a8a4f}
+  .plan-perks li.no .pi{color:#d99}
+  .plan-annual{margin-top:.6rem;padding:.5rem;background:#fdf0ee;color:#993c1d;border-radius:10px;font-size:.85rem;font-weight:700}
+  .plan-annual.none{background:transparent;color:var(--gray-500);font-weight:600}
+  .plan-choose{margin-top:1rem;border:2px solid var(--navy);color:var(--navy);border-radius:999px;padding:.55rem;font-weight:700;font-size:.85rem}
+  .plan-choose.sel{background:var(--red);border-color:var(--red);color:#fff}
+  .plan-nudge{background:#fff;border:2px solid rgba(22,40,74,.12);border-radius:18px;padding:1.1rem 1.3rem;margin-top:1.2rem;max-width:480px;margin-left:auto}
+  .plan-nudge-title{font-weight:800;color:var(--navy);font-size:1rem}
+  .plan-nudge p{font-size:.85rem;color:var(--gray-500);margin:.3rem 0 .8rem}
+  .plan-nudge-btns{display:flex;gap:.6rem}
+  .plan-nudge-btns button{flex:1;border-radius:999px;padding:.6rem;font-weight:700;font-size:.85rem;cursor:pointer;font-family:inherit}
+  .btn-keep{background:#fff;border:2px solid rgba(22,40,74,.25);color:var(--gray-500)}
+  .btn-upgrade{background:var(--navy);border:2px solid var(--navy);color:#fff}
+  /* add-ons */
+  .addon-grid{display:flex;flex-direction:column;gap:12px}
+  .addon{display:flex;align-items:center;gap:14px;border:2px solid rgba(22,40,74,.12);border-radius:14px;padding:1.1rem 1.3rem;cursor:pointer;transition:all .15s;background:#fff}
+  .addon:hover{border-color:rgba(201,71,58,.4)}
+  .addon.sel{border-color:var(--red);background:var(--blue-pale)}
+  .addon-check{width:24px;height:24px;border-radius:6px;border:2px solid rgba(22,40,74,.25);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0}
+  .addon.sel .addon-check{background:var(--red);border-color:var(--red)}
+  .addon-body{flex:1}
+  .addon-t{font-weight:700;color:var(--navy)}
+  .addon-d{font-size:.82rem;color:var(--gray-500)}
+  .addon-price{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:800;color:var(--navy)}
+  /* bundle */
+  .bundle{border:2px solid #1a8a4f;border-radius:18px;padding:1.5rem 1.6rem;background:linear-gradient(180deg,#f3fbf6,#fff);margin-bottom:1.4rem}
+  .bundle-top{display:flex;justify-content:space-between;align-items:flex-start;gap:1rem}
+  .bundle-name{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:800;color:var(--navy)}
+  .bundle-sub{font-size:.9rem;color:var(--gray-500);margin-bottom:.7rem}
+  .bundle-list{list-style:none;padding:0;margin:0}
+  .bundle-list li{display:flex;align-items:center;gap:.5rem;font-size:.95rem;color:var(--navy);padding:.2rem 0}
+  .bundle-list .pi{color:#1a8a4f;font-weight:800}
+  .bundle-price-wrap{text-align:right;flex-shrink:0}
+  .bundle-price{font-family:'Playfair Display',serif;font-size:1.8rem;font-weight:800;color:var(--navy)}
+  .bundle-price s{font-size:1.1rem;color:var(--gray-500);font-weight:600;margin-right:.3rem}
+  .bundle-save{display:inline-block;margin-top:.3rem;font-size:.85rem;font-weight:700;color:#1a8a4f;background:#e3f6ec;padding:.2rem .6rem;border-radius:20px}
+  .bundle-actions{display:flex;gap:12px;margin-top:1.2rem;padding-top:1.2rem;border-top:1px solid rgba(26,138,79,.2)}
+  .bundle-btn{border:none;border-radius:30px;padding:.7rem 1.4rem;font-size:.95rem;font-weight:700;cursor:pointer;font-family:inherit}
+  .bundle-btn.add{background:#1a8a4f;color:#fff;width:100%}
+  .bundle-btn.added{background:#eef1f4;color:var(--gray-500);cursor:default}
+  .bundle-btn.remove{background:#fff;color:var(--red);border:1.5px solid rgba(201,71,58,.3)}
+  .addon-or{font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:800;color:var(--navy);margin:0 0 .8rem}
 
   /* calendar */
   .cal{border:1.5px solid rgba(22,40,74,.12);border-radius:16px;overflow:hidden;max-width:520px;margin:0 auto}
@@ -109,10 +173,10 @@
   .rev-total .amt{font-family:'Playfair Display',serif;font-size:1.9rem;font-weight:800;color:var(--red)}
 
   /* footer nav */
-  .qb-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;max-width:1100px;margin:1.5rem auto 4rem;padding:0 1.25rem}
+  .qb-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;max-width:1180px;margin:1.5rem auto 4rem;padding:0 1.25rem}
   .btn{font-family:inherit;font-weight:700;font-size:1rem;border-radius:40px;padding:.9rem 1.8rem;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:.5rem}
-  .btn-back{background:#fff;color:var(--navy);box-shadow:var(--shadow)}
-  .btn-back:hover{transform:translateY(-1px)}
+  .btn-back{background:#fff;color:var(--navy);box-shadow:var(--shadow);width:52px;height:52px;border-radius:50%;padding:0;justify-content:center;font-size:1.3rem}
+  .btn-back:hover{transform:translateY(-1px);background:var(--blue-pale)}
   .btn-next{background:var(--red);color:#fff;box-shadow:0 6px 20px rgba(201,71,58,.35)}
   .btn-next:hover{background:#b23a2e;transform:translateY(-1px)}
   .btn-next:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
@@ -135,97 +199,186 @@
 
 <div class="qb-progress" id="progress"></div>
 
-<div class="qb-card" id="card"><!-- steps injected --></div>
+<div class="qb-layout">
+  <div class="qb-card" id="card"><!-- steps injected --></div>
+  <aside class="qb-side" id="sidebar">
+    <h2>Property Details</h2>
+    <div id="sideRows"></div>
+  </aside>
+</div>
 
 <div class="qb-nav">
-  <button class="btn btn-back" id="backBtn" onclick="prev()">← Back</button>
+  <button class="btn btn-back" id="backBtn" onclick="prev()" aria-label="Back">←</button>
   <button class="btn btn-next" id="nextBtn" onclick="next()">Continue →</button>
 </div>
 
 <script>
   // ---------- CONFIG: real Clear View pricing ----------
-  const SUPABASE_URL='https://xenmysvxfydcbyrlwlfm.supabase.co';
-  const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlbm15c3Z4ZnlkY2J5cmx3bGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTExMjIsImV4cCI6MjA5MzkyNzEyMn0.KkloIssWfOnvMDRZ0h4CsvK5--QsA1iA_luTH5Pg_PI';
-  let _sb=null; function getSB(){ if(!_sb && window.supabase){ _sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY); } return _sb; }
-
+  // Pricing is per exterior pane of glass. Each size bracket maps to an
+  // estimated pane count (confirmed exactly at the in-person walkthrough).
+  // Pricing is per exterior pane of glass; the per-pane RATE scales with how
+  // dirty the windows are ($6 recently cleaned → $9 never cleaned).
+  const MIN_JOB = 150;         // minimum job price floor
+  // Brackets mirror the price book: each tier = a pane count (the value v),
+  // mapped to a sq ft range. Pricing = panes × per-pane rate (set by dirtiness).
   const SIZE = [
-    {v:195,label:'Under 1,000 sq ft'},
-    {v:255,label:'1,000 – 1,500 sq ft'},
-    {v:330,label:'1,500 – 2,000 sq ft'},
-    {v:415,label:'2,000 – 2,500 sq ft'},
-    {v:505,label:'2,500 – 3,000 sq ft'},
-    {v:600,label:'3,000 – 3,500 sq ft'},
-    {v:725,label:'3,500 – 4,500 sq ft'},
-    {v:-1,label:'4,500+ sq ft (custom quote)'},
+    {v:28, label:'Up to 2,499 sq ft'},
+    {v:43, label:'2,500 – 3,499 sq ft'},
+    {v:60, label:'3,500 – 4,999 sq ft'},
+    {v:78, label:'5,000 – 6,499 sq ft'},
+    {v:96, label:'6,500 – 7,999 sq ft'},
+    {v:114,label:'8,000 – 8,999 sq ft'},
+    {v:132,label:'9,000 – 9,999 sq ft'},
+    {v:-1, label:'10,000+ sq ft (custom quote)'},
   ];
-  const DIRT = [{v:1.0,t:'Light',d:'Cleaned recently'},{v:1.15,t:'Moderate',d:'Typical buildup'},{v:1.35,t:'Heavy',d:'Hasn\'t been done in a while'},{v:1.60,t:'Severe',d:'New construction / years'}];
-  const STORIES = [{v:1.0,t:'1 Story'},{v:1.15,t:'2 Stories'},{v:1.30,t:'3+ Stories'}];
-  // services: factor applies to base; add-ons are per-unit but here simplified as included service scope
+  // Last cleaned sets the per-pane EXTERIOR rate (dirtier = higher rate).
+  const LASTCLEANED = [
+    {v:7.00,t:'Less than a year',d:'Recently cleaned'},
+    {v:8.00,t:'1–2 years',d:'Moderate buildup'},
+    {v:9.00,t:'3–5 years',d:'Significant buildup'},
+    {v:10.00,t:'Never',d:'First professional cleaning'},
+  ];
+  // Storm windows — a second layer of glass over the primary window.
+  // Cleaning inside & out means double the surfaces, so it doubles the base.
+  const STORM = [
+    {v:0,   t:'No',d:'No storm windows'},
+    {v:0.25,t:'Yes, less than 25%',d:'A few windows have storms'},
+    {v:0.50,t:'Yes, about 50%',d:'Half the windows have storms'},
+    {v:1.0, t:'Yes, all of them',d:'Every window has a storm window'},
+  ];
+  // French panes — small % upcharge (grids take a little longer)
+  const FRENCH = [
+    {v:0,   t:'No',d:'No french pane windows'},
+    {v:0.05,t:'Yes, less than 25%',d:'A few french pane windows'},
+    {v:0.08,t:'Yes, about 50%',d:'Half of windows are french pane'},
+    {v:0.12,t:'Yes, all of them',d:'All windows are french pane style'},
+  ];
+  // Stories barely matter — only a small bump at 3+
+  const STORIES = [{v:1.0,t:'1 Story'},{v:1.0,t:'2 Stories'},{v:1.10,t:'3+ Stories'}];
+  // Interior is priced at 3/4 of exterior. Tracks are INCLUDED FREE (no toggle).
+  // Screens = $4/screen (count ≈ panes). Solar = $10/panel.
+  const INT_FACTOR = 0.75;     // interior = 0.75 × exterior
+  const SCREEN_RATE = 4;       // $ per screen
+  const SOLAR_RATE = 10;       // $ per solar panel
   const SERVICES = [
-    {id:'exterior',t:'Exterior Windows',base:true,factor:0.70,d:'Outside glass, pure-water'},
-    {id:'interior',t:'Interior Windows',base:true,factor:0.55,d:'Inside glass, hand-cleaned'},
-    {id:'tracks',t:'Sill & Track Detailing',add:60,d:'Vacuumed & scrubbed'},
-    {id:'screens',t:'Screen Cleaning',add:40,d:'Removed & washed'},
-    {id:'solar',t:'Solar Panel Cleaning',add:90,d:'Pure-water, no chemicals'},
-    {id:'pressure',t:'Pressure Washing',add:150,d:'Siding, walks, patios'},
+    {id:'exterior',t:'Exterior Windows',base:true,d:'Outside glass, pure-water'},
+    {id:'interior',t:'Interior Windows',base:true,d:'Inside glass, hand-cleaned'},
+    {id:'screens',t:'Screen Cleaning',perScreen:true,d:'$4 per screen, removed & washed'},
+    {id:'solar',t:'Solar Panel Cleaning',perPanel:true,d:'$10 per panel, pure-water'},
   ];
+  // What the customer wants cleaned. Interior lives HERE now (not as an add-on),
+  // so nothing double-counts against the storm-window surcharge.
+  const SCOPE = [
+    {v:'both',    t:'Inside & Out', d:'Most popular'},
+    {v:'outside', t:'Outside only', d:'Exterior glass'},
+    {v:'inside',  t:'Inside only',  d:'Interior glass'},
+  ];
+  // Flat-dollar discount per visit, with a hard floor so small jobs never
+  // drop below PLAN_FLOOR. off = $ off each cleaning; floor = min paid/visit.
+  const PLAN_FLOOR = 200;      // post-discount price can never fall below this
   const PLANS = [
-    {id:'onetime',t:'One-Time',freq:'Single cleaning',disc:0,save:'Flexible, no commitment'},
-    {id:'annual',t:'Annual',freq:'1 cleaning / year',disc:0.10,save:'Save 10% each visit',popular:true},
-    {id:'biannual',t:'Biannual',freq:'2 cleanings / year',disc:0.15,save:'Save 15% each visit'},
+    {id:'quarterly',t:'Quarterly',freq:'4 cleanings / year',off:150,save:'$150 off every cleaning',popular:true},
+    {id:'triannual',t:'Tri-Annual',freq:'3 cleanings / year · winter interiors',off:100,save:'$100 off every cleaning'},
+    {id:'biannual',t:'Biannual',freq:'2 cleanings / year',off:50,save:'$50 off every cleaning'},
+    {id:'onetime',t:'One-Time',freq:'Single cleaning',off:0,save:'Flexible · no commitment'},
   ];
+  // Plan card perks (RainShield = our deionized pure-water tech, our own name).
+  const PLAN_PERKS = ['7-Day Rain Guarantee','Free Hard Water Removal (5 panes)','RainShield Technology'];
+  const PLAN_PERK_COUNT = { quarterly:3, triannual:2, biannual:1, onetime:0 };
+  const PLAN_VISITS = { quarterly:4, triannual:3, biannual:2, onetime:1 };
 
   // ---------- STATE ----------
   const S = {
-    propType:null, size:null, sizeLabel:null, dirt:null, dirtLabel:null,
-    stories:null, storiesLabel:null, services:[], plan:null,
-    name:'',phone:'',email:'',address:'',notes:'',
+    propType:null, size:null, sizeLabel:null, cleaned:null, cleanedLabel:null,
+    scope:'both',
+    storm:null, stormLabel:null,
+    french:null, frenchLabel:null,
+    stories:null, storiesLabel:null, services:[], solarPanels:0, plan:null,
+    name:'',phone:'',email:'',address:'',notes:'',smsConsent:false,
     date:null, time:null
   };
 
-  // ---------- PRICE ENGINE (mirrors site estimator) ----------
-  function priceBase(){
+  // ---------- PRICE ENGINE ----------
+  // The customer picks a SCOPE (outside / inside / both). Interior is priced at
+  // INT_FACTOR of exterior. Storm windows add glass, so the storm surcharge
+  // (×1 … ×2) loads onto any scope that includes the OUTSIDE (outside / both) —
+  // inside-only isn't surcharged since storm windows sit on the exterior.
+  // Add-ons (screens, solar) stack on after, and are NOT discounted by the plan.
+  function paneRate(){ return S.cleaned ?? 7.00; }
+  function stormMult(){ return 1 + (S.storm ?? 0); }   // No→×1 … All→×2
+  function isCustom(){ return S.size===-1; }
+  // Exterior glass (before storm). Interior = INT_FACTOR of it.
+  function outsidePart(){ return S.size*paneRate()*(1+(S.french??0)); }
+  function insidePart(){ return outsidePart()*INT_FACTOR; }
+  // Price for the chosen scope, after storm surcharge, floored at MIN_JOB.
+  function scopeBase(){
     if(S.size===null) return null;
-    if(S.size===-1) return -1; // custom
-    // service factor: if both ext+int -> 1.0; ext only ->0.70; int only ->0.55; none -> 0
-    const hasExt=S.services.includes('exterior'), hasInt=S.services.includes('interior');
-    let factor=0;
-    if(hasExt&&hasInt) factor=1.0; else if(hasExt) factor=0.70; else if(hasInt) factor=0.55;
-    const dirt=S.dirt??1, stories=S.stories??1;
-    let sub = S.size*dirt*stories*factor;
-    // add-on services
-    SERVICES.forEach(s=>{ if(s.add && S.services.includes(s.id)) sub+=s.add; });
-    return sub;
+    if(S.size===-1) return -1;   // custom quote
+    let p;
+    if(S.scope==='inside')       p = insidePart();                    // no storm
+    else if(S.scope==='outside') p = outsidePart()*stormMult();
+    else                         p = (outsidePart()+insidePart())*stormMult();  // both
+    return Math.max(p, MIN_JOB);
   }
-  function priceForPlan(planDisc){
-    const b=priceBase();
+  // Screens ≈ half the panes (most windows = 2 panes but 1 screen) × $4 each.
+  function screenCount(){ return Math.round(S.size/2); }
+  // Optional add-ons only: screens + solar. No interior here (it's in the scope).
+  function addOnTotal(){
+    let a=0;
+    if(S.services.includes('screens') && S.size>0) a += screenCount()*SCREEN_RATE;
+    if(S.services.includes('solar')) a += (S.solarPanels||0)*SOLAR_RATE;
+    return a;
+  }
+  // Apply flat $ discount to the scope base only (floored), then add add-ons.
+  function applyPlan(base, off){
+    if(base===null) return null;
+    if(base===-1) return -1;
+    if(!off) return base;
+    return Math.max(base - off, PLAN_FLOOR);
+  }
+  // Plan price: discount hits the scope base, add-ons stack on top undiscounted.
+  function priceForPlan(off){
+    const b=scopeBase();
     if(b===null) return null;
     if(b===-1) return -1;
-    return b*(1-planDisc);
+    return applyPlan(b, off) + addOnTotal();
   }
-  function fmtRange(v){
-    if(v===null) return '—';
-    if(v===-1) return 'Custom quote';
-    const low=Math.round(v*0.92/5)*5, high=Math.round(v*1.08/5)*5;
-    return '$'+low+' – $'+high;
+  // Single firm estimate (rounded to nearest $5), after plan off + add-ons.
+  function fmtRange(v, planOff){
+    const b=scopeBase();
+    if(b===null) return '—';
+    if(b===-1) return 'Custom quote';
+    const off = (planOff!==undefined ? planOff : (S.plan ? (PLANS.find(p=>p.id===S.plan)?.off||0) : 0));
+    const price = Math.round(priceForPlan(off)/5)*5;
+    return '$'+price;
   }
   function updateTotal(){
-    const disc = S.plan ? (PLANS.find(p=>p.id===S.plan)?.disc||0) : 0;
-    document.getElementById('totalAmt').textContent = fmtRange(priceForPlan(disc));
+    const pill = document.getElementById('totalPill');
+    // Price stays hidden until the customer reaches the plan step.
+    const planIdx = steps.findIndex(s=>s.key==='plan');
+    if(cur < planIdx){ pill.style.display='none'; return; }
+    pill.style.display='';
+    const off = S.plan ? (PLANS.find(p=>p.id===S.plan)?.off||0) : 0;
+    document.getElementById('totalAmt').textContent = fmtRange(null, off);
   }
 
   // ---------- STEPS ----------
+  // PHASE 1 (intake): property questions + contact. No price shown.
+  // PHASE 2 (quote): plan -> add-ons -> schedule. Price appears here.
   const steps = [
-    {key:'propType', render:stepPropType, valid:()=>!!S.propType},
-    {key:'size',     render:stepSize,     valid:()=>S.size!==null},
-    {key:'dirt',     render:stepDirt,     valid:()=>S.dirt!==null},
-    {key:'stories',  render:stepStories,  valid:()=>S.stories!==null},
-    {key:'services', render:stepServices, valid:()=>S.services.includes('exterior')||S.services.includes('interior')},
-    {key:'plan',     render:stepPlan,     valid:()=>!!S.plan},
-    {key:'contact',  render:stepContact,  valid:validContact},
-    {key:'schedule', render:stepSchedule, valid:()=>!!S.date && !!S.time},
-    {key:'review',   render:stepReview,   valid:()=>true},
+    {key:'propType', render:stepPropType, valid:()=>!!S.propType,        phase:1},
+    {key:'scope',    render:stepScope,    valid:()=>!!S.scope,           phase:1},
+    {key:'cleaned',  render:stepCleaned,  valid:()=>S.cleaned!==null,    phase:1},
+    {key:'french',   render:stepFrench,   valid:()=>S.french!==null,     phase:1},
+    {key:'storm',    render:stepStorm,    valid:()=>S.storm!==null,      phase:1},
+    {key:'size',     render:stepSize,     valid:()=>S.size!==null,       phase:1},
+    {key:'contact',  render:stepContact,  valid:validContact,            phase:1, last1:true},
+    {key:'plan',     render:stepPlan,     valid:()=>!!S.plan,            phase:2},
+    {key:'addons',   render:stepAddons,   valid:()=>true,                phase:2},
+    {key:'schedule', render:stepSchedule, valid:()=>!!S.date && !!S.time,phase:2},
+    {key:'review',   render:stepReview,   valid:()=>true,                phase:2},
   ];
+  const TOTAL_STEPS = steps.length;
   let cur=0;
 
   function renderProgress(){
@@ -237,13 +390,32 @@
     document.getElementById('card').innerHTML = steps[cur].render();
     document.getElementById('backBtn').style.visibility = cur===0?'hidden':'visible';
     const nb=document.getElementById('nextBtn');
-    nb.textContent = cur===steps.length-1 ? 'Submit Request →' : 'Continue →';
+    if(cur===steps.length-1){ nb.textContent='Submit Request →'; }
+    else if(steps[cur].last1){ nb.textContent='Create My Quote →'; }
+    else { nb.textContent='Continue →'; }
     refreshNext();
     if(steps[cur].after) steps[cur].after();
     updateTotal();
+    renderSidebar();
     window.scrollTo({top:0,behavior:'smooth'});
   }
+
+  function renderSidebar(){
+    const rows=[
+      {k:'Property Type', v:S.propType?cap(S.propType):null},
+      {k:'Cleaning',      v:scopeName()},
+      {k:'Last Cleaned',  v:S.cleanedLabel},
+      {k:'French Panes',  v:S.frenchLabel},
+      {k:'Storm Windows', v:S.stormLabel},
+      {k:'Property Size', v:S.sizeLabel},
+    ];
+    document.getElementById('sideRows').innerHTML = rows.map(r=>
+      `<div class="qb-side-row"><div class="qb-side-k">${r.k}</div><div class="qb-side-v ${r.v?'set':'empty'}">${r.v||'—'}</div></div>`
+    ).join('');
+  }
   function refreshNext(){ document.getElementById('nextBtn').disabled = !steps[cur].valid(); }
+  // Dynamic step number by key, so reordering never breaks the labels.
+  function stepNum(key){ return steps.findIndex(s=>s.key===key)+1; }
 
   function next(){
     if(!steps[cur].valid()) return;
@@ -258,88 +430,153 @@
   }
 
   function stepPropType(){
-    const types=[{id:'house',ic:'🏠',t:'House',d:'Single or multi-level home'},{id:'townhome',ic:'🏘️',t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:'🏢',t:'Condo',d:'Unit in a shared building'}];
-    return `<div class="qb-step-eyebrow">Step 1 of 9</div><h1 class="qb-h">What type of property?</h1><p class="qb-sub">Pick the option that best describes your home.</p>
+    const ICO = {
+      house:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-7 9 7"/><path d="M5 10v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9"/><path d="M10 20v-5h4v5"/></svg>',
+      townhome:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21V9l5-4 5 4v12"/><path d="M13 21V11l4-3 4 3v10"/><path d="M6 21v-4h3v4"/><path d="M17 21v-3h2v3"/></svg>',
+      condo:'<svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="1"/><path d="M9 7h0M12 7h0M15 7h0M9 11h0M12 11h0M15 11h0M9 15h0M15 15h0"/><path d="M11 21v-3h2v3"/></svg>'
+    };
+    const types=[{id:'house',ic:ICO.house,t:'House',d:'Single or multi-level home'},{id:'townhome',ic:ICO.townhome,t:'Townhome',d:'Connected residential unit'},{id:'condo',ic:ICO.condo,t:'Condo',d:'Unit in a shared building'}];
+    return `<div class="qb-step-eyebrow">Step ${stepNum('propType')} of 7 · About Your Home</div><h1 class="qb-h">What type of property do you have?</h1><p class="qb-sub">Select the option that best describes your home.</p>
     <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
   }
+  function stepScope(){
+    return `<div class="qb-step-eyebrow">Step ${stepNum('scope')} of 7 · About Your Home</div><h1 class="qb-h">What do you want cleaned?</h1><p class="qb-sub">Pick the glass you'd like done — most folks do both.</p>
+    <div class="opt-grid cols-3">${SCOPE.map(x=>optCard(S.scope===x.v,`pickScope('${x.v}')`,'',x.t,x.d)).join('')}</div>`;
+  }
+  function stepCleaned(){
+    return `<div class="qb-step-eyebrow">Step ${stepNum('cleaned')} of 7 · About Your Home</div><h1 class="qb-h">When were your windows last professionally cleaned?</h1><p class="qb-sub">This helps us understand the current condition.</p>
+    <div class="opt-grid cols-3">${LASTCLEANED.map(x=>optCard(S.cleanedLabel===x.t,`pickCleaned(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
+  }
+  function stepFrench(){
+    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 7 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
+    <div class="opt-grid cols-2">${FRENCH.map(x=>optCard(S.frenchLabel===x.t,`pickFrench(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
+    <div class="info-note"><b>Info:</b> French pane windows require additional cleaning time due to their grid patterns and multiple glass sections.</div>`;
+  }
+  function stepStorm(){
+    return `<div class="qb-step-eyebrow">Step ${stepNum('storm')} of 7 · About Your Home</div><h1 class="qb-h">Do you have storm windows?</h1><p class="qb-sub">Storm windows add a second layer of glass over each window.</p>
+    <div class="opt-grid cols-2">${STORM.map(x=>optCard(S.stormLabel===x.t,`pickStorm(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
+    <div class="info-note"><b>Info:</b> Each storm window means cleaning the storm panel and the primary window, inside and out — so the quote scales with how many of your windows have storms.</div>`;
+  }
   function stepSize(){
-    return `<div class="qb-step-eyebrow">Step 2 of 9</div><h1 class="qb-h">How big is your home?</h1><p class="qb-sub">Approximate square footage — close is fine.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 7 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
     <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
   }
-  function stepDirt(){
-    return `<div class="qb-step-eyebrow">Step 3 of 9</div><h1 class="qb-h">How dirty are the windows?</h1><p class="qb-sub">This helps us gauge the time it'll take.</p>
-    <div class="opt-grid cols-2">${DIRT.map(x=>optCard(S.dirt===x.v,`pickDirt(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
-  }
-  function stepStories(){
-    return `<div class="qb-step-eyebrow">Step 4 of 9</div><h1 class="qb-h">How many stories?</h1><p class="qb-sub">Taller homes take more setup and reach.</p>
-    <div class="opt-grid cols-3">${STORIES.map(x=>optCard(S.stories===x.v,`pickStories(${x.v},'${x.t}')`,'',x.t,'')).join('')}</div>`;
-  }
-  function stepServices(){
-    return `<div class="qb-step-eyebrow">Step 5 of 9</div><h1 class="qb-h">Which services do you want?</h1><p class="qb-sub">Pick as many as you like — choose at least exterior or interior.</p>
-    <div class="opt-grid cols-2">${SERVICES.map(x=>optCard(S.services.includes(x.id),`toggleSvc('${x.id}')`,'',x.t,x.d,true)).join('')}</div>
-    <div class="info-note">Tip: most homeowners pair <b>Exterior + Interior</b> for a full clean.</div>`;
-  }
   function stepPlan(){
+    if(!S.plan) S.plan='quarterly';   // recurring plan is the default path
     const cards = PLANS.map(p=>{
-      const full=priceForPlan(0), disc=priceForPlan(p.disc);
       let priceHtml;
-      if(full===-1){ priceHtml='<div class="price">Custom</div>'; }
-      else { priceHtml = `<div class="price">${p.disc>0?`<s>${fmtRange(full).split(' – ')[0]}</s>`:''}${fmtRange(disc).split(' – ')[0]}<span class="per"> est.</span></div>`; }
-      return `<div class="plan ${S.plan===p.id?'sel':''}" onclick="pick('plan','${p.id}')">${p.popular?'<span class="badge">Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<div class="save">${p.save}</div></div>`;
+      if(isCustom()){ priceHtml='<div class="price">Custom</div>'; }
+      else {
+        const full = fmtRange(null,0);          // undiscounted price (anchor)
+        const disc = fmtRange(null,p.off);       // after flat off + floor
+        const showStrike = p.off>0 && full!==disc;
+        priceHtml = `<div class="price">${showStrike?`<s>${full}</s>`:''}${disc}<span class="per"> / cleaning</span></div>`;
+      }
+      const nPerks = PLAN_PERK_COUNT[p.id] ?? 0;
+      const perks = PLAN_PERKS.map((perk,i)=>{
+        const on = i < nPerks;
+        return `<li class="${on?'yes':'no'}"><span class="pi">${on?'✓':'✕'}</span> ${perk}</li>`;
+      }).join('');
+      const annual = p.off>0 ? `<div class="plan-annual">Save $${p.off * (PLAN_VISITS[p.id]||1)} / year</div>` : `<div class="plan-annual none">No savings</div>`;
+      const sel = S.plan===p.id;
+      const btn = `<div class="plan-choose ${sel?'sel':''}">${sel?'✓ Selected':'Choose '+p.t}</div>`;
+      return `<div class="plan ${sel?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}${btn}</div>`;
     }).join('');
-    return `<div class="qb-step-eyebrow">Step 6 of 9</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">Recurring plans lock in a discount on every visit.</p>
+    const biSave = 50 * PLAN_VISITS.biannual;
+    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save $${biSave}/year with Biannual</div><p>Two cleanings a year keeps the shine — and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="next()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save $${biSave}</button></div></div>` : '';
+    return `<div class="qb-step-eyebrow">Step 1 of 3 · Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
     <div class="plan-grid">${cards}</div>
-    <div class="info-note">Prices are estimates based on your answers. Final price is confirmed at your free in-person walkthrough.</div>`;
+    ${nudge}
+    <div class="info-note">Recurring plans lock in your discount on every visit. Final price confirmed at your free in-person walkthrough.</div>`;
+  }
+  function stepAddons(){
+    const scrPrice = screenCount()*SCREEN_RATE;
+    // Optional extras only — inside/outside is chosen back on the scope step.
+    const items=[
+      {id:'screens', t:'Screen Cleaning',price:'$'+scrPrice},
+      {id:'solar',   t:'Solar Panel Cleaning',price:(S.solarPanels?('$'+(S.solarPanels*SOLAR_RATE)):'$10/panel')},
+    ];
+    const rows=items.map(x=>{
+      const on=S.services.includes(x.id);
+      return `<div class="addon ${on?'sel':''}" onclick="toggleSvc('${x.id}')">
+        <div class="addon-check">${on?'✓':''}</div>
+        <div class="addon-body"><div class="addon-t">${x.t}</div></div>
+        <div class="addon-price">${x.price}</div>
+      </div>`;
+    }).join('');
+
+    const solarInput = S.services.includes('solar')
+      ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();updateTotal()" placeholder="e.g. 12"></div>`
+      : '';
+
+    return `<div class="qb-step-eyebrow">Step 2 of 3 · Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Optional extras. Sill &amp; track detailing is always included free.</p>
+    <div class="addon-grid">${rows}</div>
+    ${solarInput}
+    <div class="info-note">Add-ons apply to your initial visit and can be added to future visits anytime.</div>`;
   }
   function stepContact(){
-    return `<div class="qb-step-eyebrow">Step 7 of 9</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 7 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
     <div class="fld-grid">
       <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
       <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
     </div>
     <div class="fld"><label>Email</label><input id="f_email" value="${S.email}" oninput="S.email=this.value" placeholder="you@email.com"></div>
     <div class="fld"><label>Property Address <span class="req">*</span></label><input id="f_addr" value="${S.address}" oninput="S.address=this.value;refreshNext()" placeholder="Street, Town, CT"></div>
-    <div class="fld"><label>Notes (optional)</label><textarea id="f_notes" oninput="S.notes=this.value" placeholder="Gate codes, pets, special requests, approx window count...">${S.notes}</textarea></div>`;
+    <div class="fld"><label>Notes (optional)</label><textarea id="f_notes" oninput="S.notes=this.value" placeholder="Gate codes, pets, special requests, approx window count...">${S.notes}</textarea></div>
+    <label class="consent-row"><input type="checkbox" id="f_consent" ${S.smsConsent?'checked':''} onchange="S.smsConsent=this.checked;refreshNext()"> <span>Text me updates about my quote and service. Reply STOP to opt out. <span class="req">*</span></span></label>`;
   }
   // calendar state
   let calView=new Date(); calView.setDate(1);
   function stepSchedule(){
-    return `<div class="qb-step-eyebrow">Step 8 of 9</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
+    return `<div class="qb-step-eyebrow">Step 3 of 3 · Your Quote</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
     <div id="calMount"></div>
     <div id="slotMount"></div>
     <div class="info-note">This is a <b>request</b>, not a locked booking — we'll text or call to confirm your exact time.</div>`;
   }
   function stepReview(){
-    const svc = S.services.map(id=>SERVICES.find(s=>s.id===id).t).join(', ');
+    const addonNames={screens:'Screen Cleaning',solar:'Solar Panels'};
+    const addons = S.services.map(id=>addonNames[id]||id);
+    const svc = [scopeName()||'—'].concat(addons).join(', ');
     const plan = PLANS.find(p=>p.id===S.plan);
-    const disc = plan?plan.disc:0;
-    return `<div class="qb-step-eyebrow">Step 9 of 9</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Here's everything — submit and we'll be in touch fast.</p>
+    const off = plan?plan.off:0;
+    return `<div class="qb-step-eyebrow">Review &amp; Confirm</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Please review your details below. We'll follow up shortly to confirm.</p>
     <div class="rev-box">
       <div class="rev-row"><span class="k">Property</span><span class="v">${cap(S.propType)} · ${S.sizeLabel}</span></div>
-      <div class="rev-row"><span class="k">Condition</span><span class="v">${S.dirtLabel} · ${S.storiesLabel}</span></div>
+      <div class="rev-row"><span class="k">Last cleaned</span><span class="v">${S.cleanedLabel}</span></div>
+      <div class="rev-row"><span class="k">French panes</span><span class="v">${S.frenchLabel}</span></div>
+      <div class="rev-row"><span class="k">Storm windows</span><span class="v">${S.stormLabel}</span></div>
       <div class="rev-row"><span class="k">Services</span><span class="v">${svc}</span></div>
       <div class="rev-row"><span class="k">Plan</span><span class="v">${plan.t} (${plan.freq})</span></div>
       <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} · ${S.phone}</span></div>
       <div class="rev-row"><span class="k">Address</span><span class="v">${S.address}</span></div>
       <div class="rev-row"><span class="k">Requested</span><span class="v">${S.date} · ${S.time}</span></div>
-      <div class="rev-total"><span class="lbl">Estimated price${disc>0?` (${Math.round(disc*100)}% off)`:''}</span><span class="amt">${fmtRange(priceForPlan(disc))}</span></div>
+      <div class="rev-total"><span class="lbl">Estimated price${off>0?` ($${off} off / visit)`:''}</span><span class="amt">${fmtRange(null, off)}</span></div>
     </div>
     <div class="info-note">Final price confirmed at your free in-person walkthrough. Fully insured · $1M coverage.</div>
     <div id="submitErr" class="err"></div>`;
   }
 
   // ---- pick handlers ----
-  function pick(key,val){ S[key]=val; renderStep(); }
-  function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); }
-  function pickDirt(v,t){ S.dirt=v; S.dirtLabel=t; renderStep(); }
-  function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); }
+  // No auto-advance: selecting an option just updates state + UI.
+  // The customer moves forward with the Continue button.
+  function advance(){ /* auto-advance disabled — use Next button */ }
+  function pick(key,val){ S[key]=val; if(key==='propType'){} renderStep(); advance(); }
+  function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); advance(); }
+  function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
+  function pickFrench(v,t){ S.french=v; S.frenchLabel=t; renderStep(); advance(); }
+  function pickStorm(v,t){ S.storm=v; S.stormLabel=t; renderStep(); advance(); }
+  function pickScope(v){ S.scope=v; renderStep(); advance(); }
+  function scopeName(){ return {outside:'Outside only',inside:'Inside only',both:'Inside & Out'}[S.scope]||null; }
+  function pickStories(v,t){ S.stories=v; S.storiesLabel=t; renderStep(); advance(); }
+  function pickPlan(id){ S.plan=id; renderStep(); if(id!=='onetime'){ advance(); } else { const n=document.querySelector('.plan-nudge'); if(n) n.scrollIntoView({behavior:'smooth',block:'center'}); } }
   function toggleSvc(id){
     const i=S.services.indexOf(id);
     if(i>=0) S.services.splice(i,1); else S.services.push(id);
-    document.getElementById('card').innerHTML=stepServices();
+    if(id==='solar' && i>=0) S.solarPanels=0;   // reset count if solar removed
+    document.getElementById('card').innerHTML=stepAddons();
     refreshNext(); updateTotal();
   }
-  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim(); }
+  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim() && S.smsConsent; }
   function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1):''; }
 
   // ---- calendar ----
@@ -367,7 +604,7 @@
   }
   function prettyDate(date){ return date.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'}); }
   function calMove(n){ calView.setMonth(calView.getMonth()+n); renderCal(); }
-  function pickDate(iso){ const d=new Date(iso+'T00:00'); S.date=prettyDate(d); S.time=null; renderCal(); refreshNext(); }
+  function pickDate(iso){ const d=new Date(iso+'T00:00'); S.date=prettyDate(d); S.dateISO=iso; S.time=null; renderCal(); refreshNext(); }
   function renderSlots(){
     const mount=document.getElementById('slotMount'); if(!mount) return;
     if(!S.date){ mount.innerHTML=''; return; }
@@ -377,31 +614,66 @@
   function pickTime(t){ S.time=t; renderSlots(); refreshNext(); }
 
   // attach calendar render after schedule step
-  steps[7].after=renderCal;
+  steps.find(s=>s.key==='schedule').after=renderCal;
 
   // ---- submit ----
   async function submit(){
     const btn=document.getElementById('nextBtn'); btn.disabled=true; btn.textContent='Sending...';
     const plan=PLANS.find(p=>p.id===S.plan);
-    const disc=plan?plan.disc:0;
-    const svcList=S.services.map(id=>SERVICES.find(s=>s.id===id).t).join(', ');
+    const off=plan?plan.off:0;
+    // Expand the scope into service names the lead API maps to Flyra, then add-ons.
+    const scopeSvc = S.scope==='outside' ? ['Exterior Windows']
+                   : S.scope==='inside'  ? ['Interior Windows']
+                   : ['Exterior Windows','Interior Windows'];
+    const svcList=scopeSvc.concat(S.services.map(id=>SERVICES.find(s=>s.id===id).t)).join(', ');
     const notes=[
       `Quote Builder lead`,
       `Property: ${cap(S.propType)}, ${S.sizeLabel}`,
-      `Condition: ${S.dirtLabel}, ${S.storiesLabel}`,
+      `Condition: last cleaned ${S.cleanedLabel}`,
+      `French panes: ${S.frenchLabel}`,
+      `Storm windows: ${S.stormLabel}`,
       `Services: ${svcList}`,
       `Plan: ${plan.t} (${plan.freq})`,
-      `Est. price: ${fmtRange(priceForPlan(disc))}`,
+      `Est. price: ${fmtRange(null, off)}`,
       `Requested: ${S.date} at ${S.time}`,
       S.notes?`Customer notes: ${S.notes}`:''
     ].filter(Boolean).join('\n');
+    // Build ISO start/end from the picked date + time slot (2hr window).
+    function toISO(dateISO, timeStr){
+      if(!dateISO || !timeStr) return null;
+      const m = timeStr.match(/(\d+):(\d+)\s*(AM|PM)/i);
+      if(!m) return null;
+      let h = parseInt(m[1],10); const min = parseInt(m[2],10);
+      const pm = /PM/i.test(m[3]);
+      if(pm && h!==12) h+=12; if(!pm && h===12) h=0;
+      // Build a Date from the customer's local wall-clock time, then send true UTC —
+      // Flyra parses these as UTC, so naive local strings showed jobs 4h early.
+      const d = new Date(`${dateISO}T${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:00`);
+      return d.toISOString();
+    }
+    const startISO = toISO(S.dateISO, S.time);
+    const endISO = startISO ? new Date(new Date(startISO).getTime() + 2*60*60*1000).toISOString() : null;
+    const estDollars = (function(){ const p=priceForPlan(off); return (p===null||p===-1)?null:Math.round(p/5)*5; })();
+    const fullNotes = notes + (S.address?`\nAddress: ${S.address}`:'');
     try{
-      const client=getSB(); if(!client){ throw new Error('offline'); } const {error}=await client.from('leads').insert([{
-        name:S.name, phone:S.phone, email:S.email||null, address:S.address||null,
-        service:svcList, preferred_date:null, notes:notes, source:'website-quote-builder', status:'new'
-      }]);
-      if(error){ throw error; }
-      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} — we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(priceForPlan(disc))}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
+      const r = await fetch('/api/lead', {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          name: S.name,
+          phone: S.phone,
+          email: S.email||null,
+          address: S.address||null,
+          service: svcList,
+          notes: fullNotes,
+          scheduled_start: startISO,
+          scheduled_end: endISO,
+          price: estDollars,
+          sms_consent: S.smsConsent
+        })
+      });
+      if(!r.ok){ throw new Error('lead post failed: '+r.status); }
+      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} — we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(null, off)}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
       document.querySelector('.qb-nav').style.display='none';
       document.getElementById('progress').style.display='none';
       window.scrollTo({top:0,behavior:'smooth'});
