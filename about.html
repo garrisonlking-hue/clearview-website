@@ -390,5 +390,116 @@
     </div>
   </div>
 </section>
+
+<!-- ================= QUOTE MODAL ================= -->
+<div class="modal-overlay" id="quoteModal" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="eyebrow">Free Quote</div>
+        <h3 class="modal-title">Tell us about your project.</h3>
+        <p class="modal-sub">We'll respond within 24 hours with a detailed quote. Fully insured · $1M coverage · Free estimates.</p>
+      </div>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-grid">
+        <div class="form-field"><label class="form-label">Name *</label><input class="form-input" id="f_name" type="text" placeholder="Jane Smith"></div>
+        <div class="form-field"><label class="form-label">Phone *</label><input class="form-input" id="f_phone" type="tel" placeholder="860-000-0000"></div>
+        <div class="form-field full"><label class="form-label">Email</label><input class="form-input" id="f_email" type="email" placeholder="you@email.com"></div>
+        <div class="form-field full"><label class="form-label">Property Address</label><input class="form-input" id="f_address" type="text" placeholder="123 Main St, Columbia CT"></div>
+        <div class="form-field full"><label class="form-label">Service</label>
+          <select class="form-select" id="f_service">
+            <option>Exterior Windows</option><option>Interior Windows</option>
+            <option>Sill &amp; Track Detailing</option><option>Screen Cleaning</option>
+            <option>Solar Panel Cleaning</option><option>Pressure Washing</option>
+            <option>Christmas Light Installation (Evergreen)</option>
+            <option>Multiple Services</option>
+          </select>
+        </div>
+        <div class="form-field full"><label class="form-label">Preferred Date</label><input class="form-input" id="f_date" type="date"></div>
+        <div class="form-field full"><label class="form-label">Notes</label><textarea class="form-textarea" id="f_notes" placeholder="Approximate window count, special requests, gate codes, etc."></textarea></div>
+      </div>
+      <div id="formStatus"></div>
+      <button class="form-submit" id="submitBtn" onclick="submitForm()">Submit Request</button>
+      <div class="form-call-link">Or call directly: <a href="tel:+18609663149">(860) 966-3149</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= STICKY MOBILE CTA ================= -->
+<div class="mobile-sticky-cta" id="stickyCta">
+  <button onclick="openModal()" class="sticky-cta-btn">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style="flex-shrink:0"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.38 5.06L2 22l5.06-1.38C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm3.5 14.5L12 15l-3.5 1.5L9 13l-3-2.5h4l1.5-3.5L13 10.5h4l-3 2.5.5 3.5z"/></svg>
+    Get Free Quote
+  </button>
+  <a href="tel:+18609663149" class="sticky-cta-call" aria-label="Call us">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="white"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+  </a>
+</div>
+
+<!-- ================= SCRIPTS ================= -->
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = 'https://xenmysvxfydcbyrlwlfm.supabase.co';
+  const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inhlbm15c3Z4ZnlkY2J5cmx3bGZtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgzNTExMjIsImV4cCI6MjA5MzkyNzEyMn0.KkloIssWfOnvMDRZ0h4CsvK5--QsA1iA_luTH5Pg_PI';
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function openModal() { document.getElementById('quoteModal').classList.add('open'); document.body.style.overflow = 'hidden'; }
+  function closeModal() {
+    document.getElementById('quoteModal').classList.remove('open');
+    document.body.style.overflow = '';
+    document.getElementById('formStatus').innerHTML = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  async function submitForm() {
+    const name = document.getElementById('f_name').value.trim();
+    const phone = document.getElementById('f_phone').value.trim();
+    const email = document.getElementById('f_email').value.trim();
+    const address = document.getElementById('f_address').value.trim();
+    const service = document.getElementById('f_service').value;
+    const date = document.getElementById('f_date').value;
+    const notes = document.getElementById('f_notes').value.trim();
+    const status = document.getElementById('formStatus');
+    const btn = document.getElementById('submitBtn');
+    if (!name || !phone) {
+      status.innerHTML = '<div class="form-status error">Please enter your name and phone number.</div>';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+    status.innerHTML = '';
+    try {
+      const { error } = await sb.from('leads').insert([{
+        name, phone,
+        email: email || null,
+        address: address || null,
+        service,
+        preferred_date: date || null,
+        notes: notes || null,
+        source: 'website-about',
+        status: 'new'
+      }]);
+      if (error) {
+        console.error(error);
+        status.innerHTML = '<div class="form-status error">Could not save your request. Please call us at (860) 966-3149</div>';
+      } else {
+        status.innerHTML = '<div class="form-status success">Thank you! We will respond within 24 hours.</div>';
+        setTimeout(() => {
+          closeModal();
+          ['f_name','f_phone','f_email','f_address','f_date','f_notes'].forEach(id => document.getElementById(id).value = '');
+        }, 2800);
+      }
+    } catch (e) {
+      console.error(e);
+      status.innerHTML = '<div class="form-status error">Something went wrong. Please call us at (860) 966-3149</div>';
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Submit Request';
+    }
+  }
+</script>
+
 </body>
 </html>
