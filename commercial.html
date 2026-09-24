@@ -358,10 +358,10 @@
     </div>
     <div class="modal-body">
       <div class="form-grid">
-        <div class="form-field"><label class="form-label">Name *</label><input class="form-input" id="f_name" type="text" placeholder="Jane Smith"></div>
-        <div class="form-field"><label class="form-label">Phone *</label><input class="form-input" id="f_phone" type="tel" placeholder="860-000-0000"></div>
-        <div class="form-field full"><label class="form-label">Email</label><input class="form-input" id="f_email" type="email" placeholder="you@email.com"></div>
-        <div class="form-field full"><label class="form-label">Property Address</label><input class="form-input" id="f_address" type="text" placeholder="123 Main St, Columbia CT"></div>
+        <div class="form-field"><label class="form-label">Name *</label><input class="form-input" id="f_name" type="text" placeholder="Jane Smith" autocomplete="name" autocapitalize="words"></div>
+        <div class="form-field"><label class="form-label">Phone *</label><input class="form-input" id="f_phone" type="tel" inputmode="tel" placeholder="860-000-0000" autocomplete="tel"></div>
+        <div class="form-field full"><label class="form-label">Email</label><input class="form-input" id="f_email" type="email" inputmode="email" placeholder="you@email.com" autocomplete="email" autocapitalize="off"></div>
+        <div class="form-field full"><label class="form-label">Property Address</label><input class="form-input" id="f_address" type="text" placeholder="123 Main St, Columbia CT" autocomplete="street-address" autocapitalize="words"></div>
         <div class="form-field full"><label class="form-label">Service</label>
           <select class="form-select" id="f_service">
             <option selected>Commercial Cleaning</option>

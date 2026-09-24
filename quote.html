@@ -45,7 +45,7 @@
 
   /* sidebar — Property Details */
   .qb-side{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:1.6rem 1.5rem;position:sticky;top:90px}
-  @media(max-width:920px){ .qb-side{position:static;order:-1} }
+  @media(max-width:920px){ .qb-side{display:none} }
   .qb-side h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.1rem}
   .qb-side-row{padding:.85rem 0;border-bottom:1px solid rgba(22,40,74,.08)}
   .qb-side-row:last-child{border-bottom:none}
@@ -174,6 +174,11 @@
 
   /* footer nav */
   .qb-nav{display:flex;justify-content:space-between;align-items:center;gap:1rem;max-width:1180px;margin:1.5rem auto 4rem;padding:0 1.25rem}
+  @media(max-width:600px){
+    body{padding-bottom:88px}
+    .qb-nav{position:fixed;left:0;right:0;bottom:0;margin:0;padding:.75rem 1.25rem calc(.75rem + env(safe-area-inset-bottom));background:#fff;box-shadow:0 -6px 20px rgba(22,40,74,.10);z-index:60;max-width:none}
+    .btn-next{flex:1}
+  }
   .btn{font-family:inherit;font-weight:700;font-size:1rem;border-radius:40px;padding:.9rem 1.8rem;cursor:pointer;border:none;transition:all .18s;display:inline-flex;align-items:center;gap:.5rem}
   .btn-back{background:#fff;color:var(--navy);box-shadow:var(--shadow);width:52px;height:52px;border-radius:50%;padding:0;justify-content:center;font-size:1.3rem}
   .btn-back:hover{transform:translateY(-1px);background:var(--blue-pale)}
@@ -506,7 +511,7 @@
     }).join('');
 
     const solarInput = S.services.includes('solar')
-      ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();updateTotal()" placeholder="e.g. 12"></div>`
+      ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" inputmode="numeric" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();updateTotal()" placeholder="e.g. 12"></div>`
       : '';
 
     return `<div class="qb-step-eyebrow">Step 2 of 3 · Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Optional extras. Sill &amp; track detailing is always included free.</p>
@@ -517,13 +522,13 @@
   function stepContact(){
     return `<div class="qb-step-eyebrow">Step ${stepNum('contact')} of 7 · About Your Home</div><h1 class="qb-h">Your contact info.</h1><p class="qb-sub">So we can confirm your appointment and price.</p>
     <div class="fld-grid">
-      <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name"></div>
-      <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000"></div>
+      <div class="fld"><label>Name <span class="req">*</span></label><input id="f_name" value="${S.name}" oninput="S.name=this.value;refreshNext()" placeholder="Full name" autocomplete="name" autocapitalize="words"></div>
+      <div class="fld"><label>Phone <span class="req">*</span></label><input id="f_phone" value="${S.phone}" oninput="S.phone=this.value;refreshNext()" placeholder="(860) 000-0000" type="tel" inputmode="tel" autocomplete="tel"></div>
     </div>
-    <div class="fld"><label>Email</label><input id="f_email" value="${S.email}" oninput="S.email=this.value" placeholder="you@email.com"></div>
-    <div class="fld"><label>Property Address <span class="req">*</span></label><input id="f_addr" value="${S.address}" oninput="S.address=this.value;refreshNext()" placeholder="Street, Town, CT"></div>
+    <div class="fld"><label>Email</label><input id="f_email" value="${S.email}" oninput="S.email=this.value" placeholder="you@email.com" type="email" inputmode="email" autocomplete="email" autocapitalize="off"></div>
+    <div class="fld"><label>Property Address <span class="req">*</span></label><input id="f_addr" value="${S.address}" oninput="S.address=this.value;refreshNext()" placeholder="Street, Town, CT" autocomplete="street-address" autocapitalize="words"></div>
     <div class="fld"><label>Notes (optional)</label><textarea id="f_notes" oninput="S.notes=this.value" placeholder="Gate codes, pets, special requests, approx window count...">${S.notes}</textarea></div>
-    <label class="consent-row"><input type="checkbox" id="f_consent" ${S.smsConsent?'checked':''} onchange="S.smsConsent=this.checked;refreshNext()"> <span>Text me updates about my quote and service. Reply STOP to opt out. <span class="req">*</span></span></label>`;
+    <label class="consent-row"><input type="checkbox" id="f_consent" ${S.smsConsent?'checked':''} onchange="S.smsConsent=this.checked;refreshNext()"> <span>Text me updates about my quote and service. Reply STOP to opt out.</span></label>`;
   }
   // calendar state
   let calView=new Date(); calView.setDate(1);
@@ -576,7 +581,7 @@
     document.getElementById('card').innerHTML=stepAddons();
     refreshNext(); updateTotal();
   }
-  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim() && S.smsConsent; }
+  function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim(); }
   function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1):''; }
 
   // ---- calendar ----
