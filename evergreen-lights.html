@@ -157,6 +157,9 @@
     .img-ph { position: relative; width: 100%; height: 100%; background: linear-gradient(150deg, var(--evergreen) 0%, #0a5a41 100%); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; text-align: center; overflow: hidden; }
     .img-ph svg { color: rgba(250,244,232,0.5); }
     .img-ph span { font-size: 11.5px; font-weight: 700; color: rgba(250,244,232,0.72); letter-spacing: 0.02em; padding: 0 14px; }
+    .real-img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .gallery-item .real-img { position: absolute; inset: 0; }
+    .example-tag { position: absolute; bottom: 10px; left: 10px; background: rgba(4,26,18,.72); color: var(--white); font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 5px 10px; border-radius: 20px; z-index: 2; }
 
     /* ============ SERVICE INTRO (editorial) ============ */
     .intro-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
@@ -286,6 +289,13 @@
     .form-status { margin-top: 16px; padding: 13px 16px; border-radius: 12px; font-size: 13.5px; font-weight: 600; }
     .form-status.success { background: #eefbf3; color: #1a7a45; border: 1px solid rgba(26,122,69,0.25); }
     .form-status.error { background: #fdecec; color: #c0392b; border: 1px solid rgba(192,57,43,0.25); }
+    .form-consent { font-size: 11.5px; line-height: 1.5; color: var(--muted); margin-top: 16px; }
+    .form-consent a { color: var(--red); }
+    .why-grid { display: grid; grid-template-columns: 1fr 1fr; column-gap: 32px; row-gap: 16px; max-width: 900px; margin-inline: auto; }
+    @media (max-width: 700px) { .why-grid { grid-template-columns: 1fr; } }
+    .feature-grid-3 { grid-template-columns: repeat(3,1fr); }
+    @media (max-width: 900px) { .feature-grid-3 { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 560px) { .feature-grid-3 { grid-template-columns: 1fr; } }
 
     /* ============ MOBILE STICKY CTA ============ */
     .mobile-sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgba(4,42,32,0.14); z-index: 250; gap: 10px; align-items: center; border-top: 1px solid var(--line); }
@@ -319,7 +329,7 @@
       <a href="#gallery">Our Work</a>
       <a href="#how-it-works">How It Works</a>
       <a href="#reviews">Reviews</a>
-      <a href="#clear-view">About</a>
+      <a href="about.html">About</a>
     </nav>
 
     <div class="header-actions">
@@ -339,7 +349,7 @@
     <a href="#gallery" onclick="closeMobileMenu()">Our Work</a>
     <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
     <a href="#reviews" onclick="closeMobileMenu()">Reviews</a>
-    <a href="#clear-view" onclick="closeMobileMenu()">About</a>
+    <a href="about.html" onclick="closeMobileMenu()">About</a>
     <a href="tel:+18609663149" onclick="closeMobileMenu()">Call (860) 966-3149</a>
     <button class="btn btn-red mm-cta" style="width:100%;" onclick="openModal()">Get a Free Quote</button>
   </nav>
@@ -446,16 +456,12 @@
           <button class="btn btn-red" onclick="openModal()">Get Your Free Quote</button>
         </div>
         <div class="intro-media">
-          <div class="intro-media-main">
-            <div class="img-ph" role="img" aria-label="Placeholder — add a large nighttime photo of a full home lighting install (file: install-large.jpg)">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3 2 12h3v8h6v-6h2v6h6v-8h3L12 3z"/></svg>
-              <span>install-large.jpg</span>
-            </div>
+          <div class="intro-media-main" style="position:relative;">
+            <span class="example-tag">Example Style</span>
+            <img class="real-img" src="evergreen-install-large.jpg" alt="Example of warm-white C9 roofline lighting on a home, illustrating the style of display Evergreen installs">
           </div>
-          <div class="intro-media-small">
-            <div class="img-ph" role="img" aria-label="Placeholder — add a close-up detail photo, e.g. a C9 bulb or clip (file: install-detail.jpg)">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a1 1 0 0 1 1 1v1.06a7.001 7.001 0 0 1 6 6.94c0 3.31-2 5-2 7v1a2 2 0 0 1-2 2h-6a2 2 0 0 1-2-2v-1c0-2-2-3.69-2-7a7.001 7.001 0 0 1 6-6.94V3a1 1 0 0 1 1-1z"/></svg>
-            </div>
+          <div class="intro-media-small" style="position:absolute;">
+            <img class="real-img" src="evergreen-detail.jpg" alt="Close-up example of a C9 LED bulb clipped to a roofline">
           </div>
         </div>
       </div>
@@ -466,10 +472,8 @@
   <section class="section" style="background:var(--cream); padding-top: 0;">
     <div class="container">
       <div class="experience">
-        <div class="img-ph" role="img" aria-label="Placeholder — add a full-width photo of a premium home with roofline lighting, wreaths, garland, and landscape lighting (file: experience-wide.jpg)">
-          <svg width="46" height="46" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-          <span>experience-wide.jpg</span>
-        </div>
+        <span class="example-tag" style="z-index:3;top:16px;bottom:auto;">Example Style</span>
+        <img class="real-img" src="evergreen-experience-wide.jpg" alt="Example of a premium home with roofline lighting, a wreath, and landscape lighting, illustrating the style of display Evergreen designs">
         <div class="experience-overlay" aria-hidden="true"></div>
         <div class="experience-card">
           <h3>Designed for Your Home</h3>
@@ -514,42 +518,103 @@
     </div>
   </section>
 
+  <!-- ================= WHAT'S INCLUDED (FEATURE GRID) ================= -->
+  <section class="section" id="whats-included" style="background:var(--cream);" aria-labelledby="included-heading">
+    <div class="container">
+      <div class="section-head center">
+        <div class="eyebrow">The Details</div>
+        <h2 class="h2" id="included-heading">What Comes With Every Install.</h2>
+        <p class="lede">The little things most companies skip are the ones that make a display look right — and last.</p>
+      </div>
+      <div class="steps-grid feature-grid-3">
+        <div class="step-card">
+          <h3>Custom-Cut Strands</h3>
+          <p>We measure your rooflines and peaks first, then cut every strand to fit — no extra bulbs bunched at a corner, no cords hanging loose.</p>
+        </div>
+        <div class="step-card">
+          <h3>Premium C9 LED Bulbs</h3>
+          <p>Commercial-grade C9 LEDs — brighter than the strands from a big-box store, run cooler, and hold up season after season.</p>
+        </div>
+        <div class="step-card">
+          <h3>Free Takedown &amp; Storage</h3>
+          <p>Come January, we come back, take everything down, and store it at our facility — labeled and ready for next November.</p>
+        </div>
+        <div class="step-card">
+          <h3>Clips Built to Last</h3>
+          <p>No nails, no staples, no roof damage. Our clips grip shingle, gutter, or trim and hold through wind, ice, and CT winters.</p>
+        </div>
+        <div class="step-card">
+          <h3>Real Safety Equipment</h3>
+          <p>Ladders, harnesses, and roof anchors — the same gear a professional crew should be using, every time, on every home.</p>
+        </div>
+        <div class="step-card">
+          <h3>Pricing Gets Simpler Every Year</h3>
+          <p>Year one covers the lights and the labor. After that, the strands are yours — you're only ever paying for us to hang and store them.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHY CHOOSE US ================= -->
+  <section class="section" id="why-us" style="background:var(--white);" aria-labelledby="why-heading">
+    <div class="container">
+      <div class="section-head center">
+        <div class="eyebrow">Why Evergreen</div>
+        <h2 class="h2" id="why-heading">A Local Crew That Treats Your Home Like Ours.</h2>
+        <p class="lede">Evergreen is run by the same local team behind Clear View Window Co. — not a franchise, not a subcontractor.</p>
+      </div>
+      <div class="why-grid">
+        <div class="intro-benefit">
+          <span class="ico" aria-hidden="true">★</span>
+          <p><strong>Experience.</strong> The same insured crew that's cleaned hundreds of Connecticut homes' windows, now doing lights the same careful way.</p>
+        </div>
+        <div class="intro-benefit">
+          <span class="ico" aria-hidden="true">★</span>
+          <p><strong>Safety first.</strong> Every install follows the same safety standards as our window work — proper anchoring, no shortcuts on the roof.</p>
+        </div>
+        <div class="intro-benefit">
+          <span class="ico" aria-hidden="true">★</span>
+          <p><strong>Built for your house.</strong> No generic strands. Every design is measured and cut for your home's actual roofline and features.</p>
+        </div>
+        <div class="intro-benefit">
+          <span class="ico" aria-hidden="true">★</span>
+          <p><strong>We don't leave until it's right.</strong> If a bulb goes out mid-season or a clip comes loose, we come back and fix it — free.</p>
+        </div>
+      </div>
+      <p style="text-align:center;max-width:640px;margin:2rem auto 0;color:var(--muted);font-size:14.5px;line-height:1.7;">
+        Every strand is LED, so displays run bright without spiking your power bill, and everything we install is rated to handle a Connecticut winter — wind, ice, and all. From your first consultation to takedown in January, we handle the whole season so you don't have to think about it again until next fall.
+      </p>
+    </div>
+  </section>
+
   <!-- ================= GALLERY ================= -->
   <section class="section" id="gallery" style="background:var(--cream);" aria-labelledby="gallery-heading">
     <div class="container">
       <div class="section-head center">
-        <div class="eyebrow">Our Work</div>
+        <div class="eyebrow">Example Styles</div>
         <h2 class="h2" id="gallery-heading">See What's Possible.</h2>
-        <p class="lede">Photos from this season's installs go here as they're completed.</p>
+        <p class="lede">These photos show the style of display we install — not yet our own completed jobs. Real photos from this season's Evergreen installs will replace these as they're finished.</p>
       </div>
       <div class="gallery-grid">
-        <div class="gallery-item g-feature">
-          <div class="img-ph" role="img" aria-label="Placeholder — add featured project photo (file: gallery-01-feature.jpg)">
-            <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-            <span>gallery-01-feature.jpg</span>
-          </div>
-          <div class="gallery-caption">Columbia, CT — Full roofline &amp; garland</div>
+        <div class="gallery-item g-feature" style="position:relative;">
+          <span class="example-tag">Example</span>
+          <img class="real-img" src="evergreen-gallery-01.jpg" alt="Example of red and white roofline lighting on a stone home" style="object-position:center 80%;">
+          <div class="gallery-caption">Full roofline in red &amp; white</div>
         </div>
-        <div class="gallery-item">
-          <div class="img-ph" role="img" aria-label="Placeholder — add project photo (file: gallery-02.jpg)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-            <span>gallery-02.jpg</span>
-          </div>
-          <div class="gallery-caption">Coventry, CT — Wreath detail</div>
+        <div class="gallery-item" style="position:relative;">
+          <span class="example-tag">Example</span>
+          <img class="real-img" src="evergreen-gallery-02.jpg" alt="Example of a technician installing roofline lighting on a ladder" style="object-position:75% center;">
+          <div class="gallery-caption">Professional install in progress</div>
         </div>
-        <div class="gallery-item">
-          <div class="img-ph" role="img" aria-label="Placeholder — add project photo (file: gallery-03.jpg)">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-            <span>gallery-03.jpg</span>
-          </div>
-          <div class="gallery-caption">Mansfield, CT — Walkway lighting</div>
+        <div class="gallery-item" style="position:relative;">
+          <span class="example-tag">Example</span>
+          <img class="real-img" src="evergreen-gallery-03.jpg" alt="Example of warm-white roofline lighting with holiday yard decor" style="object-position:center 70%;">
+          <div class="gallery-caption">Roofline lighting &amp; yard decor</div>
         </div>
-        <div class="gallery-item g-wide">
-          <div class="img-ph" role="img" aria-label="Placeholder — add a wide project photo (file: gallery-04-wide.jpg)">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M9 2 7.17 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2h-3.17L15 2H9zm3 15c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-            <span>gallery-04-wide.jpg</span>
-          </div>
-          <div class="gallery-caption">Glastonbury, CT — Whole-home display</div>
+        <div class="gallery-item g-wide" style="position:relative;">
+          <span class="example-tag">Example</span>
+          <img class="real-img" src="evergreen-gallery-04.jpg" alt="Example of a full whole-home lighting display at dusk">
+          <div class="gallery-caption">Whole-home display</div>
         </div>
       </div>
       <div style="text-align:center;margin-top:2.4rem;">
@@ -677,7 +742,7 @@
           <a href="#gallery">Our Work</a>
           <a href="#how-it-works">How It Works</a>
           <a href="#reviews">Reviews</a>
-          <a href="#clear-view">About</a>
+          <a href="about.html">About</a>
         </div>
       </div>
       <div>
@@ -718,23 +783,48 @@
       <button class="modal-close" onclick="closeModal()" aria-label="Close">×</button>
     </div>
     <div class="modal-body">
+      <p style="font-size:12.5px;font-weight:700;color:var(--red);background:var(--cream);border:1px solid var(--line);border-radius:10px;padding:10px 13px;margin-bottom:16px;">
+        Heads up: we only hang lights purchased through Evergreen — if you have strands from a previous year, we're not able to hang those for you.
+      </p>
       <div class="form-grid">
-        <div class="form-field"><label class="form-label" for="f_name">Name *</label><input class="form-input" id="f_name" type="text" placeholder="Jane Smith" autocomplete="name" autocapitalize="words"></div>
-        <div class="form-field"><label class="form-label" for="f_phone">Phone *</label><input class="form-input" id="f_phone" type="tel" inputmode="tel" placeholder="860-000-0000" autocomplete="tel"></div>
+        <div class="form-field"><label class="form-label" for="f_fname">First Name *</label><input class="form-input" id="f_fname" type="text" placeholder="Jane" autocomplete="given-name" autocapitalize="words"></div>
+        <div class="form-field"><label class="form-label" for="f_lname">Last Name *</label><input class="form-input" id="f_lname" type="text" placeholder="Smith" autocomplete="family-name" autocapitalize="words"></div>
         <div class="form-field full"><label class="form-label" for="f_email">Email</label><input class="form-input" id="f_email" type="email" inputmode="email" placeholder="you@email.com" autocomplete="email" autocapitalize="off"></div>
-        <div class="form-field full"><label class="form-label" for="f_address">Property Address</label><input class="form-input" id="f_address" type="text" placeholder="123 Main St, Columbia CT" autocomplete="street-address" autocapitalize="words"></div>
-        <div class="form-field full"><label class="form-label" for="f_service">Service</label>
-          <select class="form-select" id="f_service">
-            <option selected>Christmas Light Installation (Evergreen)</option>
-            <option>Exterior Windows</option><option>Interior Windows</option>
-            <option>Sill &amp; Track Detailing</option><option>Screen Cleaning</option>
-            <option>Solar Panel Cleaning</option><option>Commercial Cleaning</option>
-            <option>Multiple Services</option>
+        <div class="form-field full"><label class="form-label" for="f_phone">Cell Phone Number *</label><input class="form-input" id="f_phone" type="tel" inputmode="tel" placeholder="860-000-0000" autocomplete="tel"></div>
+        <div class="form-field full"><label class="form-label" for="f_address">Address *</label><input class="form-input" id="f_address" type="text" placeholder="123 Main St" autocomplete="street-address" autocapitalize="words"></div>
+        <div class="form-field"><label class="form-label" for="f_city">City *</label><input class="form-input" id="f_city" type="text" placeholder="Columbia" autocomplete="address-level2" autocapitalize="words"></div>
+        <div class="form-field"><label class="form-label" for="f_zip">Zip Code *</label><input class="form-input" id="f_zip" type="text" inputmode="numeric" placeholder="06237" autocomplete="postal-code"></div>
+        <div class="form-field full"><label class="form-label" for="f_state">State *</label>
+          <select class="form-select" id="f_state">
+            <option value="CT" selected>Connecticut</option>
+            <option value="MA">Massachusetts</option>
+            <option value="RI">Rhode Island</option>
+            <option value="NY">New York</option>
           </select>
         </div>
-        <div class="form-field full"><label class="form-label" for="f_date">Preferred Date</label><input class="form-input" id="f_date" type="date"></div>
+        <div class="form-field full"><label class="form-label" for="f_placement">Where on your house do you want lights? *</label>
+          <select class="form-select" id="f_placement">
+            <option>Front Only</option>
+            <option selected>Front and Sides</option>
+            <option>Front, Sides, and Back</option>
+          </select>
+        </div>
+        <div class="form-field full"><label class="form-label" for="f_heard">How did you hear about us? *</label>
+          <select class="form-select" id="f_heard">
+            <option value="">Select one...</option>
+            <option>Yard Sign</option>
+            <option>Text Message</option>
+            <option>Facebook</option>
+            <option>Instagram</option>
+            <option>Google</option>
+            <option>Family or friend</option>
+            <option>Existing Clear View customer</option>
+            <option>Other</option>
+          </select>
+        </div>
         <div class="form-field full"><label class="form-label" for="f_notes">Notes</label><textarea class="form-textarea" id="f_notes" placeholder="Roofline length, number of stories, special requests, gate codes, etc."></textarea></div>
       </div>
+      <p class="form-consent">By submitting, you agree to let Clear View / Evergreen Holiday Lights text you about your quote, scheduling, and appointment reminders — possibly using automated technology. Message and data rates may apply. We never sell or share your information; it's used only to quote and schedule your install.</p>
       <div id="formStatus" role="status" aria-live="polite"></div>
       <button class="form-submit" id="submitBtn" onclick="submitForm()">Submit Request</button>
       <div class="form-call-link">Or call directly: <a href="tel:+18609663149">(860) 966-3149</a></div>
@@ -764,22 +854,33 @@
   document.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal(); closeMobileMenu(); } });
 
   async function submitForm() {
-    const name = document.getElementById('f_name').value.trim();
+    const fname = document.getElementById('f_fname').value.trim();
+    const lname = document.getElementById('f_lname').value.trim();
     const phone = document.getElementById('f_phone').value.trim();
     const email = document.getElementById('f_email').value.trim();
-    const address = document.getElementById('f_address').value.trim();
-    const service = document.getElementById('f_service').value;
-    const date = document.getElementById('f_date').value;
+    const street = document.getElementById('f_address').value.trim();
+    const city = document.getElementById('f_city').value.trim();
+    const zip = document.getElementById('f_zip').value.trim();
+    const state = document.getElementById('f_state').value;
+    const placement = document.getElementById('f_placement').value;
+    const heard = document.getElementById('f_heard').value;
     const notes = document.getElementById('f_notes').value.trim();
     const status = document.getElementById('formStatus');
     const btn = document.getElementById('submitBtn');
-    if (!name || !phone) {
-      status.innerHTML = '<div class="form-status error">Please enter your name and phone number.</div>';
+    const name = [fname, lname].filter(Boolean).join(' ');
+    if (!fname || !lname || !phone || !street || !city || !zip) {
+      status.innerHTML = '<div class="form-status error">Please fill in your name, phone, and full address.</div>';
       return;
     }
     btn.disabled = true;
     btn.textContent = 'Sending...';
     status.innerHTML = '';
+    const address = `${street}, ${city}, ${state} ${zip}`;
+    const fullNotes = [
+      `Light placement: ${placement}`,
+      heard ? `Heard about us: ${heard}` : '',
+      notes
+    ].filter(Boolean).join('\n');
     try {
       const r = await fetch('/api/lead', {
         method: 'POST',
@@ -787,10 +888,9 @@
         body: JSON.stringify({
           name, phone,
           email: email || null,
-          address: address || null,
-          service,
-          notes: notes || null,
-          scheduled_start: date ? new Date(date + 'T12:00:00').toISOString() : null,
+          address,
+          service: 'Christmas Light Installation (Evergreen)',
+          notes: fullNotes || null,
           sms_consent: true
         })
       });
@@ -800,7 +900,7 @@
         status.innerHTML = '<div class="form-status success">Thank you! We will respond within 24 hours.</div>';
         setTimeout(() => {
           closeModal();
-          ['f_name','f_phone','f_email','f_address','f_date','f_notes'].forEach(id => document.getElementById(id).value = '');
+          ['f_fname','f_lname','f_phone','f_email','f_address','f_city','f_zip','f_notes'].forEach(id => document.getElementById(id).value = '');
         }, 2800);
       }
     } catch (e) {
