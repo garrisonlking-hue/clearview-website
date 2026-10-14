@@ -256,6 +256,11 @@
     .prog-note { margin-top:2.2rem; text-align:center; max-width:720px; margin-inline:auto; }
     .prog-note p { color:var(--gray-500); font-size:.98rem; line-height:1.75; margin-bottom:.8rem; }
     .prog-note strong { color:var(--navy); }
+    .prog-perks { max-width:900px; margin:2rem auto 0; background:var(--gray-50); border:1.5px solid var(--gray-200); border-radius:16px; padding:1.4rem 1.6rem; display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+    @media(max-width:760px){ .prog-perks{ grid-template-columns:1fr 1fr; } }
+    @media(max-width:460px){ .prog-perks{ grid-template-columns:1fr; } }
+    .prog-perk { display:flex; align-items:flex-start; gap:.5rem; font-size:.92rem; font-weight:600; color:var(--navy); }
+    .prog-perk .pi { color:var(--blue); font-weight:800; flex-shrink:0; }
 
     /* STEPS */
     .steps-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem; }
@@ -494,8 +499,15 @@
       </div>
     </div>
     <div class="prog-note">
+      <p><strong>How often?</strong> Twice a year, quarterly, or monthly for storefronts. The more often we come, the better your rate.</p>
       <p><strong>Every building is different.</strong> We price each one after a free site walk and send your quote within 48 hours.</p>
       <p>One-time cleanings are available too, no program required. We also offer optional <strong>Weather &amp; Construction Protection</strong>, a free exterior touch up after storms, pollen, or nearby construction dust.</p>
+    </div>
+    <div class="prog-perks">
+      <div class="prog-perk"><span class="pi">✓</span> Priority scheduling</div>
+      <div class="prog-perk"><span class="pi">✓</span> Photo report after every visit</div>
+      <div class="prog-perk"><span class="pi">✓</span> One point of contact</div>
+      <div class="prog-perk"><span class="pi">✓</span> 48 hour re-clean guarantee</div>
     </div>
   </div>
 </section>
