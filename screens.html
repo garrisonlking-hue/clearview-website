@@ -382,11 +382,33 @@
     .nav-call svg { fill:#fff; }
 
   </style>
+<style id="cv-navfix">
+    .nav-dd { position:relative; }
+    .nav-dd > a { cursor:pointer; display:inline-flex; align-items:center; gap:.3rem; }
+    .nav-dd > a::after { content:'\25BE'; font-size:.7em; opacity:.7; }
+    .nav-dd-menu { position:absolute; top:100%; left:50%; transform:translateX(-50%) translateY(8px); background:#fff; border-radius:14px; box-shadow:0 20px 50px rgba(22,40,74,.18); padding:.6rem; min-width:240px; opacity:0; visibility:hidden; transition:all .2s; z-index:200; }
+    .nav-dd:hover .nav-dd-menu { opacity:1; visibility:visible; transform:translateX(-50%) translateY(4px); }
+    .nav-dd-menu a { display:block; padding:.7rem .9rem; border-radius:9px; color:#16284A; font-weight:600; font-size:.92rem; white-space:nowrap; }
+    .nav-dd-menu a:hover { background:#f8fafc; }
+    .nav-call { display:inline-flex; align-items:center; gap:.5rem; background:#C9473A; color:#fff !important; padding:.6rem 1.2rem; border-radius:40px; font-weight:700; }
+    .nav-call:hover { background:#b23a2e; }
+    .nav-call svg { fill:#fff; }
+    .nav-links { gap:26px !important; }
+    .nav-links > a, .nav-dd > a, .nav-call { white-space:nowrap; }
+    .nav .btn-nav { background:#F6F2EA !important; color:#16284A !important; border:1.5px solid #16284A !important; border-radius:12px !important; padding:12px 22px !important; font-size:14px !important; font-weight:700; white-space:nowrap; box-shadow:0 4px 14px rgba(22,40,74,0.12); }
+    @media (max-width: 1360px) { .nav-call { display:none !important; } }
+    @media (max-width: 1180px) { .nav-links { gap:18px !important; } .nav-links > a, .nav-dd > a { font-size:14px !important; } }
+    .mobile-menu { display:none; position:fixed; inset:0; background:#fff; z-index:500; padding:2rem 1.5rem; flex-direction:column; gap:1.3rem; overflow-y:auto; }
+    .mobile-menu.open { display:flex; }
+    .mobile-menu a { font-size:1.2rem; font-weight:600; color:#16284A; }
+    .mobile-menu-close { align-self:flex-end; background:#f1f5f9; width:40px; height:40px; border-radius:50%; font-size:1.4rem; color:#16284A; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; }
+  </style>
+  <script>function toggleMobileMenu(){var m=document.getElementById('mobileMenu');if(m)m.classList.toggle('open');}</script>
 <body>
 <nav class="nav">
     <div class="nav-inner">
       <a href="index.html" class="nav-logo">
-        <img src="logo.png" alt="Clear View Window Co. badge logo" class="nav-logo-badge">
+        <img src="logo.png" alt="Clear View Window Cleaning logo" class="nav-logo-badge">
         <div class="nav-logo-wordmark">
           <div class="nav-logo-text">CLEAR&nbsp;VIEW</div>
           <div class="nav-logo-sub"><span class="wm-dash"></span>WINDOW&nbsp;CO.<span class="wm-dash"></span></div>
@@ -398,6 +420,8 @@
           Call us
         </a>
         <a href="about.html">About Us</a>
+        <a href="window-cleaning-plans-ct.html">Plans</a>
+        <a href="commercial.html">Commercial</a>
         <div class="nav-dd">
           <a>Our Services</a>
           <div class="nav-dd-menu">
@@ -418,10 +442,22 @@
         <a href="index.html#reviews">Reviews</a>
         <button class="btn btn-primary btn-nav" onclick="location.href='quote.html'">Get Free Quote</button>
       </div>
-      
-      <a class="mobile-btn" href="index.html"><span></span><span></span><span></span></a>
+      <button class="mobile-btn" onclick="toggleMobileMenu()" aria-label="Open menu"><span></span><span></span><span></span></button>
     </div>
   </nav>
+<nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
+  <button class="mobile-menu-close" onclick="toggleMobileMenu()" aria-label="Close menu">&times;</button>
+  <a href="index.html">Home</a>
+  <a href="about.html">About Us</a>
+  <a href="window-cleaning-plans-ct.html">Plans</a>
+  <a href="commercial.html">Commercial</a>
+  <a href="exterior.html">Services</a>
+  <a href="areas.html">Service Areas</a>
+  <a href="gallery.html">Our Work</a>
+  <a href="index.html#reviews">Reviews</a>
+  <a href="tel:+18609663149">Call (860) 966-3149</a>
+  <a href="quote.html" class="btn btn-primary" style="text-align:center;color:#16284A;background:#F6F2EA;border:1.5px solid #16284A;">Get Free Quote</a>
+</nav>
 
 <header class="svc-hero" style="background-image:linear-gradient(rgba(22,40,74,.72),rgba(22,40,74,.72)),url('cv-hero-screens.jpg');background-size:cover;background-position:center;">
   <div class="eyebrow">Window Cleaning</div>
