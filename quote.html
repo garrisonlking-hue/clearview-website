@@ -278,13 +278,14 @@
     {v:'outside', t:'Outside only', d:'Exterior glass'},
     {v:'inside',  t:'Inside only',  d:'Interior glass'},
   ];
-  // Flat-dollar discount per visit, with a hard floor so small jobs never
-  // drop below PLAN_FLOOR. off = $ off each cleaning; floor = min paid/visit.
+  // Percent discount per visit (matches the plans on the homepage), with a floor
+  // so small jobs never drop below PLAN_FLOOR, and a plan never costs more than one-time.
+  // off = percent off each cleaning (0.10 = 10%).
   const PLAN_FLOOR = 200;      // post-discount price can never fall below this
   const PLANS = [
-    {id:'quarterly',t:'Quarterly',freq:'4 cleanings / year',off:150,save:'$150 off every cleaning',popular:true},
-    {id:'triannual',t:'Tri-Annual',freq:'3 cleanings / year · winter interiors',off:100,save:'$100 off every cleaning'},
-    {id:'biannual',t:'Biannual',freq:'2 cleanings / year',off:50,save:'$50 off every cleaning'},
+    {id:'quarterly',t:'Always Clear',freq:'4 cleanings / year',off:0.15,save:'15% off every cleaning'},
+    {id:'triannual',t:'3-Season',freq:'3 cleanings / year · winter inside clean',off:0.125,save:'12.5% off every cleaning',popular:true},
+    {id:'biannual',t:'Seasonal',freq:'2 cleanings / year · spring & fall',off:0.10,save:'10% off every cleaning'},
     {id:'onetime',t:'One-Time',freq:'Single cleaning',off:0,save:'Flexible · no commitment'},
   ];
   // Plan card perks (RainShield = our deionized pure-water tech, our own name).
@@ -334,12 +335,17 @@
     if(S.services.includes('solar')) a += (S.solarPanels||0)*SOLAR_RATE;
     return a;
   }
-  // Apply flat $ discount to the scope base only (floored), then add add-ons.
+  // Apply percent discount to the scope base only (floored), then add add-ons.
   function applyPlan(base, off){
     if(base===null) return null;
     if(base===-1) return -1;
     if(!off) return base;
-    return Math.max(base - off, PLAN_FLOOR);
+    return Math.max(base * (1 - off), Math.min(base, PLAN_FLOOR));
+  }
+  function pctLabel(off){ return (Math.round(off*1000)/10)+'%'; }
+  function dollarsSaved(off){
+    const b=scopeBase(); if(b===null||b===-1||!off) return 0;
+    return Math.max(0, Math.round((b - applyPlan(b, off))/5)*5);
   }
   // Plan price: discount hits the scope base, add-ons stack on top undiscounted.
   function priceForPlan(off){
@@ -467,13 +473,13 @@
     <div class="opt-grid cols-3">${SIZE.map((x,i)=>optCard(S.size===x.v,`pickSize(${x.v},${i})`,'',x.label,'')).join('')}</div>`;
   }
   function stepPlan(){
-    if(!S.plan) S.plan='quarterly';   // recurring plan is the default path
+    if(!S.plan) S.plan='triannual';   // recurring plan is the default path
     const cards = PLANS.map(p=>{
       let priceHtml;
       if(isCustom()){ priceHtml='<div class="price">Custom</div>'; }
       else {
         const full = fmtRange(null,0);          // undiscounted price (anchor)
-        const disc = fmtRange(null,p.off);       // after flat off + floor
+        const disc = fmtRange(null,p.off);       // after percent off + floor
         const showStrike = p.off>0 && full!==disc;
         priceHtml = `<div class="price">${showStrike?`<s>${full}</s>`:''}${disc}<span class="per"> / cleaning</span></div>`;
       }
@@ -482,13 +488,14 @@
         const on = i < nPerks;
         return `<li class="${on?'yes':'no'}"><span class="pi">${on?'✓':'✕'}</span> ${perk}</li>`;
       }).join('');
-      const annual = p.off>0 ? `<div class="plan-annual">Save $${p.off * (PLAN_VISITS[p.id]||1)} / year</div>` : `<div class="plan-annual none">No savings</div>`;
+      const yr = dollarsSaved(p.off) * (PLAN_VISITS[p.id]||1);
+      const annual = p.off>0 ? `<div class="plan-annual">${pctLabel(p.off)} off every visit${yr>0?` · save about $${yr} / year`:''}</div>` : `<div class="plan-annual none">No savings</div>`;
       const sel = S.plan===p.id;
       const btn = `<div class="plan-choose ${sel?'sel':''}">${sel?'✓ Selected':'Choose '+p.t}</div>`;
       return `<div class="plan ${sel?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}${btn}</div>`;
     }).join('');
-    const biSave = 50 * PLAN_VISITS.biannual;
-    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save $${biSave}/year with Biannual</div><p>Two cleanings a year keeps the shine — and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="next()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save $${biSave}</button></div></div>` : '';
+    const biSave = dollarsSaved(0.10) * PLAN_VISITS.biannual;
+    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save 10%${biSave>0?` (about $${biSave}/year)`:''} with Seasonal</div><p>Two cleanings a year keeps the shine — and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="next()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save 10%</button></div></div>` : '';
     return `<div class="qb-step-eyebrow">Step 1 of 3 · Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
     <div class="plan-grid">${cards}</div>
     ${nudge}
@@ -555,7 +562,7 @@
       <div class="rev-row"><span class="k">Contact</span><span class="v">${S.name} · ${S.phone}</span></div>
       <div class="rev-row"><span class="k">Address</span><span class="v">${S.address}</span></div>
       <div class="rev-row"><span class="k">Requested</span><span class="v">${S.date} · ${S.time}</span></div>
-      <div class="rev-total"><span class="lbl">Estimated price${off>0?` ($${off} off / visit)`:''}</span><span class="amt">${fmtRange(null, off)}</span></div>
+      <div class="rev-total"><span class="lbl">Estimated price${off>0?` (${pctLabel(off)} off / visit)`:''}</span><span class="amt">${fmtRange(null, off)}</span></div>
     </div>
     <div class="info-note">Final price confirmed at your free in-person walkthrough. Fully insured · $1M coverage.</div>
     <div id="submitErr" class="err"></div>`;
