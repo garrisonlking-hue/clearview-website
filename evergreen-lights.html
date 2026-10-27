@@ -160,7 +160,7 @@
     .img-ph span { font-size: 11.5px; font-weight: 700; color: rgba(250,244,232,0.72); letter-spacing: 0.02em; padding: 0 14px; }
     .real-img { width: 100%; height: 100%; object-fit: cover; display: block; }
     .gallery-item .real-img { position: absolute; inset: 0; }
-    .example-tag { position: absolute; bottom: 10px; left: 10px; background: rgba(4,26,18,.72); color: var(--white); font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 5px 10px; border-radius: 20px; z-index: 2; }
+    .example-tag { position: absolute; top: 10px; left: 10px; background: rgba(4,26,18,.72); color: var(--white); font-size: 10.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 5px 10px; border-radius: 20px; z-index: 2; }
 
     /* ============ SERVICE INTRO (editorial) ============ */
     .intro-grid { display: grid; grid-template-columns: 0.95fr 1.05fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
@@ -332,7 +332,7 @@
 <a href="#main" class="skip-link">Skip to main content</a>
 
 <!-- ================= ANNOUNCEMENT BAR ================= -->
-<div class="announce-bar"><p>Now Booking 2026 &bull; Save 50% on Early-Bird Installation</p></div>
+<div class="announce-bar"><p>Now Booking 2026 &bull; $200 Off Holiday Light Installs, Book Within 10 Days</p></div>
 
 <!-- ================= HEADER / NAV ================= -->
 <header class="site-header">
@@ -427,16 +427,9 @@
 <div class="offer-wrap">
   <div class="container">
     <div class="offer-card" id="offer">
-      <div class="eyebrow" style="margin-bottom:10px;">🎄 Early-Bird Special</div>
-      <div class="offer-title">50% Off Installation + Free Takedown &amp; Storage</div>
-      <p class="offer-sub">Deal ends November 1st — reserve your 2026 installation today.</p>
-
-      <div class="offer-countdown" id="offerCountdown" aria-label="Countdown to November 1st early-bird deadline">
-        <div class="cd-box"><div class="cd-num" id="cd-days">--</div><div class="cd-label">Days</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-hours">--</div><div class="cd-label">Hours</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-mins">--</div><div class="cd-label">Minutes</div></div>
-        <div class="cd-box"><div class="cd-num" id="cd-secs">--</div><div class="cd-label">Seconds</div></div>
-      </div>
+      <div class="eyebrow" style="margin-bottom:10px;">🎄 Limited-Time Offer</div>
+      <div class="offer-title">$200 Off Your Holiday Light Install</div>
+      <p class="offer-sub">Book within 10 days and save $200 on design, installation, takedown, and storage.</p>
 
       <button class="btn btn-red" onclick="openModal()">Get Your Free Quote</button>
 
@@ -614,15 +607,14 @@
   <section class="section" id="gallery" style="background:var(--cream);" aria-labelledby="gallery-heading">
     <div class="container">
       <div class="section-head center">
-        <div class="eyebrow">Example Styles</div>
+        <div class="eyebrow">Our Work</div>
         <h2 class="h2" id="gallery-heading">See What's Possible.</h2>
-        <p class="lede">These photos show the style of display we install — not yet our own completed jobs. Real photos from this season's Evergreen installs will replace these as they're finished.</p>
+        <p class="lede">Our first Evergreen install is up now. More real jobs will replace the example photos as we finish them this season.</p>
       </div>
       <div class="gallery-grid">
         <div class="gallery-item g-feature" style="position:relative;">
-          <span class="example-tag">Example</span>
-          <img class="real-img" src="evergreen-gallery-01.webp" alt="Example of red and white roofline lighting on a stone home" style="object-position:center 80%;">
-          <div class="gallery-caption">Full roofline in red &amp; white</div>
+          <img class="real-img" src="evergreen-first-install.jpg" alt="Warm white C9 roofline lights on a home at night, Evergreen's first Connecticut install" style="object-position:center 60%;">
+          <div class="gallery-caption">Our first Evergreen install</div>
         </div>
         <div class="gallery-item" style="position:relative;">
           <span class="example-tag">Example</span>
@@ -992,34 +984,6 @@
   })();
 </script>
 
-<script>
-  // Countdown to November 1st (rolls to next year automatically once it passes)
-  (function() {
-    function getTarget() {
-      const now = new Date();
-      let target = new Date(now.getFullYear(), 10, 1, 0, 0, 0); // month 10 = November
-      if (now >= target) target = new Date(now.getFullYear() + 1, 10, 1, 0, 0, 0);
-      return target;
-    }
-    const target = getTarget();
-    const els = {
-      d: document.getElementById('cd-days'),
-      h: document.getElementById('cd-hours'),
-      m: document.getElementById('cd-mins'),
-      s: document.getElementById('cd-secs')
-    };
-    if (!els.d) return;
-    function tick() {
-      const diff = Math.max(0, target - new Date());
-      els.d.textContent = String(Math.floor(diff / 86400000)).padStart(2, '0');
-      els.h.textContent = String(Math.floor((diff % 86400000) / 3600000)).padStart(2, '0');
-      els.m.textContent = String(Math.floor((diff % 3600000) / 60000)).padStart(2, '0');
-      els.s.textContent = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
-    }
-    tick();
-    setInterval(tick, 1000);
-  })();
-</script>
 
 </body>
 </html>
