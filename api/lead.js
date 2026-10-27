@@ -47,14 +47,21 @@ export default async function handler(req, res) {
   if (rawService.includes(',')) service_type = 'multiple_services';
   else if (SERVICE_VALUES[rawService]) service_type = SERVICE_VALUES[rawService];
 
+  // Send only the first name to Flyra so texts can say "Hey Jane".
+  // Any last name goes into the notes so it isn't lost.
+  const fullName = String(b.name || '').trim();
+  const [firstOnly, ...restName] = fullName.split(/\s+/);
+  const lastName = restName.join(' ');
+  const notesWithLast = [lastName ? `Last name: ${lastName}` : '', b.notes || ''].filter(Boolean).join('\n');
+
   const payload = {
-    first_name: String(b.name || '').trim() || 'Website Lead',
+    first_name: firstOnly || 'Website Lead',
     phone: phone || undefined,
     email: b.email || undefined,
     address: b.address || undefined,
     service_type,
     preferred_date: b.scheduled_start ? String(b.scheduled_start).slice(0, 10) : undefined,
-    notes: b.notes || undefined,
+    notes: notesWithLast || undefined,
     sms_consent: !!b.sms_consent,
   };
 
