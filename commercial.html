@@ -379,6 +379,25 @@
   </style>
   <script>function toggleMobileMenu(){var m=document.getElementById('mobileMenu');if(m)m.classList.toggle('open');}</script>
 <body>
+<div class="xmas-banner">
+  <div class="xmas-banner-inner">
+    <span class="xmas-banner-text">We also install Christmas lights</span>
+    <a href="evergreen-lights.html" class="xmas-banner-btn">Get a Christmas lights quote &rarr;</a>
+  </div>
+</div>
+<style id="cv-xmas-banner">
+.xmas-banner{position:relative;background:#0F4D33;color:#FFF8EC;padding:14px 1rem;text-align:center;border-bottom:3px solid #D83A34;overflow:hidden;z-index:11}
+.xmas-banner::before,.xmas-banner::after{content:"";position:absolute;left:0;right:0;height:8px;background:radial-gradient(circle,#FFD76A 2.5px,transparent 3px) 0 0/22px 8px repeat-x;opacity:.95}
+.xmas-banner::before{top:2px}
+.xmas-banner::after{bottom:2px}
+.xmas-banner-inner{position:relative;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.xmas-banner-text{font-weight:700;font-size:16px;letter-spacing:.01em}
+.xmas-banner-text::before{content:"\2605  ";color:#FFD76A}
+.xmas-banner-text::after{content:"  \2605";color:#FFD76A}
+.xmas-banner-btn{background:#D83A34;color:#fff;font-weight:700;font-size:14px;padding:9px 18px;border-radius:999px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.xmas-banner-btn:hover{background:#B92E29}
+@media (max-width:640px){.xmas-banner-text{font-size:14px}}
+</style>
 <nav class="nav">
     <div class="nav-inner">
       <a href="index.html" class="nav-logo">
