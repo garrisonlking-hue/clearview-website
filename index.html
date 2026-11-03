@@ -952,90 +952,105 @@
 
 
 
-<!-- ================= HOW IT WORKS (4 STEPS) ================= -->
-<section class="simple-steps" id="how-it-works">
-  <div class="simple-steps-inner">
+<!-- ================= HOW IT WORKS (scroll steps) ================= -->
+<section class="ps" id="how-it-works">
+  <div class="ps-head">
     <h2>How it works</h2>
-    <p class="simple-steps-sub">Four steps from first call to clean glass.</p>
-    <div class="ss-stage" data-steps>
-      <div class="ss-slide is-active">
-        <img src="cv-ext-a.jpg" alt="Front of a Connecticut home with clean windows" loading="lazy">
-        <div class="ss-text"><span class="ss-num">Step 1 of 4</span><h3>Get your free quote</h3><p>We come out for a free in-person estimate and give you a clear price before any work starts.</p></div>
+    <p>Four steps from first call to clean glass.</p>
+  </div>
+  <div class="ps-track" data-ps>
+    <div class="ps-sticky">
+      <div class="ps-card">
+        <div class="ps-media">
+          <img src="cv-ext-a.jpg" alt="Front of a Connecticut home with clean windows" class="is-active" loading="lazy">
+          <img src="cv-action-1.jpg" alt="Technician cleaning windows on a home" loading="lazy">
+          <img src="cv-ext-c.jpg" alt="Clean exterior windows on a Connecticut home" loading="lazy">
+          <img src="cv-detail-shutters.jpg" alt="Detailed window and shutter cleaning" loading="lazy">
+        </div>
+        <div class="ps-copy">
+          <span class="ps-count" data-count>Step 1 of 4</span>
+          <div class="ps-step is-active"><h3>Get your free quote</h3><p>We come out for a free in-person estimate and give you a clear price before any work starts.</p></div>
+          <div class="ps-step"><h3>Pick your plan</h3><p>One-time cleaning or a recurring plan. We set the schedule and book your next visit before we leave.</p></div>
+          <div class="ps-step"><h3>We clean</h3><p>Interior and exterior, screens, tracks and every edge, done with pure water so the glass dries clear with no streaks.</p></div>
+          <div class="ps-step"><h3>We make it right</h3><p>Spot a streak? Tell us within 7 days of a cleaning and we come back once, free, to fix it.</p></div>
+        </div>
       </div>
-      <div class="ss-slide">
-        <img src="cv-action-1.jpg" alt="Technician cleaning windows on a home" loading="lazy">
-        <div class="ss-text"><span class="ss-num">Step 2 of 4</span><h3>Pick your plan</h3><p>One-time cleaning or a recurring plan. We set the schedule and book your next visit before we leave.</p></div>
+      <div class="ps-rail">
+        <div class="ps-line"><span data-fill></span></div>
+        <button type="button" class="ps-dot is-on" data-go="0">1</button>
+        <button type="button" class="ps-dot" data-go="1">2</button>
+        <button type="button" class="ps-dot" data-go="2">3</button>
+        <button type="button" class="ps-dot" data-go="3">4</button>
       </div>
-      <div class="ss-slide">
-        <img src="cv-ext-c.jpg" alt="Clean exterior windows on a Connecticut home" loading="lazy">
-        <div class="ss-text"><span class="ss-num">Step 3 of 4</span><h3>We clean</h3><p>Interior and exterior, screens, tracks and every edge, done with pure water so the glass dries clear with no streaks.</p></div>
-      </div>
-      <div class="ss-slide">
-        <img src="cv-detail-shutters.jpg" alt="Detailed window and shutter cleaning" loading="lazy">
-        <div class="ss-text"><span class="ss-num">Step 4 of 4</span><h3>We make it right</h3><p>Spot a streak? Tell us within 7 days of a cleaning and we come back once, free, to fix it.</p></div>
-      </div>
-    </div>
-    <div class="ss-controls">
-      <button type="button" class="ss-btn" data-prev>Back</button>
-      <div class="ss-dots" data-dots>
-        <button type="button" class="ss-dot is-active" aria-label="Step 1"></button>
-        <button type="button" class="ss-dot" aria-label="Step 2"></button>
-        <button type="button" class="ss-dot" aria-label="Step 3"></button>
-        <button type="button" class="ss-dot" aria-label="Step 4"></button>
-      </div>
-      <button type="button" class="ss-btn ss-btn-primary" data-next>Next</button>
     </div>
   </div>
   <style>
-    .simple-steps { background: #0F4D33; color: #FFF8EC; padding: 72px 1.5rem; }
-    .simple-steps-inner { max-width: 1100px; margin: 0 auto; text-align: center; }
-    .simple-steps h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin: 0 0 10px; color: #FFF8EC; }
-    .simple-steps-sub { font-size: 17px; opacity: .85; margin: 0 0 36px; }
-    .ss-stage { background: #FFF8EC; color: #16284A; border-radius: 18px; overflow: hidden; text-align: left; }
-    .ss-slide { display: none; }
-    .ss-slide.is-active { display: grid; grid-template-columns: 1.1fr 1fr; }
-    .ss-slide img { width: 100%; height: 100%; min-height: 360px; object-fit: cover; display: block; }
-    .ss-text { padding: 44px 40px; display: flex; flex-direction: column; justify-content: center; }
-    .ss-num { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #0F4D33; }
-    .ss-text h3 { font-size: 28px; margin: 10px 0 12px; color: #16284A; }
-    .ss-text p { font-size: 16px; line-height: 1.6; color: #475569; margin: 0; }
-    .ss-controls { display: flex; align-items: center; justify-content: space-between; margin-top: 26px; gap: 16px; }
-    .ss-btn { background: transparent; border: 1.5px solid #FFF8EC; color: #FFF8EC; font: inherit; font-weight: 700; padding: 11px 24px; border-radius: 999px; cursor: pointer; }
-    .ss-btn-primary { background: #FFF8EC; color: #0F4D33; }
-    .ss-btn:disabled { opacity: .4; cursor: default; }
-    .ss-dots { display: flex; gap: 10px; }
-    .ss-dot { width: 12px; height: 12px; border-radius: 50%; border: none; background: rgba(255,248,236,.4); cursor: pointer; padding: 0; }
-    .ss-dot.is-active { background: #FFF8EC; }
+    .ps { background: #FAF4E8; padding: 72px 1.5rem 0; color: #16284A; }
+    .ps-head { text-align: center; max-width: 900px; margin: 0 auto 28px; }
+    .ps-head h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin: 0 0 8px; }
+    .ps-head p { font-size: 17px; color: #6B7570; margin: 0; }
+    .ps-track { position: relative; height: 320vh; }
+    .ps-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; box-sizing: border-box; }
+    .ps-card { width: 100%; max-width: 1100px; background: #fff; border-radius: 22px; overflow: hidden; display: grid; grid-template-columns: 1.1fr 1fr; box-shadow: 0 20px 50px rgba(4,42,32,.10); }
+    .ps-media { position: relative; min-height: 420px; background: #0F4D33; }
+    .ps-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
+    .ps-media img.is-active { opacity: 1; }
+    .ps-copy { padding: 48px 44px; display: flex; flex-direction: column; justify-content: center; position: relative; }
+    .ps-count { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #0F4D33; margin-bottom: 10px; }
+    .ps-step { display: none; }
+    .ps-step.is-active { display: block; }
+    .ps-step h3 { font-size: 30px; font-weight: 800; margin: 0 0 12px; color: #16284A; }
+    .ps-step p { font-size: 16.5px; line-height: 1.65; color: #475569; margin: 0; }
+    .ps-rail { position: relative; width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
+    .ps-line { position: absolute; left: 22px; right: 22px; top: 50%; height: 4px; background: #D9D2C3; border-radius: 4px; transform: translateY(-50%); overflow: hidden; }
+    .ps-line span { display: block; height: 100%; width: 0; background: #0F4D33; transition: width .3s ease; }
+    .ps-dot { position: relative; z-index: 1; width: 44px; height: 44px; border-radius: 50%; border: 3px solid #D9D2C3; background: #FAF4E8; color: #6B7570; font: inherit; font-weight: 800; cursor: pointer; }
+    .ps-dot.is-on { border-color: #0F4D33; background: #0F4D33; color: #FAF4E8; }
     @media (max-width: 760px) {
-      .ss-slide.is-active { grid-template-columns: 1fr; }
-      .ss-slide img { min-height: 0; height: 220px; }
-      .ss-text { padding: 26px 22px; }
-      .ss-text h3 { font-size: 23px; }
+      .ps-track { height: 280vh; }
+      .ps-card { grid-template-columns: 1fr; }
+      .ps-media { min-height: 220px; }
+      .ps-copy { padding: 26px 22px; }
+      .ps-step h3 { font-size: 24px; }
+      .ps-sticky { padding: 16px; }
     }
   </style>
   <script>
   (function () {
-    var root = document.querySelector('[data-steps]');
-    if (!root) return;
-    var slides = root.querySelectorAll('.ss-slide');
-    var dots = document.querySelectorAll('[data-dots] .ss-dot');
-    var prev = document.querySelector('[data-prev]');
-    var next = document.querySelector('[data-next]');
-    var i = 0;
-    function show(n) {
-      i = Math.max(0, Math.min(slides.length - 1, n));
-      Array.prototype.forEach.call(slides, function (sl, k) { sl.classList.toggle('is-active', k === i); });
-      Array.prototype.forEach.call(dots, function (d, k) { d.classList.toggle('is-active', k === i); });
-      prev.disabled = i === 0;
-      next.textContent = i === slides.length - 1 ? 'Get a quote' : 'Next';
+    var track = document.querySelector('[data-ps]');
+    if (!track) return;
+    var imgs = track.querySelectorAll('.ps-media img');
+    var steps = track.querySelectorAll('.ps-step');
+    var dots = document.querySelectorAll('.ps-rail .ps-dot');
+    var fill = track.querySelector('[data-fill]');
+    var count = track.querySelector('[data-count]');
+    var n = steps.length;
+    var cur = -1;
+    function setStep(k) {
+      if (k === cur) return;
+      cur = k;
+      Array.prototype.forEach.call(imgs, function (im, j) { im.classList.toggle('is-active', j === k); });
+      Array.prototype.forEach.call(steps, function (st, j) { st.classList.toggle('is-active', j === k); });
+      Array.prototype.forEach.call(dots, function (d, j) { d.classList.toggle('is-on', j <= k); });
+      count.textContent = 'Step ' + (k + 1) + ' of ' + n;
     }
-    prev.addEventListener('click', function () { show(i - 1); });
-    next.addEventListener('click', function () {
-      if (i === slides.length - 1) { if (typeof openModal === 'function') openModal(); return; }
-      show(i + 1);
+    function onScroll() {
+      var rect = track.getBoundingClientRect();
+      var range = track.offsetHeight - window.innerHeight;
+      var p = range > 0 ? Math.min(1, Math.max(0, -rect.top / range)) : 0;
+      fill.style.width = (p * 100) + '%';
+      setStep(Math.min(n - 1, Math.floor(p * n + 0.0001)));
+    }
+    Array.prototype.forEach.call(dots, function (d, k) {
+      d.addEventListener('click', function () {
+        var range = track.offsetHeight - window.innerHeight;
+        var top = track.getBoundingClientRect().top + window.pageYOffset;
+        window.scrollTo({ top: top + (k / n) * range + 2, behavior: 'smooth' });
+      });
     });
-    Array.prototype.forEach.call(dots, function (d, k) { d.addEventListener('click', function () { show(k); }); });
-    show(0);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    onScroll();
   })();
   </script>
 </section>
