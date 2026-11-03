@@ -465,11 +465,30 @@
 
   </style>
 </head>
-<style id="cv-navfix">.nav-links{gap:26px !important}.nav-links > a,.nav-dd > a,.nav-call{white-space:nowrap}@media (max-width:1360px){.nav-call{display:none !important}}@media (max-width:1180px){.nav-links{gap:18px !important}.nav-links > a,.nav-dd > a{font-size:14px !important}}</style>
+<style id="cv-navfix">.nav-links{gap:26px !important}.nav-links > a,.nav-dd > a,.nav-call{white-space:nowrap}@media (max-width:1180px){.nav-links{gap:18px !important}.nav-links > a,.nav-dd > a{font-size:14px !important}}</style>
 <body>
 
 <!-- ================= HERO ================= -->
 <section class="hero-section">
+<div class="xmas-banner">
+  <div class="xmas-banner-inner">
+    <span class="xmas-banner-text">We also install Christmas lights</span>
+    <a href="evergreen-lights.html" class="xmas-banner-btn">Get a Christmas lights quote &rarr;</a>
+  </div>
+</div>
+<style id="cv-xmas-banner">
+.xmas-banner{position:relative;background:#0F4D33;color:#FFF8EC;padding:14px 1rem;text-align:center;border-bottom:3px solid #D83A34;overflow:hidden;z-index:11}
+.xmas-banner::before,.xmas-banner::after{content:"";position:absolute;left:0;right:0;height:8px;background:radial-gradient(circle,#FFD76A 2.5px,transparent 3px) 0 0/22px 8px repeat-x;opacity:.95}
+.xmas-banner::before{top:2px}
+.xmas-banner::after{bottom:2px}
+.xmas-banner-inner{position:relative;display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.xmas-banner-text{font-weight:700;font-size:16px;letter-spacing:.01em}
+.xmas-banner-text::before{content:"\2605  ";color:#FFD76A}
+.xmas-banner-text::after{content:"  \2605";color:#FFD76A}
+.xmas-banner-btn{background:#D83A34;color:#fff;font-weight:700;font-size:14px;padding:9px 18px;border-radius:999px;text-decoration:none;box-shadow:0 4px 12px rgba(0,0,0,.25)}
+.xmas-banner-btn:hover{background:#B92E29}
+@media (max-width:640px){.xmas-banner-text{font-size:14px}}
+</style>
   <nav class="nav">
     <div class="nav-inner">
       <a href="#top" class="nav-logo">
@@ -480,8 +499,11 @@
         </div>
       </a>
       <div class="nav-links">
+        <a href="tel:+18609663149" class="nav-call">
+          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+          Call us
+        </a>
         <a href="about.html">About Us</a>
-        <a href="#plans">Plans</a>
         <div class="nav-dd">
           <a href="index.html#services">Our Services</a>
           <div class="nav-dd-menu">
@@ -495,11 +517,13 @@
             <a href="storms.html">Storm Window Cleaning</a>
             <a href="hardwater.html">Hard Water Removal</a>
             <a href="evergreen-lights.html">Christmas Lights</a>
+            <a href="#plans">Plans</a>
+            <a href="areas.html">Service Areas</a>
+            <a href="gallery.html">Our Work</a>
           </div>
         </div>
-        <a href="areas.html">Service Areas</a>
-        <a href="gallery.html">Our Work</a>
         <a href="#reviews">Reviews</a>
+        <a href="commercial.html">Commercial Cleaning</a>
         <button class="btn btn-primary btn-nav" onclick="openModal()">Get Free Quote</button>
       </div>
 
