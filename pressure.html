@@ -380,16 +380,17 @@
 <body>
 <div class="xmas-banner">
   <div class="xmas-banner-inner">
-    <span class="xmas-tag">Holiday lights</span>
+    <svg class="xmas-tree" width="22" height="26" viewBox="0 0 24 28" aria-hidden="true"><path fill="#E9B949" d="M12 1 4 12h3.5L3 19h5.5L5 27h14l-3.5-8H21l-5.5-7H19z"/></svg>
     <span class="xmas-banner-text">We also install Christmas lights</span>
     <a href="evergreen-lights.html" class="xmas-banner-btn">See holiday packages &rarr;</a>
   </div>
 </div>
 <style id="cv-xmas-banner">
-.xmas-banner{background:#0F4D33;color:#FFF8EC;padding:12px 1rem;text-align:center;border-top:3px solid #E9B949;border-bottom:3px solid #E9B949;font-family:'Inter',system-ui,-apple-system,sans-serif}
+.xmas-banner{position:relative;background:#16284A;color:#FFF8EC;padding:12px 1rem 16px;text-align:center;font-family:'Inter',system-ui,-apple-system,sans-serif}
+.xmas-banner::after{content:"";position:absolute;left:0;right:0;bottom:0;height:6px;background:repeating-linear-gradient(-45deg,#D83A34 0 8px,#FFFFFF 8px 16px)}
 .xmas-banner-inner{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
-.xmas-tag{background:#E9B949;color:#0F4D33;font-weight:800;font-size:11px;letter-spacing:.12em;text-transform:uppercase;padding:5px 10px;border-radius:999px}
-.xmas-banner-text{font-weight:600;font-size:15px}
+.xmas-tree{display:block}
+.xmas-banner-text{font-weight:600;font-size:16px}
 .xmas-banner-btn{background:#D83A34;color:#fff;font-weight:700;font-size:14px;padding:8px 18px;border-radius:999px;text-decoration:none}
 .xmas-banner-btn:hover{background:#B92E29}
 @media (max-width:640px){.xmas-banner-text{font-size:14px}}
