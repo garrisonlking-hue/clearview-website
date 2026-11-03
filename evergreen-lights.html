@@ -314,22 +314,34 @@
     .bulb-dot { width: 10px; height: 10px; border-radius: 50%; border: none; padding: 0; background: rgba(7,63,46,0.22); cursor: pointer; }
     .bulb-dot.active { background: var(--red); }
     .pkg-link { text-align: center; margin-bottom: 18px; }
-    .install-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
-    @media (max-width: 760px) { .install-grid { grid-template-columns: 1fr; } }
-    .install-card { margin: 0; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 12px 32px rgba(4,42,32,0.1); border: 1px solid var(--line); }
-    .install-card img { display: block; width: 100%; height: auto; }
-    .install-card figcaption { padding: 14px 18px; font-size: 14.5px; color: var(--charcoal); }
+    .install-grid { display: grid; grid-template-columns: 1fr 1fr 259px; gap: 20px; align-items: stretch; }
+    .install-card { margin: 0; height: 460px; display: flex; flex-direction: column; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 12px 32px rgba(4,42,32,0.1); border: 1px solid var(--line); }
+    .install-photo { flex: 1 1 auto; min-height: 0; overflow: hidden; }
+    .install-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .install-card figcaption { padding: 14px 18px; font-size: 14.5px; color: var(--charcoal); flex-shrink: 0; }
     .install-card figcaption span { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-right: 8px; }
-    .install-video { margin-top: 36px; display: flex; justify-content: center; }
-    .install-video-frame { position: relative; width: min(100%, 340px); aspect-ratio: 9 / 16; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 40px rgba(4,42,32,0.2); background: var(--forest); }
-    .install-video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
-    .trust-strip { background: var(--forest); color: var(--cream); padding: 14px 0; }
-    .trust-strip-inner { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px 28px; font-size: 13.5px; font-weight: 600; }
-    .trust-strip-inner span { position: relative; padding-left: 18px; }
-    .trust-strip-inner span::before { content: ""; position: absolute; left: 0; top: 7px; width: 7px; height: 7px; border-radius: 50%; background: var(--gold); }
-    .area-list { list-style: none; padding: 0; margin: 0 auto; max-width: 720px; display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-    .area-list li { background: var(--white); border: 1px solid var(--line); color: var(--evergreen); font-weight: 700; padding: 12px 22px; border-radius: 999px; box-shadow: 0 6px 16px rgba(4,42,32,0.06); }
-    .area-note { text-align: center; color: var(--muted); font-size: 15px; margin-top: 24px; }
+    .install-video { position: relative; height: 460px; border-radius: 20px; overflow: hidden; box-shadow: 0 18px 40px rgba(4,42,32,0.2); background: var(--forest); }
+    .install-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+    @media (max-width: 960px) {
+      .install-grid { grid-template-columns: 1fr 1fr; }
+      .install-video { grid-column: 1 / -1; width: min(100%, 300px); height: auto; aspect-ratio: 9 / 16; margin: 0 auto; }
+      .install-card { height: auto; }
+      .install-photo { aspect-ratio: 4 / 3; flex: none; }
+    }
+    @media (max-width: 600px) {
+      .install-grid { grid-template-columns: 1fr; }
+      .install-card { height: auto; }
+      .install-photo { aspect-ratio: 4 / 3; flex: none; }
+      .install-video { width: min(100%, 300px); }
+    }
+    .town-search { display: block; width: min(100%, 420px); margin: 0 auto 26px; padding: 14px 20px; border-radius: 999px; border: 1px solid var(--line); background: var(--white); font: inherit; font-size: 15px; color: var(--charcoal); }
+    .town-search:focus { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .town-list { list-style: none; padding: 0; margin: 0 auto; max-width: 1000px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px 22px; }
+    .town-list li { font-size: 14.5px; color: var(--charcoal); padding: 7px 0; border-bottom: 1px solid rgba(7,63,46,0.08); }
+    .town-list li[hidden] { display: none; }
+    @media (max-width: 900px) { .town-list { grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 560px) { .town-list { grid-template-columns: repeat(2, 1fr); } }
+    .town-empty { text-align: center; color: var(--muted); margin-top: 22px; font-size: 15px; }
     .faq-wrap { max-width: 820px; }
     .faq-item { border-bottom: 1px solid var(--line); padding: 18px 4px; }
     .faq-item summary { cursor: pointer; font-weight: 700; font-size: 17px; color: var(--evergreen); list-style: none; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
@@ -501,16 +513,6 @@
 
 <main id="main">
 
-  <!-- ================= TRUST STRIP ================= -->
-  <div class="trust-strip">
-    <div class="container trust-strip-inner">
-      <span>Fully insured, $1M general liability through Hiscox</span>
-      <span>80+ five-star Google reviews</span>
-      <span>Free mid-season fixes</span>
-      <span>Takedown and storage included</span>
-    </div>
-  </div>
-
   <!-- ================= SERVICE INTRODUCTION ================= -->
   <section class="section" id="services" style="background:var(--white);" aria-labelledby="services-heading">
     <div class="container">
@@ -563,17 +565,14 @@
 
       <div class="install-grid">
         <figure class="install-card">
-          <img src="install-before.jpg" alt="Connecticut home in daylight before the holiday light install" loading="lazy">
+          <div class="install-photo"><img src="install-before.jpg" alt="Connecticut home in daylight before the holiday light install" loading="lazy"></div>
           <figcaption><span>Before</span> Daylight, ready for the install</figcaption>
         </figure>
         <figure class="install-card">
-          <img src="install-after.jpg" alt="Same Connecticut home at night with warm white C9 lights along the roofline and gutters" loading="lazy">
+          <div class="install-photo"><img src="install-after.jpg" alt="Same Connecticut home at night with warm white C9 lights along the roofline and gutters" loading="lazy"></div>
           <figcaption><span>After</span> Night, roofline and gutters lit</figcaption>
         </figure>
-      </div>
-
-      <div class="install-video">
-        <div class="install-video-frame">
+        <div class="install-video">
           <iframe src="https://www.youtube-nocookie.com/embed/I9Z2fUJljGs" title="Evergreen Holiday Lights install video" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
       </div>
@@ -778,7 +777,7 @@
         </div>
         <div class="step-card">
           <h3>Pricing Gets Simpler Every Year</h3>
-          <p>Year one covers the lights and the labor. After that, the strands are yours — you're only ever paying for us to hang and store them.</p>
+          <p>We own the bulbs and keep them stored for you. Each season is a lease, and booking next year's install gets you 15% off because your design is already done.</p>
         </div>
       </div>
     </div>
@@ -967,18 +966,201 @@
     <div class="container">
       <div class="section-head center">
         <div class="eyebrow">Where We Install</div>
-        <h2 class="h2" id="area-heading">Local Connecticut Installs.</h2>
-        <p class="lede">We're a local crew, so we keep our routes tight. Here's where we're installing this season.</p>
+        <h2 class="h2" id="area-heading">Every Town in Connecticut.</h2>
+        <p class="lede">Most jobs are worth it, so we work the whole state. Find your town below.</p>
       </div>
-      <ul class="area-list">
+      <input type="search" class="town-search" placeholder="Search your town" aria-label="Search Connecticut towns" data-town-search>
+      <ul class="town-list" data-town-list>
+        <li>Andover</li>
+        <li>Ansonia</li>
+        <li>Ashford</li>
         <li>Avon</li>
+        <li>Barkhamsted</li>
+        <li>Beacon Falls</li>
+        <li>Berlin</li>
+        <li>Bethany</li>
+        <li>Bethel</li>
+        <li>Bethlehem</li>
+        <li>Bloomfield</li>
+        <li>Bolton</li>
+        <li>Bozrah</li>
+        <li>Branford</li>
+        <li>Bridgeport</li>
+        <li>Bridgewater</li>
+        <li>Bristol</li>
+        <li>Brookfield</li>
+        <li>Brooklyn</li>
+        <li>Burlington</li>
+        <li>Canaan</li>
+        <li>Canterbury</li>
+        <li>Canton</li>
+        <li>Chaplin</li>
+        <li>Cheshire</li>
+        <li>Chester</li>
+        <li>Clinton</li>
+        <li>Colchester</li>
+        <li>Colebrook</li>
+        <li>Columbia</li>
+        <li>Cornwall</li>
+        <li>Coventry</li>
+        <li>Cromwell</li>
+        <li>Danbury</li>
+        <li>Darien</li>
+        <li>Deep River</li>
+        <li>Derby</li>
+        <li>Durham</li>
+        <li>East Granby</li>
+        <li>East Haddam</li>
+        <li>East Hampton</li>
+        <li>East Hartford</li>
+        <li>East Haven</li>
+        <li>East Lyme</li>
+        <li>East Windsor</li>
+        <li>Eastford</li>
+        <li>Easton</li>
+        <li>Ellington</li>
+        <li>Enfield</li>
+        <li>Essex</li>
+        <li>Fairfield</li>
+        <li>Farmington</li>
+        <li>Franklin</li>
         <li>Glastonbury</li>
+        <li>Goshen</li>
+        <li>Granby</li>
+        <li>Greenwich</li>
+        <li>Griswold</li>
+        <li>Groton</li>
+        <li>Guilford</li>
+        <li>Haddam</li>
+        <li>Hamden</li>
+        <li>Hampton</li>
+        <li>Hartford</li>
+        <li>Hartland</li>
+        <li>Harwinton</li>
+        <li>Hebron</li>
+        <li>Kent</li>
+        <li>Killingly</li>
+        <li>Killingworth</li>
+        <li>Lebanon</li>
+        <li>Ledyard</li>
+        <li>Lisbon</li>
+        <li>Litchfield</li>
+        <li>Lyme</li>
+        <li>Madison</li>
+        <li>Manchester</li>
+        <li>Mansfield</li>
+        <li>Marlborough</li>
+        <li>Meriden</li>
+        <li>Middlebury</li>
+        <li>Middlefield</li>
+        <li>Middletown</li>
+        <li>Milford</li>
+        <li>Monroe</li>
+        <li>Montville</li>
+        <li>Morris</li>
+        <li>Naugatuck</li>
+        <li>New Britain</li>
+        <li>New Canaan</li>
+        <li>New Fairfield</li>
+        <li>New Hartford</li>
+        <li>New Haven</li>
+        <li>New London</li>
+        <li>New Milford</li>
+        <li>Newington</li>
+        <li>Newtown</li>
+        <li>Norfolk</li>
+        <li>North Branford</li>
+        <li>North Canaan</li>
+        <li>North Haven</li>
+        <li>North Stonington</li>
+        <li>Norwalk</li>
+        <li>Norwich</li>
+        <li>Old Lyme</li>
+        <li>Old Saybrook</li>
+        <li>Orange</li>
+        <li>Oxford</li>
+        <li>Plainfield</li>
+        <li>Plainville</li>
+        <li>Plymouth</li>
+        <li>Pomfret</li>
+        <li>Portland</li>
+        <li>Preston</li>
+        <li>Prospect</li>
+        <li>Putnam</li>
+        <li>Redding</li>
+        <li>Ridgefield</li>
+        <li>Rocky Hill</li>
+        <li>Roxbury</li>
+        <li>Salem</li>
+        <li>Salisbury</li>
+        <li>Scotland</li>
+        <li>Seymour</li>
+        <li>Sharon</li>
+        <li>Shelton</li>
+        <li>Sherman</li>
         <li>Simsbury</li>
+        <li>Somers</li>
+        <li>Southbury</li>
+        <li>Southington</li>
         <li>South Windsor</li>
+        <li>Sprague</li>
+        <li>Stafford</li>
+        <li>Stamford</li>
+        <li>Sterling</li>
+        <li>Stonington</li>
+        <li>Stratford</li>
+        <li>Suffield</li>
+        <li>Thomaston</li>
+        <li>Thompson</li>
+        <li>Tolland</li>
+        <li>Torrington</li>
+        <li>Trumbull</li>
+        <li>Union</li>
+        <li>Vernon</li>
+        <li>Voluntown</li>
+        <li>Wallingford</li>
+        <li>Warren</li>
+        <li>Washington</li>
+        <li>Waterbury</li>
+        <li>Waterford</li>
+        <li>Watertown</li>
+        <li>West Hartford</li>
+        <li>West Haven</li>
+        <li>Westbrook</li>
+        <li>Weston</li>
         <li>Westport</li>
+        <li>Wethersfield</li>
+        <li>Willington</li>
+        <li>Wilton</li>
+        <li>Winchester</li>
+        <li>Windham</li>
+        <li>Windsor</li>
+        <li>Windsor Locks</li>
+        <li>Wolcott</li>
+        <li>Woodbridge</li>
+        <li>Woodbury</li>
+        <li>Woodstock</li>
       </ul>
-      <p class="area-note">Don't see your town? Call (860) 966-3149 or request a quote and we'll tell you if we can reach you.</p>
+      <p class="town-empty" data-town-empty hidden>Not in our list? Call (860) 966-3149 and we'll check for you.</p>
     </div>
+    <script>
+    (function () {
+      var input = document.querySelector('[data-town-search]');
+      var list = document.querySelector('[data-town-list]');
+      var empty = document.querySelector('[data-town-empty]');
+      if (!input || !list) return;
+      input.addEventListener('input', function () {
+        var q = input.value.trim().toLowerCase();
+        var shown = 0;
+        Array.prototype.forEach.call(list.children, function (li) {
+          var match = li.textContent.toLowerCase().indexOf(q) !== -1;
+          li.hidden = !match;
+          if (match) shown++;
+        });
+        empty.hidden = shown !== 0;
+      });
+    })();
+    </script>
   </section>
 
   <!-- ================= FAQ ================= -->
@@ -993,12 +1175,20 @@
         <p>No. We don't use nails or staples. Our clips grip the shingle, gutter, or trim and hold through wind, ice, and CT winters without damaging the roof.</p>
       </details>
       <details class="faq-item">
-        <summary>What if a bulb or strand goes out mid-season?</summary>
-        <p>We come back and fix it for free. A clip coming loose gets the same treatment.</p>
+        <summary>What if a bulb or strand goes out during the season?</summary>
+        <p>Bulb fixes are free for the entire season. If anything goes wrong, we come back and fix it.</p>
       </details>
       <details class="faq-item">
-        <summary>What happens after the first year?</summary>
-        <p>Year one covers the lights and the labor. After that, the strands are yours, and you're only paying for us to hang and store them.</p>
+        <summary>Do I keep the lights after the first year?</summary>
+        <p>No. We own the bulbs, keep them stored, and you lease the display each season. Book next year's install and you get 15% off, because your design is already done.</p>
+      </details>
+      <details class="faq-item">
+        <summary>How long does an install take?</summary>
+        <p>The first install takes a lot longer than the ones after it, because every strand is custom cut to your roofline.</p>
+      </details>
+      <details class="faq-item">
+        <summary>What if it rains on install day?</summary>
+        <p>We change the day. We won't install in the rain.</p>
       </details>
       <details class="faq-item">
         <summary>Do you take the lights down and store them?</summary>
@@ -1009,8 +1199,8 @@
         <p>Yes. We carry $1M in general liability coverage through Hiscox. Every install follows the same safety standards as our window work.</p>
       </details>
       <details class="faq-item">
-        <summary>How do I book, and what's the deposit?</summary>
-        <p>Request a free quote and we'll follow up with a detailed plan. A 50% deposit is due at booking.</p>
+        <summary>How do I book, and when is the rest due?</summary>
+        <p>Request a free quote and we'll follow up with a detailed plan. A 50% deposit is due at booking, and the remaining balance is due after the job is complete.</p>
       </details>
     </div>
   </section>
