@@ -369,6 +369,21 @@
     .top-list li { position: relative; padding-left: 26px; font-size: 16px; color: var(--charcoal); line-height: 1.5; }
     .top-list li::before { content: "\2713"; position: absolute; left: 0; color: var(--evergreen); font-weight: 800; }
     @media (max-width: 820px) { .top-hero-inner, .top-intro { grid-template-columns: 1fr; } .top-hero-photo { aspect-ratio: 4 / 3; } }
+    .cat-tabs { display: flex; justify-content: center; flex-wrap: wrap; gap: 10px; margin-bottom: 34px; }
+    .cat-tab { border: 1px solid var(--line); background: var(--white); color: var(--evergreen); font: inherit; font-weight: 700; font-size: 14.5px; padding: 10px 20px; border-radius: 999px; cursor: pointer; }
+    .cat-tab.active { background: var(--evergreen); color: var(--cream); border-color: var(--evergreen); }
+    .cat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+    .cat-grid .cat-card[hidden] { display: none; }
+    @media (max-width: 960px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 560px) { .cat-grid { grid-template-columns: 1fr; } }
+    .cat-card { background: var(--white); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 28px rgba(4,42,32,0.07); }
+    .cat-art { height: 150px; background: radial-gradient(circle, rgba(233,185,73,0.5) 2px, transparent 3px) 0 0 / 22px 22px, linear-gradient(160deg, #0B3327 0%, #042A20 100%); display: flex; align-items: center; justify-content: center; }
+    .cat-art span { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; color: var(--cream); background: rgba(4,42,32,0.7); padding: 8px 14px; border-radius: 999px; }
+    .cat-body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
+    .cat-body h3 { font-size: 18px; font-weight: 700; color: var(--evergreen); margin-bottom: 6px; }
+    .cat-body p { font-size: 14.5px; line-height: 1.6; color: var(--muted); margin-bottom: 14px; }
+    .cat-ask { margin-top: auto; align-self: flex-start; background: none; border: none; padding: 0; font: inherit; font-weight: 700; font-size: 14px; color: var(--red); cursor: pointer; }
+    .cat-ask:hover { color: var(--red-dark); }
     .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
     @media (max-width: 960px) { .pkg-grid { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; } }
     .pkg-card { background: var(--white); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(4,42,32,0.08); }
@@ -741,6 +756,121 @@
     show(0);
   })();
   </script>
+
+  <!-- ================= ADD-ON CATALOG ================= -->
+  <section class="section" id="catalog" style="background:var(--cream);" aria-labelledby="catalog-heading">
+    <div class="container">
+      <div class="section-head center">
+        <div class="eyebrow">Add to Your Display</div>
+        <h2 class="h2" id="catalog-heading">Make It Yours.</h2>
+        <p class="lede">Add any of these to your package. Pricing is set on your quote.</p>
+      </div>
+
+      <div class="cat-tabs" role="group" aria-label="Filter add-ons">
+        <button type="button" class="cat-tab active" data-cat-tab="all">All</button>
+        <button type="button" class="cat-tab" data-cat-tab="lighting">Lighting</button>
+        <button type="button" class="cat-tab" data-cat-tab="decor">D&eacute;cor</button>
+      </div>
+
+      <div class="cat-grid" data-cat-grid>
+        <article class="cat-card" data-cat="lighting">
+          <div class="cat-art" aria-hidden="true"><span>Tree Wraps</span></div>
+          <div class="cat-body">
+            <h3>Tree Wraps</h3>
+            <p>Warm white lights wrapped up the trunks and branches of your big trees.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="lighting">
+          <div class="cat-art" aria-hidden="true"><span>Shrub & Bush Lighting</span></div>
+          <div class="cat-body">
+            <h3>Shrub & Bush Lighting</h3>
+            <p>Soft lights on boxwoods, evergreens, and shrubs along the front bed.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="lighting">
+          <div class="cat-art" aria-hidden="true"><span>Walkway Lights</span></div>
+          <div class="cat-body">
+            <h3>Walkway Lights</h3>
+            <p>Your walkway outlined on both edges, from the front steps to the lawn.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="lighting">
+          <div class="cat-art" aria-hidden="true"><span>Landscape Uplighting</span></div>
+          <div class="cat-body">
+            <h3>Landscape Uplighting</h3>
+            <p>Spotlights that light the front of the house and the trees from below.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="lighting">
+          <div class="cat-art" aria-hidden="true"><span>Arch & Garden Lights</span></div>
+          <div class="cat-body">
+            <h3>Arch & Garden Lights</h3>
+            <p>Lights on arbors, arches, and garden features.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="decor">
+          <div class="cat-art" aria-hidden="true"><span>Wreaths</span></div>
+          <div class="cat-body">
+            <h3>Wreaths</h3>
+            <p>Front door, garage, or window wreaths with red bows.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="decor">
+          <div class="cat-art" aria-hidden="true"><span>Garland</span></div>
+          <div class="cat-body">
+            <h3>Garland</h3>
+            <p>Garland wrapped around porch columns, railings, and posts.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="decor">
+          <div class="cat-art" aria-hidden="true"><span>Lanterns & Steps</span></div>
+          <div class="cat-body">
+            <h3>Lanterns & Steps</h3>
+            <p>Lanterns and lit markers along the front steps.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="decor">
+          <div class="cat-art" aria-hidden="true"><span>Holiday Trees</span></div>
+          <div class="cat-body">
+            <h3>Holiday Trees</h3>
+            <p>A lit tree in the front yard or on the porch.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+        <article class="cat-card" data-cat="decor">
+          <div class="cat-art" aria-hidden="true"><span>Color Themes</span></div>
+          <div class="cat-body">
+            <h3>Color Themes</h3>
+            <p>Candy cane, red and green, or all-white to tie the display together.</p>
+            <button type="button" class="cat-ask" onclick="openModal()">Ask about this &rarr;</button>
+          </div>
+        </article>
+      </div>
+    </div>
+    <script>
+    (function () {
+      var tabs = document.querySelectorAll('[data-cat-tab]');
+      var cards = document.querySelectorAll('[data-cat-grid] .cat-card');
+      Array.prototype.forEach.call(tabs, function (tab) {
+        tab.addEventListener('click', function () {
+          var choice = tab.getAttribute('data-cat-tab');
+          Array.prototype.forEach.call(tabs, function (t) { t.classList.toggle('active', t === tab); });
+          Array.prototype.forEach.call(cards, function (c) {
+            c.hidden = !(choice === 'all' || c.getAttribute('data-cat') === choice);
+          });
+        });
+      });
+    })();
+    </script>
+  </section>
 
   <!-- ================= PHOTO-LED EXPERIENCE ================= -->
   <section class="section" style="background:var(--cream); padding-top: 0;">
