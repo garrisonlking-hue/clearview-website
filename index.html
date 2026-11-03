@@ -511,13 +511,12 @@
             <a href="storms.html">Storm Window Cleaning</a>
             <a href="hardwater.html">Hard Water Removal</a>
             <a href="evergreen-lights.html">Christmas Lights</a>
-            <a href="#plans">Plans</a>
-            <a href="areas.html">Service Areas</a>
-            <a href="gallery.html">Our Work</a>
+            <a href="index.html#services" style="color:#6B7570;font-weight:600;">See all services &rarr;</a>
           </div>
         </div>
         <a href="#reviews">Reviews</a>
         <a href="commercial.html">Commercial Cleaning</a>
+        <a href="gallery.html">Our Work</a>
         <button class="btn btn-primary btn-nav" onclick="openModal()">Get Free Quote</button>
       </div>
 
@@ -635,19 +634,6 @@
 </section>
 
 
-
-<!-- ================= VIDEO SECTION ================= -->
-<section class="section" style="background: var(--navy, #16284A);">
-  <div style="max-width:1000px;margin:0 auto;text-align:center;padding:0 24px;">
-    <div class="eyebrow" style="justify-content:center;background:rgba(246,242,234,0.12);color:#F6F2EA;">Watch</div>
-    <h2 class="section-title" style="color:#F6F2EA;">See the <span class="blue">difference.</span></h2>
-    <p style="font-family:'Inter',sans-serif;color:#F6F2EA;opacity:.85;font-size:1.1rem;margin:12px 0 40px;">Watch our team bring Connecticut windows back to crystal clear.</p>
-    <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);">
-      <iframe src="https://www.youtube.com/embed/1JTZ_ygo_RA?rel=0" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
-    </div>
-    <a href="quote.html" class="btn btn-primary btn-lg" style="margin-top:40px;">Get Instant Quote →</a>
-  </div>
-</section>
 
 <!-- ================= RECURRING PLANS ================= -->
 <section class="section" id="plans" style="background: var(--cream, #F6F2EA);">
@@ -844,6 +830,13 @@
 </script>
 <!-- ================= SCROLLING REVIEWS BAR ================= -->
 <section class="rev-marquee-section" id="reviews">
+  <style>
+    .rev-marquee { overflow: visible !important; -webkit-mask-image: none !important; mask-image: none !important; }
+    .rev-track { display: grid !important; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; width: auto !important; animation: none !important; transform: none !important; }
+    .rev-card { flex: none !important; width: auto !important; }
+    @media (max-width: 900px) { .rev-track { grid-template-columns: 1fr !important; } }
+  </style>
+  
   <div class="rev-marquee-head">
     <div class="eyebrow" style="justify-content:center;">See what your</div>
     <h2 class="section-title">Neighbors <span class="blue">are saying.</span></h2>
@@ -946,150 +939,16 @@
 
 
 
-<!-- ================= HOW IT WORKS (scroll steps) ================= -->
-<section class="ps" id="how-it-works">
-  <div class="ps-head">
-    <h2>How it works</h2>
-    <p>Four steps from first call to clean glass.</p>
-  </div>
-  <div class="ps-track" data-ps>
-    <div class="ps-sticky">
-      <div class="ps-card">
-        <div class="ps-media">
-          <img src="cv-ext-a.jpg" alt="Front of a Connecticut home with clean windows" class="is-active" loading="lazy">
-          <img src="cv-action-1.jpg" alt="Technician cleaning windows on a home" loading="lazy">
-          <img src="cv-ext-c.jpg" alt="Clean exterior windows on a Connecticut home" loading="lazy">
-          <img src="cv-detail-shutters.jpg" alt="Detailed window and shutter cleaning" loading="lazy">
-        </div>
-        <div class="ps-copy">
-          <span class="ps-count" data-count>Step 1 of 4</span>
-          <div class="ps-step is-active"><h3>Get your free quote</h3><p>We come out for a free in-person estimate and give you a clear price before any work starts.</p></div>
-          <div class="ps-step"><h3>Pick your plan</h3><p>One-time cleaning or a recurring plan. We set the schedule and book your next visit before we leave.</p></div>
-          <div class="ps-step"><h3>We clean</h3><p>Interior and exterior, screens, tracks and every edge, done with pure water so the glass dries clear with no streaks.</p></div>
-          <div class="ps-step"><h3>We make it right</h3><p>Spot a streak? Tell us within 7 days of a cleaning and we come back once, free, to fix it.</p></div>
-        </div>
-      </div>
-      <div class="ps-rail">
-        <div class="ps-line"><span data-fill></span></div>
-        <button type="button" class="ps-dot is-on" data-go="0">1</button>
-        <button type="button" class="ps-dot" data-go="1">2</button>
-        <button type="button" class="ps-dot" data-go="2">3</button>
-        <button type="button" class="ps-dot" data-go="3">4</button>
-      </div>
+<!-- ================= VIDEO SECTION ================= -->
+<section class="section" style="background: var(--navy, #16284A);">
+  <div style="max-width:1000px;margin:0 auto;text-align:center;padding:0 24px;">
+    <div class="eyebrow" style="justify-content:center;background:rgba(246,242,234,0.12);color:#F6F2EA;">Watch</div>
+    <h2 class="section-title" style="color:#F6F2EA;">See the <span class="blue">difference.</span></h2>
+    <p style="font-family:'Inter',sans-serif;color:#F6F2EA;opacity:.85;font-size:1.1rem;margin:12px 0 40px;">Watch our team bring Connecticut windows back to crystal clear.</p>
+    <div style="position:relative;padding-bottom:56.25%;height:0;border-radius:12px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+      <iframe src="https://www.youtube.com/embed/1JTZ_ygo_RA?rel=0" style="position:absolute;top:0;left:0;width:100%;height:100%;border:0;" allow="accelerometer;autoplay;clipboard-write;encrypted-media;gyroscope;picture-in-picture" allowfullscreen></iframe>
     </div>
-  </div>
-  <style>
-    .ps { background: #FAF4E8; padding: 72px 1.5rem 0; color: #16284A; }
-    .ps-head { text-align: center; max-width: 900px; margin: 0 auto 28px; }
-    .ps-head h2 { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(30px, 4vw, 44px); font-weight: 800; margin: 0 0 8px; }
-    .ps-head p { font-size: 17px; color: #6B7570; margin: 0; }
-    .ps-track { position: relative; height: 320vh; }
-    .ps-sticky { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; box-sizing: border-box; }
-    .ps-card { width: 100%; max-width: 1100px; background: #fff; border-radius: 22px; overflow: hidden; display: grid; grid-template-columns: 1.1fr 1fr; box-shadow: 0 20px 50px rgba(4,42,32,.10); }
-    .ps-media { position: relative; min-height: 420px; background: #0F4D33; }
-    .ps-media img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity .6s ease; }
-    .ps-media img.is-active { opacity: 1; }
-    .ps-copy { padding: 48px 44px; display: flex; flex-direction: column; justify-content: center; position: relative; }
-    .ps-count { font-size: 13px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: #0F4D33; margin-bottom: 10px; }
-    .ps-step { display: none; }
-    .ps-step.is-active { display: block; }
-    .ps-step h3 { font-size: 30px; font-weight: 800; margin: 0 0 12px; color: #16284A; }
-    .ps-step p { font-size: 16.5px; line-height: 1.65; color: #475569; margin: 0; }
-    .ps-rail { position: relative; width: 100%; max-width: 1100px; display: flex; justify-content: space-between; align-items: center; margin-top: 28px; }
-    .ps-line { position: absolute; left: 22px; right: 22px; top: 50%; height: 4px; background: #D9D2C3; border-radius: 4px; transform: translateY(-50%); overflow: hidden; }
-    .ps-line span { display: block; height: 100%; width: 0; background: #0F4D33; transition: width .3s ease; }
-    .ps-dot { position: relative; z-index: 1; width: 44px; height: 44px; border-radius: 50%; border: 3px solid #D9D2C3; background: #FAF4E8; color: #6B7570; font: inherit; font-weight: 800; cursor: pointer; }
-    .ps-dot.is-on { border-color: #0F4D33; background: #0F4D33; color: #FAF4E8; }
-    @media (max-width: 760px) {
-      .ps-track { height: 280vh; }
-      .ps-card { grid-template-columns: 1fr; }
-      .ps-media { min-height: 220px; }
-      .ps-copy { padding: 26px 22px; }
-      .ps-step h3 { font-size: 24px; }
-      .ps-sticky { padding: 16px; }
-    }
-  </style>
-  <script>
-  (function () {
-    var track = document.querySelector('[data-ps]');
-    if (!track) return;
-    var imgs = track.querySelectorAll('.ps-media img');
-    var steps = track.querySelectorAll('.ps-step');
-    var dots = document.querySelectorAll('.ps-rail .ps-dot');
-    var fill = track.querySelector('[data-fill]');
-    var count = track.querySelector('[data-count]');
-    var n = steps.length;
-    var cur = -1;
-    function setStep(k) {
-      if (k === cur) return;
-      cur = k;
-      Array.prototype.forEach.call(imgs, function (im, j) { im.classList.toggle('is-active', j === k); });
-      Array.prototype.forEach.call(steps, function (st, j) { st.classList.toggle('is-active', j === k); });
-      Array.prototype.forEach.call(dots, function (d, j) { d.classList.toggle('is-on', j <= k); });
-      count.textContent = 'Step ' + (k + 1) + ' of ' + n;
-    }
-    function onScroll() {
-      var rect = track.getBoundingClientRect();
-      var range = track.offsetHeight - window.innerHeight;
-      var p = range > 0 ? Math.min(1, Math.max(0, -rect.top / range)) : 0;
-      fill.style.width = (p * 100) + '%';
-      setStep(Math.min(n - 1, Math.floor(p * n + 0.0001)));
-    }
-    Array.prototype.forEach.call(dots, function (d, k) {
-      d.addEventListener('click', function () {
-        var range = track.offsetHeight - window.innerHeight;
-        var top = track.getBoundingClientRect().top + window.pageYOffset;
-        window.scrollTo({ top: top + (k / n) * range + 2, behavior: 'smooth' });
-      });
-    });
-    window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('resize', onScroll);
-    onScroll();
-  })();
-  </script>
-</section>
-
-<!-- ================= SERVICE AREA ================= -->
-<section class="section" id="service-area">
-  <div class="section-inner">
-    <div class="section-header center">
-      <div class="eyebrow">Service Area</div>
-      <h2 class="section-title">Proudly serving <span class="blue">all of Connecticut.</span></h2>
-      <p class="section-subtitle" style="margin-top:16px;">Clear View Window Cleaning is based in Columbia, CT and serves homeowners statewide, from the shoreline to the hills.</p>
-    </div>
-
-    <div class="area-wrap">
-      <div class="area-map">
-        <iframe src="https://www.google.com/maps?q=Connecticut&output=embed&z=8" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Clear View Window Co. Connecticut service area" allowfullscreen></iframe>
-      </div>
-      <div class="area-card">
-        <h3>Statewide coverage</h3>
-        <p>We travel across Connecticut for residential window cleaning. A few of the towns we regularly serve:</p>
-        <div class="area-towns">
-        <span class="area-chip">Hartford</span>
-        <span class="area-chip">New Haven</span>
-        <span class="area-chip">Stamford</span>
-        <span class="area-chip">Waterbury</span>
-        <span class="area-chip">Norwalk</span>
-        <span class="area-chip">Danbury</span>
-        <span class="area-chip">New London</span>
-        <span class="area-chip">Bristol</span>
-        <span class="area-chip">Meriden</span>
-        <span class="area-chip">Middletown</span>
-        <span class="area-chip">Manchester</span>
-        <span class="area-chip">Glastonbury</span>
-        <span class="area-chip">West Hartford</span>
-        <span class="area-chip">Storrs</span>
-        <span class="area-chip">Mansfield</span>
-        <span class="area-chip">Columbia</span>
-        <span class="area-chip">Tolland</span>
-        <span class="area-chip">Coventry</span>
-        <span class="area-chip">Farmington</span>
-        <span class="area-chip">Avon</span>
-        </div>
-        <button class="btn btn-primary btn-lg" onclick="openModal()">Check your address →</button>
-      </div>
-    </div>
+    <a href="quote.html" class="btn btn-primary btn-lg" style="margin-top:40px;">Get Instant Quote →</a>
   </div>
 </section>
 
@@ -1271,6 +1130,50 @@
 </script>
 
 
+
+<!-- ================= SERVICE AREA ================= -->
+<section class="section" id="service-area">
+  <div class="section-inner">
+    <div class="section-header center">
+      <div class="eyebrow">Service Area</div>
+      <h2 class="section-title">Proudly serving <span class="blue">all of Connecticut.</span></h2>
+      <p class="section-subtitle" style="margin-top:16px;">Clear View Window Cleaning is based in Columbia, CT and serves homeowners statewide, from the shoreline to the hills.</p>
+    </div>
+
+    <div class="area-wrap">
+      <div class="area-map">
+        <iframe src="https://www.google.com/maps?q=Connecticut&output=embed&z=8" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Clear View Window Co. Connecticut service area" allowfullscreen></iframe>
+      </div>
+      <div class="area-card">
+        <h3>Statewide coverage</h3>
+        <p>We travel across Connecticut for residential window cleaning. A few of the towns we regularly serve:</p>
+        <div class="area-towns">
+        <span class="area-chip">Hartford</span>
+        <span class="area-chip">New Haven</span>
+        <span class="area-chip">Stamford</span>
+        <span class="area-chip">Waterbury</span>
+        <span class="area-chip">Norwalk</span>
+        <span class="area-chip">Danbury</span>
+        <span class="area-chip">New London</span>
+        <span class="area-chip">Bristol</span>
+        <span class="area-chip">Meriden</span>
+        <span class="area-chip">Middletown</span>
+        <span class="area-chip">Manchester</span>
+        <span class="area-chip">Glastonbury</span>
+        <span class="area-chip">West Hartford</span>
+        <span class="area-chip">Storrs</span>
+        <span class="area-chip">Mansfield</span>
+        <span class="area-chip">Columbia</span>
+        <span class="area-chip">Tolland</span>
+        <span class="area-chip">Coventry</span>
+        <span class="area-chip">Farmington</span>
+        <span class="area-chip">Avon</span>
+        </div>
+        <button class="btn btn-primary btn-lg" onclick="openModal()">Check your address →</button>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ================= FINAL CTA ================= -->
 <section class="cta-final">
