@@ -313,6 +313,7 @@
     .bulb-dots { display: flex; justify-content: center; gap: 9px; margin-top: 16px; }
     .bulb-dot { width: 10px; height: 10px; border-radius: 50%; border: none; padding: 0; background: rgba(7,63,46,0.22); cursor: pointer; }
     .bulb-dot.active { background: var(--red); }
+    .pkg-link { text-align: center; margin-bottom: 18px; }
     .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
     @media (max-width: 960px) { .pkg-grid { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; } }
     .pkg-card { background: var(--white); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(4,42,32,0.08); }
@@ -381,7 +382,8 @@
     </div>
 
     <nav class="main-nav" aria-label="Primary">
-      <a href="#services">Services</a>
+      <a href="#packages">Packages</a>
+      <a href="#bulbs">Bulbs</a>
       <a href="#gallery">Our Work</a>
       <a href="#how-it-works">How It Works</a>
       <a href="#reviews">Reviews</a>
@@ -517,89 +519,67 @@
     </div>
   </section>
 
-  <!-- ================= PHOTO-LED EXPERIENCE ================= -->
-  <section class="section" style="background:var(--cream); padding-top: 0;">
-    <div class="container">
-      <div class="experience">
-        <span class="example-tag" style="z-index:3;top:16px;bottom:auto;">Example Style</span>
-        <img class="real-img" src="evergreen-experience-wide.webp" alt="Example of a premium home with roofline lighting, a wreath, and landscape lighting, illustrating the style of display Evergreen designs">
-        <div class="experience-overlay" aria-hidden="true"></div>
-        <div class="experience-card">
-          <h3>Designed for Your Home</h3>
-          <p>Every display is measured, custom-cut, and designed to complement your home's architecture — not a generic strand stretched across the roofline.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ================= HOW IT WORKS ================= -->
-  <section class="section" id="how-it-works" style="background:var(--white);" aria-labelledby="how-heading">
+  <!-- ================= CHOOSE YOUR PACKAGE ================= -->
+  <section class="section" id="packages" style="background:var(--cream);" aria-labelledby="packages-heading">
     <div class="container">
       <div class="section-head center">
-        <div class="eyebrow">How It Works</div>
-        <h2 class="h2" id="how-heading">Four Steps to a Brighter Season.</h2>
-        <p class="lede">From first call to next November, we handle every detail.</p>
+        <div class="eyebrow">Pick Your Package</div>
+        <h2 class="h2" id="packages-heading">Choose Your Display.</h2>
+        <p class="lede">Every package starts with the same custom design and clean install. Pick the level of display you want.</p>
       </div>
-      <div class="steps-wrap">
-        <div class="steps-grid">
-          <div class="step-card">
-            <div class="step-num" aria-hidden="true">1</div>
-            <h3>Design</h3>
-            <p>A custom lighting plan built for your home's exact roofline and features.</p>
-          </div>
-          <div class="step-card">
-            <div class="step-num" aria-hidden="true">2</div>
-            <h3>Install</h3>
-            <p>Custom-cut strands installed cleanly by our insured local crew.</p>
-          </div>
-          <div class="step-card">
-            <div class="step-num" aria-hidden="true">3</div>
-            <h3>Maintain</h3>
-            <p>Something goes out mid-season? We come back and fix it, free.</p>
-          </div>
-          <div class="step-card">
-            <div class="step-num" aria-hidden="true">4</div>
-            <h3>Remove &amp; Store</h3>
-            <p>We take it all down, label it, and store it until next year.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- ================= WHAT'S INCLUDED (FEATURE GRID) ================= -->
-  <section class="section" id="whats-included" style="background:var(--cream);" aria-labelledby="included-heading">
-    <div class="container">
-      <div class="section-head center">
-        <div class="eyebrow">The Details</div>
-        <h2 class="h2" id="included-heading">What Comes With Every Install.</h2>
-        <p class="lede">The little things most companies skip are the ones that make a display look right — and last.</p>
+      <div class="pkg-grid">
+        <div class="pkg-card">
+          <div class="pkg-photo"><img src="render-classic.jpg" alt="Concept render: Classic package with warm white lights on the gutter lines and sloped roof edges" loading="lazy"></div>
+          <div class="pkg-body">
+            <h3>Classic</h3>
+            <p class="pkg-price">Starting at $1,899</p>
+            <ul class="pkg-list">
+              <li>Gutter lines on front and both sides</li>
+              <li>Sloped roof edges</li>
+              <li>Warm white C9 LEDs</li>
+              <li>Install, takedown, and storage</li>
+            </ul>
+            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
+          </div>
+        </div>
+
+        <div class="pkg-card pkg-featured">
+          <div class="pkg-photo"><img src="render-showcase.jpg" alt="Concept render: Showcase package with the full roofline, dormers, garage doors, and porch lights" loading="lazy"></div>
+          <div class="pkg-body">
+            <h3>Showcase <span class="pkg-badge">Add-Ons Available</span></h3>
+            <p class="pkg-price">Classic + add-ons</p>
+            <ul class="pkg-list">
+              <li>Everything in Classic</li>
+              <li>Full roofline and ridge lines</li>
+              <li>Dormer and porch post lights</li>
+              <li>Garage doors and porch roof edge</li>
+              <li>Choose the add-ons you want</li>
+            </ul>
+            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
+          </div>
+        </div>
+
+        <div class="pkg-card">
+          <div class="pkg-photo"><img src="render-estate.jpg" alt="Concept render: Estate package, a full-property display with walkway lights, landscape lighting, and holiday decor" loading="lazy"></div>
+          <div class="pkg-body">
+            <h3>Estate</h3>
+            <p class="pkg-price">Quoted after your property visit</p>
+            <ul class="pkg-list">
+              <li>Everything in Showcase</li>
+              <li>Walkway and front-yard lighting</li>
+              <li>Trees, shrubs, and landscape lights</li>
+              <li>Wreaths, garland, and custom touches</li>
+            </ul>
+            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
+          </div>
+        </div>
       </div>
-      <div class="steps-grid feature-grid-3">
-        <div class="step-card">
-          <h3>Custom-Cut Strands</h3>
-          <p>We measure your rooflines and peaks first, then cut every strand to fit — no extra bulbs bunched at a corner, no cords hanging loose.</p>
-        </div>
-        <div class="step-card">
-          <h3>Premium C9 LED Bulbs</h3>
-          <p>Commercial-grade C9 LEDs — brighter than the strands from a big-box store, run cooler, and hold up season after season.</p>
-        </div>
-        <div class="step-card">
-          <h3>Free Takedown &amp; Storage</h3>
-          <p>Come January, we come back, take everything down, and store it at our facility — labeled and ready for next November.</p>
-        </div>
-        <div class="step-card">
-          <h3>Clips Built to Last</h3>
-          <p>No nails, no staples, no roof damage. Our clips grip shingle, gutter, or trim and hold through wind, ice, and CT winters.</p>
-        </div>
-        <div class="step-card">
-          <h3>Real Safety Equipment</h3>
-          <p>Ladders, harnesses, and roof anchors — the same gear a professional crew should be using, every time, on every home.</p>
-        </div>
-        <div class="step-card">
-          <h3>Pricing Gets Simpler Every Year</h3>
-          <p>Year one covers the lights and the labor. After that, the strands are yours — you're only ever paying for us to hang and store them.</p>
-        </div>
+
+      <div class="pkg-footer">
+        <p class="pkg-link"><a href="#bulbs" class="link-arrow">Next: choose your bulb style</a></p>
+        <p>Install next year and save 15%. Your design is already done, so the price drops.</p>
+        <p class="pkg-note">Concept renders. Pricing and inclusions subject to home measurement. 50% deposit at booking.</p>
       </div>
     </div>
   </section>
@@ -628,6 +608,7 @@
         </div>
         <div class="bulb-dots" data-dots></div>
       </div>
+        <p class="pkg-link bulb-link"><a href="#packages" class="link-arrow">Back to packages</a></p>
     </div>
   </section>
 
@@ -690,66 +671,89 @@
   })();
   </script>
 
-  <!-- ================= CHOOSE YOUR PACKAGE ================= -->
-  <section class="section" id="packages" style="background:var(--cream);" aria-labelledby="packages-heading">
+  <!-- ================= PHOTO-LED EXPERIENCE ================= -->
+  <section class="section" style="background:var(--cream); padding-top: 0;">
+    <div class="container">
+      <div class="experience">
+        <span class="example-tag" style="z-index:3;top:16px;bottom:auto;">Example Style</span>
+        <img class="real-img" src="evergreen-experience-wide.webp" alt="Example of a premium home with roofline lighting, a wreath, and landscape lighting, illustrating the style of display Evergreen designs">
+        <div class="experience-overlay" aria-hidden="true"></div>
+        <div class="experience-card">
+          <h3>Designed for Your Home</h3>
+          <p>Every display is measured, custom-cut, and designed to complement your home's architecture — not a generic strand stretched across the roofline.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= WHAT'S INCLUDED (FEATURE GRID) ================= -->
+  <section class="section" id="whats-included" style="background:var(--cream);" aria-labelledby="included-heading">
     <div class="container">
       <div class="section-head center">
-        <div class="eyebrow">Pick Your Package</div>
-        <h2 class="h2" id="packages-heading">Choose Your Display.</h2>
-        <p class="lede">Every package starts with the same custom design and clean install. Pick the level of display you want.</p>
+        <div class="eyebrow">The Details</div>
+        <h2 class="h2" id="included-heading">What Comes With Every Install.</h2>
+        <p class="lede">The little things most companies skip are the ones that make a display look right — and last.</p>
       </div>
-
-      <div class="pkg-grid">
-        <div class="pkg-card">
-          <div class="pkg-photo"><img src="render-classic.jpg" alt="Concept render: Classic package with warm white lights on the gutter lines and sloped roof edges" loading="lazy"></div>
-          <div class="pkg-body">
-            <h3>Classic</h3>
-            <p class="pkg-price">Starting at $1,899</p>
-            <ul class="pkg-list">
-              <li>Gutter lines on front and both sides</li>
-              <li>Sloped roof edges</li>
-              <li>Warm white C9 LEDs</li>
-              <li>Install, takedown, and storage</li>
-            </ul>
-            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
-          </div>
+      <div class="steps-grid feature-grid-3">
+        <div class="step-card">
+          <h3>Custom-Cut Strands</h3>
+          <p>We measure your rooflines and peaks first, then cut every strand to fit — no extra bulbs bunched at a corner, no cords hanging loose.</p>
         </div>
-
-        <div class="pkg-card pkg-featured">
-          <div class="pkg-photo"><img src="render-showcase.jpg" alt="Concept render: Showcase package with the full roofline, dormers, garage doors, and porch lights" loading="lazy"></div>
-          <div class="pkg-body">
-            <h3>Showcase <span class="pkg-badge">Add-Ons Available</span></h3>
-            <p class="pkg-price">Classic + add-ons</p>
-            <ul class="pkg-list">
-              <li>Everything in Classic</li>
-              <li>Full roofline and ridge lines</li>
-              <li>Dormer and porch post lights</li>
-              <li>Garage doors and porch roof edge</li>
-              <li>Choose the add-ons you want</li>
-            </ul>
-            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
-          </div>
+        <div class="step-card">
+          <h3>Premium C9 LED Bulbs</h3>
+          <p>Commercial-grade C9 LEDs — brighter than the strands from a big-box store, run cooler, and hold up season after season.</p>
         </div>
-
-        <div class="pkg-card">
-          <div class="pkg-photo"><img src="render-estate.jpg" alt="Concept render: Estate package, a full-property display with walkway lights, landscape lighting, and holiday decor" loading="lazy"></div>
-          <div class="pkg-body">
-            <h3>Estate</h3>
-            <p class="pkg-price">Quoted after your property visit</p>
-            <ul class="pkg-list">
-              <li>Everything in Showcase</li>
-              <li>Walkway and front-yard lighting</li>
-              <li>Trees, shrubs, and landscape lights</li>
-              <li>Wreaths, garland, and custom touches</li>
-            </ul>
-            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
-          </div>
+        <div class="step-card">
+          <h3>Free Takedown &amp; Storage</h3>
+          <p>Come January, we come back, take everything down, and store it at our facility — labeled and ready for next November.</p>
+        </div>
+        <div class="step-card">
+          <h3>Clips Built to Last</h3>
+          <p>No nails, no staples, no roof damage. Our clips grip shingle, gutter, or trim and hold through wind, ice, and CT winters.</p>
+        </div>
+        <div class="step-card">
+          <h3>Real Safety Equipment</h3>
+          <p>Ladders, harnesses, and roof anchors — the same gear a professional crew should be using, every time, on every home.</p>
+        </div>
+        <div class="step-card">
+          <h3>Pricing Gets Simpler Every Year</h3>
+          <p>Year one covers the lights and the labor. After that, the strands are yours — you're only ever paying for us to hang and store them.</p>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="pkg-footer">
-        <p>Install next year and save 15%. Your design is already done, so the price drops.</p>
-        <p class="pkg-note">Concept renders. Pricing and inclusions subject to home measurement. 50% deposit at booking.</p>
+  <!-- ================= HOW IT WORKS ================= -->
+  <section class="section" id="how-it-works" style="background:var(--white);" aria-labelledby="how-heading">
+    <div class="container">
+      <div class="section-head center">
+        <div class="eyebrow">How It Works</div>
+        <h2 class="h2" id="how-heading">Four Steps to a Brighter Season.</h2>
+        <p class="lede">From first call to next November, we handle every detail.</p>
+      </div>
+      <div class="steps-wrap">
+        <div class="steps-grid">
+          <div class="step-card">
+            <div class="step-num" aria-hidden="true">1</div>
+            <h3>Design</h3>
+            <p>A custom lighting plan built for your home's exact roofline and features.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num" aria-hidden="true">2</div>
+            <h3>Install</h3>
+            <p>Custom-cut strands installed cleanly by our insured local crew.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num" aria-hidden="true">3</div>
+            <h3>Maintain</h3>
+            <p>Something goes out mid-season? We come back and fix it, free.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-num" aria-hidden="true">4</div>
+            <h3>Remove &amp; Store</h3>
+            <p>We take it all down, label it, and store it until next year.</p>
+          </div>
+        </div>
       </div>
     </div>
   </section>
