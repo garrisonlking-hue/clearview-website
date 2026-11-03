@@ -297,6 +297,23 @@
     .feature-grid-3 { grid-template-columns: repeat(3,1fr); }
     @media (max-width: 900px) { .feature-grid-3 { grid-template-columns: 1fr 1fr; } }
     @media (max-width: 560px) { .feature-grid-3 { grid-template-columns: 1fr; } }
+    .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
+    @media (max-width: 960px) { .pkg-grid { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; } }
+    .pkg-card { background: var(--white); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(4,42,32,0.08); }
+    .pkg-featured { border: 2px solid var(--gold); }
+    .pkg-photo { aspect-ratio: 4 / 3; overflow: hidden; background: var(--forest); }
+    .pkg-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .pkg-body { padding: 22px 22px 26px; display: flex; flex-direction: column; flex: 1; }
+    .pkg-body h3 { font-size: 24px; font-weight: 700; color: var(--evergreen); display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .pkg-badge { font-size: 11px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; background: var(--red); color: #fff; padding: 5px 10px; border-radius: 999px; }
+    .pkg-price { font-size: 16px; font-weight: 700; color: var(--red); margin: 6px 0 10px; }
+    .pkg-list { list-style: none; padding: 0; margin: 0 0 20px; }
+    .pkg-list li { position: relative; padding: 6px 0 6px 24px; font-size: 14.5px; color: var(--charcoal); line-height: 1.5; }
+    .pkg-list li::before { content: "\2713"; position: absolute; left: 0; top: 6px; color: var(--evergreen); font-weight: 800; }
+    .pkg-cta { width: 100%; margin-top: auto; }
+    .pkg-footer { margin-top: 40px; text-align: center; }
+    .pkg-footer p { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
+    .pkg-note { font-size: 12.5px !important; opacity: 0.85; }
 
     /* ============ MOBILE STICKY CTA ============ */
     .mobile-sticky-cta { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); padding: 10px 14px calc(10px + env(safe-area-inset-bottom)); box-shadow: 0 -4px 20px rgba(4,42,32,0.14); z-index: 250; gap: 10px; align-items: center; border-top: 1px solid var(--line); }
@@ -567,6 +584,70 @@
           <h3>Pricing Gets Simpler Every Year</h3>
           <p>Year one covers the lights and the labor. After that, the strands are yours — you're only ever paying for us to hang and store them.</p>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= CHOOSE YOUR PACKAGE ================= -->
+  <section class="section" id="packages" style="background:var(--cream);" aria-labelledby="packages-heading">
+    <div class="container">
+      <div class="section-head center">
+        <div class="eyebrow">Pick Your Package</div>
+        <h2 class="h2" id="packages-heading">Choose Your Display.</h2>
+        <p class="lede">Every package starts with the same custom design and clean install. Pick the level of display you want.</p>
+      </div>
+
+      <div class="pkg-grid">
+        <div class="pkg-card">
+          <div class="pkg-photo"><img src="render-classic.jpg" alt="Concept render: Classic package with warm white lights on the gutter lines and sloped roof edges" loading="lazy"></div>
+          <div class="pkg-body">
+            <h3>Classic</h3>
+            <p class="pkg-price">Starting at $1,899</p>
+            <ul class="pkg-list">
+              <li>Gutter lines on front and both sides</li>
+              <li>Sloped roof edges</li>
+              <li>Warm white C9 LEDs</li>
+              <li>Install, takedown, and storage</li>
+            </ul>
+            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
+          </div>
+        </div>
+
+        <div class="pkg-card pkg-featured">
+          <div class="pkg-photo"><img src="render-showcase.jpg" alt="Concept render: Showcase package with the full roofline, dormers, garage doors, and porch lights" loading="lazy"></div>
+          <div class="pkg-body">
+            <h3>Showcase <span class="pkg-badge">Add-Ons Available</span></h3>
+            <p class="pkg-price">Classic + add-ons</p>
+            <ul class="pkg-list">
+              <li>Everything in Classic</li>
+              <li>Full roofline and ridge lines</li>
+              <li>Dormer and porch post lights</li>
+              <li>Garage doors and porch roof edge</li>
+              <li>Choose the add-ons you want</li>
+            </ul>
+            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
+          </div>
+        </div>
+
+        <div class="pkg-card">
+          <div class="pkg-photo"><img src="render-estate.jpg" alt="Concept render: Estate package, a full-property display with walkway lights, landscape lighting, and holiday decor" loading="lazy"></div>
+          <div class="pkg-body">
+            <h3>Estate</h3>
+            <p class="pkg-price">Quoted after your property visit</p>
+            <ul class="pkg-list">
+              <li>Everything in Showcase</li>
+              <li>Walkway and front-yard lighting</li>
+              <li>Trees, shrubs, and landscape lights</li>
+              <li>Wreaths, garland, and custom touches</li>
+            </ul>
+            <button class="btn btn-red pkg-cta" onclick="openModal()">Get Your Free Quote</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="pkg-footer">
+        <p>Install next year and save 15%. Your design is already done, so the price drops.</p>
+        <p class="pkg-note">Concept renders. Pricing and inclusions subject to home measurement. 50% deposit at booking.</p>
       </div>
     </div>
   </section>
