@@ -377,8 +377,10 @@
     @media (max-width: 960px) { .cat-grid { grid-template-columns: repeat(2, 1fr); } }
     @media (max-width: 560px) { .cat-grid { grid-template-columns: 1fr; } }
     .cat-card { background: var(--white); border: 1px solid var(--line); border-radius: 20px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 28px rgba(4,42,32,0.07); }
-    .cat-art { height: 150px; background: radial-gradient(circle, rgba(233,185,73,0.5) 2px, transparent 3px) 0 0 / 22px 22px, linear-gradient(160deg, #0B3327 0%, #042A20 100%); display: flex; align-items: center; justify-content: center; }
+    .cat-art { height: 200px; width: 100%; background: radial-gradient(circle, rgba(233,185,73,0.5) 2px, transparent 3px) 0 0 / 22px 22px, linear-gradient(160deg, #0B3327 0%, #042A20 100%); display: flex; align-items: center; justify-content: center; }
     .cat-art span { font-weight: 700; font-size: 15px; letter-spacing: 0.04em; color: var(--cream); background: rgba(4,42,32,0.7); padding: 8px 14px; border-radius: 999px; }
+    .cat-art-photo { padding: 0; background: none; }
+    .cat-art-photo img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
     .cat-body { padding: 18px 20px 20px; display: flex; flex-direction: column; flex: 1; }
     .cat-body h3 { font-size: 18px; font-weight: 700; color: var(--evergreen); margin-bottom: 6px; }
     .cat-body p { font-size: 14.5px; line-height: 1.6; color: var(--muted); margin-bottom: 14px; }
@@ -774,7 +776,7 @@
 
       <div class="cat-grid" data-cat-grid>
         <article class="cat-card" data-cat="lighting">
-          <div class="cat-art" aria-hidden="true"><span>Tree Wraps</span></div>
+          <div class="cat-art cat-art-photo"><img src="cat-tree.jpg" alt="Tree wrapped in warm white lights" width="800" height="600" loading="lazy"></div>
           <div class="cat-body">
             <h3>Tree Wraps</h3>
             <p>Warm white lights wrapped up the trunks and branches of your big trees.</p>
@@ -782,7 +784,7 @@
           </div>
         </article>
         <article class="cat-card" data-cat="lighting">
-          <div class="cat-art" aria-hidden="true"><span>Shrub & Bush Lighting</span></div>
+          <div class="cat-art cat-art-photo"><img src="cat-bush.jpg" alt="Shrubs lit with warm white lights" width="800" height="600" loading="lazy"></div>
           <div class="cat-body">
             <h3>Shrub & Bush Lighting</h3>
             <p>Soft lights on boxwoods, evergreens, and shrubs along the front bed.</p>
@@ -790,7 +792,7 @@
           </div>
         </article>
         <article class="cat-card" data-cat="lighting">
-          <div class="cat-art" aria-hidden="true"><span>Walkway Lights</span></div>
+          <div class="cat-art cat-art-photo"><img src="cat-walkway.jpg" alt="Walkway lined with warm white lights" width="800" height="600" loading="lazy"></div>
           <div class="cat-body">
             <h3>Walkway Lights</h3>
             <p>Your walkway outlined on both edges, from the front steps to the lawn.</p>
