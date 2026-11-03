@@ -409,6 +409,8 @@
     .offer-deals > div { background: var(--cream); border-radius: 16px; padding: 16px 18px; font-size: 14.5px; color: var(--muted); line-height: 1.45; }
     .offer-deals span { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
     .offer-deals strong { color: var(--evergreen); font-size: 20px; }
+    .offer-timer { display: inline-flex; align-items: center; gap: 10px; background: var(--cream); border-radius: 999px; padding: 9px 18px; margin: 0 0 22px; font-size: 14px; color: var(--muted); }
+    .offer-timer strong { color: var(--red); font-variant-numeric: tabular-nums; font-size: 15px; }
     .offer-terms { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
     @media (max-width: 640px) { .offer-stack, .offer-deals { grid-template-columns: 1fr; } .offer-box { padding: 26px 22px; } .offer-box h3 { font-size: 22px; } }
     .pkg-footer { margin-top: 40px; text-align: center; }
@@ -449,7 +451,7 @@
 <a href="#main" class="skip-link">Skip to main content</a>
 
 <!-- ================= ANNOUNCEMENT BAR ================= -->
-<div class="announce-bar"><p>Now booking 2026 holiday light installs. Save $200 on your install.</p></div>
+<div class="announce-bar"><p>Now booking 2026 holiday light installs. Save $200 before Nov 15.</p></div>
 
 <!-- ================= HEADER / NAV ================= -->
 <header class="site-header">
@@ -545,7 +547,7 @@
 <!-- ================= EARLY-BIRD OFFER ================= -->
 <div class="top-offer">
   <div class="container top-offer-inner">
-    <p>Save $200 on your install.</p>
+    <p>Save $200 on your install before Nov 15.</p>
     <button class="btn btn-red" onclick="openModal()">Get a free quote</button>
   </div>
 </div>
@@ -680,6 +682,7 @@
         <div class="offer-box">
           <p class="eyebrow">The Evergreen Holiday Offer</p>
           <h3>A custom display, installed and taken down, for one price.</h3>
+          <div class="offer-timer" data-deadline="2026-11-15T23:59:59-05:00"><span>Offer ends in</span> <strong data-countdown>--d --h --m --s</strong></div>
           <ul class="offer-stack">
             <li>Custom design for your home</li>
             <li>Professional install with clips that won't damage gutters or shingles</li>
@@ -689,12 +692,35 @@
             <li>Rain? We just change the day</li>
           </ul>
           <div class="offer-deals">
-            <div><span>This season</span><strong>$200 off</strong> your install</div>
+            <div><span>Before Nov 15</span><strong>$200 off</strong> your install</div>
             <div><span>Book next year</span><strong>15% off</strong> because your design is already done</div>
           </div>
           <p class="offer-terms">Add any extras from the catalog below. 50% deposit at booking, remaining balance after the job. Final price set on your free quote.</p>
           <button type="button" class="btn btn-red" onclick="openModal()">Get Your Free Quote</button>
         </div>
+        <script>
+        (function () {
+          var el = document.querySelector('[data-deadline]');
+          if (!el) return;
+          var out = el.querySelector('[data-countdown]');
+          var end = new Date(el.getAttribute('data-deadline')).getTime();
+          function tick() {
+            var diff = end - Date.now();
+            if (diff <= 0) {
+              el.innerHTML = '<strong>This offer has ended.</strong>';
+              clearInterval(timer);
+              return;
+            }
+            var d = Math.floor(diff / 86400000);
+            var h = Math.floor(diff % 86400000 / 3600000);
+            var m = Math.floor(diff % 3600000 / 60000);
+            var sec = Math.floor(diff % 60000 / 1000);
+            out.textContent = d + 'd ' + h + 'h ' + m + 'm ' + sec + 's';
+          }
+          tick();
+          var timer = setInterval(tick, 1000);
+        })();
+        </script>
         <p class="pkg-note">Concept renders. Pricing and inclusions subject to home measurement. 50% deposit at booking.</p>
       </div>
     </div>
