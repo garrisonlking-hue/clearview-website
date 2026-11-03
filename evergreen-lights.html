@@ -349,6 +349,24 @@
     .faq-item summary::after { content: "+"; font-size: 22px; color: var(--red); line-height: 1; }
     .faq-item[open] summary::after { content: "\2013"; }
     .faq-item p { margin-top: 12px; color: var(--muted); font-size: 15.5px; line-height: 1.7; }
+    .top-hero { background: var(--cream); padding: clamp(48px, 7vw, 88px) 0; }
+    .top-hero-inner { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 64px); align-items: center; }
+    .top-kicker { font-size: 12px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); margin-bottom: 14px; }
+    .top-title { font-size: clamp(34px, 4.8vw, 56px); line-height: 1.12; font-weight: 700; color: var(--evergreen); letter-spacing: -0.01em; margin-bottom: 18px; }
+    .top-sub { font-size: clamp(16px, 1.6vw, 18px); line-height: 1.65; color: var(--muted); max-width: 500px; margin-bottom: 26px; }
+    .top-actions { display: flex; gap: 22px; align-items: center; flex-wrap: wrap; margin-bottom: 22px; }
+    .top-actions .link-arrow { color: var(--evergreen); }
+    .top-proof { font-size: 13.5px; font-weight: 600; color: var(--evergreen); }
+    .top-hero-photo { margin: 0; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 44px rgba(4,42,32,0.16); aspect-ratio: 4 / 5; }
+    .top-hero-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .top-offer { background: var(--evergreen); color: var(--cream); padding: 16px 0; }
+    .top-offer-inner { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 14px 24px; text-align: center; font-size: 16px; }
+    .top-offer strong { color: var(--gold); }
+    .top-intro { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 5vw, 64px); align-items: start; }
+    .top-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+    .top-list li { position: relative; padding-left: 26px; font-size: 16px; color: var(--charcoal); line-height: 1.5; }
+    .top-list li::before { content: "\2713"; position: absolute; left: 0; color: var(--evergreen); font-weight: 800; }
+    @media (max-width: 820px) { .top-hero-inner, .top-intro { grid-template-columns: 1fr; } .top-hero-photo { aspect-ratio: 4 / 3; } }
     .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
     @media (max-width: 960px) { .pkg-grid { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; } }
     .pkg-card { background: var(--white); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(4,42,32,0.08); }
@@ -419,7 +437,7 @@
     <nav class="main-nav" aria-label="Primary">
       <a href="#packages">Packages</a>
       <a href="#bulbs">Bulbs</a>
-      <a href="#gallery">Our Work</a>
+      <a href="#real-install">Our Work</a>
       <a href="#how-it-works">How It Works</a>
       <a href="#reviews">Reviews</a>
       <a href="about.html">About</a>
@@ -439,7 +457,7 @@
 
   <nav class="mobile-menu" id="mobileMenu" aria-label="Mobile">
     <a href="#services" onclick="closeMobileMenu()">Services</a>
-    <a href="#gallery" onclick="closeMobileMenu()">Our Work</a>
+    <a href="#real-install" onclick="closeMobileMenu()">Our Work</a>
     <a href="#how-it-works" onclick="closeMobileMenu()">How It Works</a>
     <a href="#reviews" onclick="closeMobileMenu()">Reviews</a>
     <a href="about.html" onclick="closeMobileMenu()">About</a>
@@ -449,65 +467,30 @@
 </header>
 
 <!-- ================= HERO ================= -->
-<section class="hero" id="top">
-  <div class="hero-media">
-    <img src="evergreen-hero.webp" alt="Nighttime photo of a Connecticut home with professional warm-white Christmas lighting along every roofline and a lit walkway" width="768" height="576">
-  </div>
-  <div class="hero-overlay" aria-hidden="true"></div>
-
-  <div class="container hero-inner">
-    <div class="hero-content">
-      <div class="hero-badge">Full-Service Holiday Lighting</div>
-      <h1 class="hero-title">Christmas Magic, Done for You.</h1>
-      <p class="hero-desc">Custom design, professional installation, maintenance, takedown, and storage — all handled by one local team.</p>
-      <div class="hero-buttons">
-        <button class="btn btn-red" onclick="openModal()">Get Your Free Quote</button>
-        <a href="#gallery" class="link-arrow on-dark">See Our Work</a>
+<section class="top-hero" id="top">
+  <div class="container top-hero-inner">
+    <div class="top-hero-text">
+      <p class="top-kicker">Holiday lighting, start to finish</p>
+      <h1 class="top-title">Holiday lights, installed and taken down for you.</h1>
+      <p class="top-sub">Custom design, professional install, and takedown with storage. One local Connecticut crew, from the first quote to next November.</p>
+      <div class="top-actions">
+        <button class="btn btn-red" onclick="openModal()">Get a free quote</button>
+        <a href="#packages" class="link-arrow">See the packages</a>
       </div>
-      <p class="hero-trust">
-        <span class="stars" aria-hidden="true">★★★★★</span>
-        80+ five-star reviews &bull; Local Connecticut team
-      </p>
+      <p class="top-proof">80+ five-star Google reviews &middot; Fully insured &middot; Connecticut</p>
     </div>
-  </div>
-
-  <div class="hero-lights" aria-hidden="true">
-    <svg viewBox="0 0 1440 40" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M0,7 C120,25 240,-3 360,7 C480,25 600,-3 720,7 C840,25 960,-3 1080,7 C1200,25 1320,-3 1440,7"
-            fill="none" stroke="rgba(250,244,232,0.22)" stroke-width="1.5"/>
-      <g style="filter:drop-shadow(0 0 4px rgba(233,185,73,0.55));">
-        <circle cx="60"  cy="13" r="3.2" fill="#FAF4E8"/>
-        <circle cx="180" cy="4"  r="3.2" fill="#E9B949"/>
-        <circle cx="300" cy="13" r="3.2" fill="#FAF4E8"/>
-        <circle cx="420" cy="4"  r="3.2" fill="#E9B949"/>
-        <circle cx="540" cy="13" r="3.2" fill="#FAF4E8"/>
-        <circle cx="660" cy="4"  r="3.2" fill="#E9B949"/>
-        <circle cx="780" cy="13" r="3.2" fill="#FAF4E8"/>
-        <circle cx="900" cy="4"  r="3.2" fill="#E9B949"/>
-        <circle cx="1020" cy="13" r="3.2" fill="#FAF4E8"/>
-        <circle cx="1140" cy="4"  r="3.2" fill="#E9B949"/>
-        <circle cx="1260" cy="13" r="3.2" fill="#FAF4E8"/>
-        <circle cx="1380" cy="4"  r="3.2" fill="#E9B949"/>
-      </g>
-    </svg>
+    <figure class="top-hero-photo">
+      <img src="install-after.jpg" alt="A Connecticut home at night with warm white C9 lights along the roofline and gutters" width="750" height="1000">
+    </figure>
   </div>
 </section>
 
+
 <!-- ================= EARLY-BIRD OFFER ================= -->
-<div class="offer-wrap">
-  <div class="container">
-    <div class="offer-card" id="offer">
-      <div class="eyebrow" style="margin-bottom:10px;">🎄 Limited-Time Offer</div>
-      <div class="offer-title">$200 Off Your Holiday Light Install</div>
-      <p class="offer-sub">Book within 10 days and save $200 on design, installation, takedown, and storage.</p>
-
-      <button class="btn btn-red" onclick="openModal()">Get Your Free Quote</button>
-
-      <div class="offer-avail">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-        <!-- EDIT ME: confirm real capacity before publishing -->We're only taking on a limited number of new installs this season.
-      </div>
-    </div>
+<div class="top-offer">
+  <div class="container top-offer-inner">
+    <p><strong>Book within 10 days and save $200</strong> on your install.</p>
+    <button class="btn btn-red" onclick="openModal()">Get a free quote</button>
   </div>
 </div>
 
@@ -515,67 +498,18 @@
 
   <!-- ================= SERVICE INTRODUCTION ================= -->
   <section class="section" id="services" style="background:var(--white);" aria-labelledby="services-heading">
-    <div class="container">
-      <div class="intro-grid">
-        <div>
-          <div class="eyebrow">What's Included</div>
-          <h2 class="h2" id="services-heading">One Team, Every Detail of Your Display.</h2>
-          <p class="lede">From the first sketch to next year's storage bin, Evergreen handles the entire season so you don't have to touch a ladder.</p>
-          <div class="intro-benefits">
-            <div class="intro-benefit">
-              <span class="ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2 2 7l10 5 10-5-10-5zm0 8L2 15l10 5 10-5-10-5z"/></svg></span>
-              <p>Custom lighting design for your home's exact rooflines</p>
-            </div>
-            <div class="intro-benefit">
-              <span class="ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.7 19l-9.1-9.1c.9-2.3.4-5-1.5-6.9-2-2-5-2.4-7.4-1.3L9 6l-3 3-4.3-4.3C.6 7.1 1 10.1 3 12.1c1.9 1.9 4.6 2.4 6.9 1.5l9.1 9.1c.4.4 1 .4 1.4 0l2.3-2.3c.4-.5.4-1.1 0-1.4z"/></svg></span>
-              <p>Professional installation by an insured local crew</p>
-            </div>
-            <div class="intro-benefit">
-              <span class="ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg></span>
-              <p>In-season maintenance if anything needs attention</p>
-            </div>
-            <div class="intro-benefit">
-              <span class="ico" aria-hidden="true"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 8h-3.19l-1.42-1.42A2 2 0 0 0 14 6h-4a2 2 0 0 0-1.39.58L7.19 8H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1zm-8 9a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/></svg></span>
-              <p>Takedown and organized, labeled seasonal storage</p>
-            </div>
-          </div>
-          <button class="btn btn-red" onclick="openModal()">Get Your Free Quote</button>
-        </div>
-        <div class="intro-media">
-          <div class="intro-media-main" style="position:relative;">
-            <span class="example-tag">Example Style</span>
-            <img class="real-img" src="evergreen-install-large.webp" alt="Example of warm-white C9 roofline lighting on a home, illustrating the style of display Evergreen installs">
-          </div>
-          <div class="intro-media-small" style="position:absolute;">
-            <img class="real-img" src="evergreen-detail.webp" alt="Close-up example of a C9 LED bulb clipped to a roofline">
-          </div>
-        </div>
+    <div class="container top-intro">
+      <div>
+        <p class="top-kicker">What you get</p>
+        <h2 class="h2" id="services-heading">One crew for the whole season.</h2>
+        <p class="lede">We design the display around your roofline, install it, keep it working through the season, and take it down and store it when it's done.</p>
       </div>
-    </div>
-  </section>
-
-  <!-- ================= REAL INSTALL ================= -->
-  <section class="section" id="real-install" style="background:var(--white);" aria-labelledby="install-heading">
-    <div class="container">
-      <div class="section-head center">
-        <div class="eyebrow">Real Install</div>
-        <h2 class="h2" id="install-heading">See It on a Real Home.</h2>
-        <p class="lede">The same crew, the same clips, the same care. Here's one of our installs, from day to night.</p>
-      </div>
-
-      <div class="install-grid">
-        <figure class="install-card">
-          <div class="install-photo"><img src="install-before.jpg" alt="Connecticut home in daylight before the holiday light install" loading="lazy"></div>
-          <figcaption><span>Before</span> Daylight, ready for the install</figcaption>
-        </figure>
-        <figure class="install-card">
-          <div class="install-photo"><img src="install-after.jpg" alt="Same Connecticut home at night with warm white C9 lights along the roofline and gutters" loading="lazy"></div>
-          <figcaption><span>After</span> Night, roofline and gutters lit</figcaption>
-        </figure>
-        <div class="install-video">
-          <iframe src="https://www.youtube-nocookie.com/embed/I9Z2fUJljGs" title="Evergreen Holiday Lights install video" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-        </div>
-      </div>
+      <ul class="top-list">
+        <li>Custom design for your home's exact rooflines</li>
+        <li>Professional install by an insured local crew</li>
+        <li>Free fixes if anything goes wrong during the season</li>
+        <li>Takedown and labeled storage at our facility</li>
+      </ul>
     </div>
   </section>
 
@@ -847,41 +781,6 @@
       <p style="text-align:center;max-width:640px;margin:2rem auto 0;color:var(--muted);font-size:14.5px;line-height:1.7;">
         Every strand is LED, so displays run bright without spiking your power bill, and everything we install is rated to handle a Connecticut winter — wind, ice, and all. From your first consultation to takedown in January, we handle the whole season so you don't have to think about it again until next fall.
       </p>
-    </div>
-  </section>
-
-  <!-- ================= GALLERY ================= -->
-  <section class="section" id="gallery" style="background:var(--cream);" aria-labelledby="gallery-heading">
-    <div class="container">
-      <div class="section-head center">
-        <div class="eyebrow">Our Work</div>
-        <h2 class="h2" id="gallery-heading">See What's Possible.</h2>
-        <p class="lede">Our first Evergreen install is up now. More real jobs will replace the example photos as we finish them this season.</p>
-      </div>
-      <div class="gallery-grid">
-        <div class="gallery-item g-feature" style="position:relative;">
-          <img class="real-img" src="evergreen-first-install.jpg" alt="Warm white C9 roofline lights on a home at dusk, Evergreen's first Connecticut install" style="object-position:center 42%;">
-          <div class="gallery-caption">Our first Evergreen install</div>
-        </div>
-        <div class="gallery-item" style="position:relative;">
-          <span class="example-tag">Example</span>
-          <img class="real-img" src="evergreen-gallery-02.webp" alt="Example of a technician installing roofline lighting on a ladder" style="object-position:75% center;">
-          <div class="gallery-caption">Professional install in progress</div>
-        </div>
-        <div class="gallery-item" style="position:relative;">
-          <span class="example-tag">Example</span>
-          <img class="real-img" src="evergreen-gallery-03.webp" alt="Example of warm-white roofline lighting with holiday yard decor" style="object-position:center 70%;">
-          <div class="gallery-caption">Roofline lighting &amp; yard decor</div>
-        </div>
-        <div class="gallery-item g-wide" style="position:relative;">
-          <span class="example-tag">Example</span>
-          <img class="real-img" src="evergreen-gallery-04.webp" alt="Example of a full whole-home lighting display at dusk">
-          <div class="gallery-caption">Whole-home display</div>
-        </div>
-      </div>
-      <div style="text-align:center;margin-top:2.4rem;">
-        <button class="btn btn-outline-dark" onclick="openModal()">View Projects</button>
-      </div>
     </div>
   </section>
 
@@ -1245,7 +1144,7 @@
         <div class="footer-heading">Navigate</div>
         <div class="footer-list">
           <a href="#services">Services</a>
-          <a href="#gallery">Our Work</a>
+          <a href="#real-install">Our Work</a>
           <a href="#how-it-works">How It Works</a>
           <a href="#reviews">Reviews</a>
           <a href="about.html">About</a>
