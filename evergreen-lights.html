@@ -314,6 +314,15 @@
     .bulb-dot { width: 10px; height: 10px; border-radius: 50%; border: none; padding: 0; background: rgba(7,63,46,0.22); cursor: pointer; }
     .bulb-dot.active { background: var(--red); }
     .pkg-link { text-align: center; margin-bottom: 18px; }
+    .install-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+    @media (max-width: 760px) { .install-grid { grid-template-columns: 1fr; } }
+    .install-card { margin: 0; background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 12px 32px rgba(4,42,32,0.1); border: 1px solid var(--line); }
+    .install-card img { display: block; width: 100%; height: auto; }
+    .install-card figcaption { padding: 14px 18px; font-size: 14.5px; color: var(--charcoal); }
+    .install-card figcaption span { display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--red); margin-right: 8px; }
+    .install-video { margin-top: 36px; display: flex; justify-content: center; }
+    .install-video-frame { position: relative; width: min(100%, 340px); aspect-ratio: 9 / 16; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 40px rgba(4,42,32,0.2); background: var(--forest); }
+    .install-video-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
     .pkg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; margin-top: 8px; }
     @media (max-width: 960px) { .pkg-grid { grid-template-columns: 1fr; max-width: 520px; margin-inline: auto; } }
     .pkg-card { background: var(--white); border: 1px solid var(--line); border-radius: 22px; overflow: hidden; display: flex; flex-direction: column; box-shadow: 0 10px 30px rgba(4,42,32,0.08); }
@@ -514,6 +523,34 @@
           <div class="intro-media-small" style="position:absolute;">
             <img class="real-img" src="evergreen-detail.webp" alt="Close-up example of a C9 LED bulb clipped to a roofline">
           </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= REAL INSTALL ================= -->
+  <section class="section" id="real-install" style="background:var(--white);" aria-labelledby="install-heading">
+    <div class="container">
+      <div class="section-head center">
+        <div class="eyebrow">Real Install</div>
+        <h2 class="h2" id="install-heading">See It on a Real Home.</h2>
+        <p class="lede">The same crew, the same clips, the same care. Here's one of our installs, from day to night.</p>
+      </div>
+
+      <div class="install-grid">
+        <figure class="install-card">
+          <img src="install-before.jpg" alt="Connecticut home in daylight before the holiday light install" loading="lazy">
+          <figcaption><span>Before</span> Daylight, ready for the install</figcaption>
+        </figure>
+        <figure class="install-card">
+          <img src="install-after.jpg" alt="Same Connecticut home at night with warm white C9 lights along the roofline and gutters" loading="lazy">
+          <figcaption><span>After</span> Night, roofline and gutters lit</figcaption>
+        </figure>
+      </div>
+
+      <div class="install-video">
+        <div class="install-video-frame">
+          <iframe src="https://www.youtube-nocookie.com/embed/I9Z2fUJljGs" title="Evergreen Holiday Lights install video" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         </div>
       </div>
     </div>
