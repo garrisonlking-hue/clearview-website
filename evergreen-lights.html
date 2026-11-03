@@ -400,6 +400,17 @@
     .pkg-list li { position: relative; padding: 6px 0 6px 24px; font-size: 14.5px; color: var(--charcoal); line-height: 1.5; }
     .pkg-list li::before { content: "\2713"; position: absolute; left: 0; top: 6px; color: var(--evergreen); font-weight: 800; }
     .pkg-cta { width: 100%; margin-top: auto; }
+    .offer-box { max-width: 760px; margin: 36px auto 22px; background: var(--white); border: 2px solid var(--gold); border-radius: 24px; padding: 34px 32px; text-align: left; box-shadow: 0 16px 40px rgba(4,42,32,0.10); }
+    .offer-box h3 { font-size: 26px; font-weight: 800; color: var(--evergreen); line-height: 1.2; margin: 6px 0 18px; }
+    .offer-stack { list-style: none; padding: 0; margin: 0 0 22px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px 24px; }
+    .offer-stack li { font-size: 15px; line-height: 1.5; color: var(--charcoal); padding-left: 26px; position: relative; }
+    .offer-stack li::before { content: "\2713"; position: absolute; left: 0; top: 0; color: var(--evergreen); font-weight: 800; }
+    .offer-deals { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
+    .offer-deals > div { background: var(--cream); border-radius: 16px; padding: 16px 18px; font-size: 14.5px; color: var(--muted); line-height: 1.45; }
+    .offer-deals span { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--red); margin-bottom: 4px; }
+    .offer-deals strong { color: var(--evergreen); font-size: 20px; }
+    .offer-terms { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+    @media (max-width: 640px) { .offer-stack, .offer-deals { grid-template-columns: 1fr; } .offer-box { padding: 26px 22px; } .offer-box h3 { font-size: 22px; } }
     .pkg-footer { margin-top: 40px; text-align: center; }
     .pkg-footer p { color: var(--muted); font-size: 15px; margin-bottom: 8px; }
     .pkg-note { font-size: 12.5px !important; opacity: 0.85; }
@@ -635,7 +646,7 @@
         <div class="pkg-card pkg-featured">
           <div class="pkg-photo"><img src="render-showcase.jpg" alt="Concept render: Showcase package with the full roofline, dormers, garage doors, and porch lights" loading="lazy"></div>
           <div class="pkg-body">
-            <h3>Showcase <span class="pkg-badge">Add-Ons Available</span></h3>
+            <h3>Showcase <span class="pkg-badge">Recommended</span></h3>
             <p class="pkg-price">Classic + add-ons</p>
             <ul class="pkg-list">
               <li>Everything in Classic</li>
@@ -666,7 +677,24 @@
 
       <div class="pkg-footer">
         <p class="pkg-link"><a href="#bulbs" class="link-arrow">Next: choose your bulb style</a></p>
-        <p>Install next year and save 15%. Your design is already done, so the price drops.</p>
+        <div class="offer-box">
+          <p class="eyebrow">The Evergreen Holiday Offer</p>
+          <h3>A custom display, installed and taken down, for one price.</h3>
+          <ul class="offer-stack">
+            <li>Custom design for your home</li>
+            <li>Professional install with clips that won't damage gutters or shingles</li>
+            <li>Bulb and strand fixes free for the entire season</li>
+            <li>Takedown and storage included</li>
+            <li>Insured ($1M liability)</li>
+            <li>Rain? We just change the day</li>
+          </ul>
+          <div class="offer-deals">
+            <div><span>Book within 10 days</span><strong>$200 off</strong> your install</div>
+            <div><span>Book next year</span><strong>15% off</strong> because your design is already done</div>
+          </div>
+          <p class="offer-terms">Add any extras from the catalog below. 50% deposit at booking, remaining balance after the job. Final price set on your free quote.</p>
+          <button type="button" class="btn btn-red" onclick="openModal()">Get Your Free Quote</button>
+        </div>
         <p class="pkg-note">Concept renders. Pricing and inclusions subject to home measurement. 50% deposit at booking.</p>
       </div>
     </div>
