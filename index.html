@@ -735,6 +735,185 @@
 </section>
 
 
+<!-- ================= BEFORE / AFTER SLIDER ================= -->
+<section class="section" id="before-after" style="background:#fff;">
+  <div class="section-inner">
+    <div class="section-header center">
+      <div class="eyebrow">Before &amp; After</div>
+      <h2 class="section-title">See it for <span class="blue">yourself</span>.</h2>
+      <p class="section-subtitle">Same window, same day. Drag either slider to see the difference a professional clean makes.</p>
+    </div>
+
+    <div class="ba-stack">
+      <div class="ba-unit">
+        <div class="ba-slider">
+          <img class="ba-img ba-after" src="before-after-1-after.webp" loading="lazy" decoding="async" alt="Window after cleaning by Clear View Window Co., crystal clear glass">
+          <div class="ba-before-wrap">
+            <img class="ba-img ba-before" src="before-after-1-before.webp" loading="lazy" decoding="async" alt="Window before cleaning, dusty, hazy glass">
+          </div>
+          <span class="ba-label ba-label-before">Before</span>
+          <span class="ba-label ba-label-after">After</span>
+          <div class="ba-handle">
+            <div class="ba-handle-line"></div>
+            <div class="ba-handle-grip">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
+            </div>
+            <div class="ba-handle-line"></div>
+          </div>
+        </div>
+        <p class="ba-caption">Exterior glass · pure-water finish</p>
+      </div>
+
+      <div class="ba-unit">
+        <div class="ba-slider">
+          <img class="ba-img ba-after" src="ba-2-after.webp" loading="lazy" decoding="async" alt="Window frame, sill and glass after a full detail clean by Clear View Window Co.">
+          <div class="ba-before-wrap">
+            <img class="ba-img ba-before" src="ba-2-before.webp" loading="lazy" decoding="async" alt="Window before cleaning, mildewed sill and water-spotted frame">
+          </div>
+          <span class="ba-label ba-label-before">Before</span>
+          <span class="ba-label ba-label-after">After</span>
+          <div class="ba-handle">
+            <div class="ba-handle-line"></div>
+            <div class="ba-handle-grip">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
+            </div>
+            <div class="ba-handle-line"></div>
+          </div>
+        </div>
+        <p class="ba-caption">Full detail · frame, sill &amp; glass restored</p>
+      </div>
+      <div class="ba-unit">
+        <div class="ba-slider">
+          <img class="ba-img ba-after" src="ba-sill-after.webp" loading="lazy" decoding="async" alt="Casement window sill and track after Clear View detailing, clean white channel">
+          <div class="ba-before-wrap"><img class="ba-img ba-before" src="ba-sill-before.webp" loading="lazy" decoding="async" alt="Window sill and track before cleaning, channel packed with dirt and debris"></div>
+          <span class="ba-label ba-label-before">Before</span>
+          <span class="ba-label ba-label-after">After</span>
+          <div class="ba-handle"><div class="ba-handle-line"></div><div class="ba-handle-grip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg></div><div class="ba-handle-line"></div></div>
+        </div>
+        <p class="ba-caption">Sill &amp; track detailing &middot; the difference up close</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .ba-slider { position:relative; max-width:560px; margin:0 auto; aspect-ratio:3/4; border-radius:20px; overflow:hidden; box-shadow:0 20px 50px rgba(22,40,74,.18); cursor:ew-resize; user-select:none; touch-action:none; }
+  .ba-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .ba-before-wrap { position:absolute; inset:0; width:50%; overflow:hidden; }
+  .ba-before-wrap .ba-before { width:auto; height:100%; max-width:none; }
+  /* before image must be sized to the slider width, not the clipped wrapper */
+  .ba-slider .ba-before-wrap .ba-before { width:560px; }
+  @media(max-width:600px){ .ba-slider .ba-before-wrap .ba-before { width:92vw; max-width:560px; } }
+  .ba-label { position:absolute; top:16px; z-index:4; background:rgba(22,40,74,.85); color:#fff; padding:.3rem .85rem; border-radius:20px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; backdrop-filter:blur(4px); }
+  .ba-label-before { left:16px; }
+  .ba-label-after { right:16px; background:var(--red); }
+  .ba-handle { position:absolute; top:0; bottom:0; left:50%; width:44px; transform:translateX(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; pointer-events:none; }
+  .ba-handle-line { flex:1; width:3px; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.3); }
+  .ba-handle-grip { width:44px; height:44px; border-radius:50%; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .ba-caption { text-align:center; margin-top:1.2rem; font-size:.9rem; color:var(--gray-500); font-weight:500; }
+  .ba-stack { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:2rem 2.4rem; }
+  .ba-unit { flex:1 1 360px; max-width:460px; }
+  @media(max-width:520px){ .ba-unit { flex-basis:100%; max-width:560px; } }
+</style>
+
+<script>
+(function(){
+  document.querySelectorAll('.ba-slider').forEach(function(slider){
+    const wrap = slider.querySelector('.ba-before-wrap');
+    const handle = slider.querySelector('.ba-handle');
+    const beforeImg = slider.querySelector('.ba-before');
+    if(!wrap || !handle) return;
+    let dragging = false;
+
+    // keep the "before" image exactly as wide as the slider so the two halves line up at any size
+    function sizeBefore(){ if(beforeImg) beforeImg.style.width = slider.getBoundingClientRect().width + 'px'; }
+    sizeBefore();
+    window.addEventListener('resize', sizeBefore);
+    window.addEventListener('load', sizeBefore);
+
+    function setPos(clientX){
+      const rect = slider.getBoundingClientRect();
+      let x = clientX - rect.left;
+      x = Math.max(0, Math.min(x, rect.width));
+      const pct = (x / rect.width) * 100;
+      wrap.style.width = pct + '%';
+      handle.style.left = pct + '%';
+    }
+    function start(e){ dragging = true; setPos(getX(e)); }
+    function move(e){ if(!dragging) return; setPos(getX(e)); e.preventDefault(); }
+    function end(){ dragging = false; }
+    function getX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
+
+    slider.addEventListener('mousedown', start);
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', end);
+    slider.addEventListener('touchstart', start, {passive:true});
+    window.addEventListener('touchmove', move, {passive:false});
+    window.addEventListener('touchend', end);
+
+    // also let clicking anywhere jump the handle there
+    slider.addEventListener('click', e=>{ if(!dragging) setPos(getX(e)); });
+  });
+})();
+</script>
+
+
+
+<!-- ================= RECENT WORK ================= -->
+<section class="section" id="recent-work" style="background:#fff;">
+  <div class="section-inner">
+    <div class="section-header center">
+      <div class="eyebrow">Recent Work</div>
+      <h2 class="section-title">Homes we've made <span class="blue">shine.</span></h2>
+      <p class="section-subtitle">A few recent jobs along the Connecticut shoreline, every pane cleaned by hand and pure water.</p>
+    </div>
+
+    <div class="work-band">
+      <figure class="work-tile wide">
+        <img src="cv-work-estate.webp" alt="Wide view of a Connecticut shoreline home with wraparound porch and seawall, windows cleaned by Clear View" loading="lazy">
+        <figcaption>Shoreline colonial</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-arch.webp" alt="Stone archway framing a poolside view of Long Island Sound at a Connecticut shoreline home cleaned by Clear View" loading="lazy">
+        <figcaption>Poolside &amp; waterfront glass</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-turret.webp" alt="Cedar-shingle Connecticut estate with a turret and hydrangea beds, windows cleaned by Clear View" loading="lazy">
+        <figcaption>Shingle-style estate</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-rocks.webp" alt="Connecticut home built on the rocks above the water, freshly cleaned windows by Clear View" loading="lazy">
+        <figcaption>Waterfront cottage</figcaption>
+      </figure>
+      <figure class="work-tile">
+        <img src="cv-work-pool.webp" alt="Poolside stone archways and balconies of a Connecticut shoreline home cleaned by Clear View" loading="lazy">
+        <figcaption>Pool house &amp; balconies</figcaption>
+      </figure>
+      <figure class="work-tile wide">
+        <img src="cv-ext-rear.webp" alt="Full rear elevation of a cedar-shingle Connecticut estate with freshly cleaned windows by Clear View" loading="lazy">
+        <figcaption>Full-house exterior</figcaption>
+      </figure>
+    </div>
+
+    <div style="text-align:center;margin-top:36px;">
+      <a href="gallery.html" class="btn btn-primary btn-lg">See the full gallery →</a>
+    </div>
+  </div>
+</section>
+
+<style>
+  .work-band { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+  .work-tile { position:relative; margin:0; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(22,40,74,.12); }
+  .work-tile.wide { grid-column:span 2; }
+  .work-tile img { width:100%; height:340px; object-fit:cover; display:block; transition:transform .5s ease; }
+  .work-tile:hover img { transform:scale(1.05); }
+  .work-tile figcaption { position:absolute; left:0; right:0; bottom:0; padding:28px 16px 14px;
+    background:linear-gradient(to top, rgba(13,24,48,.82), rgba(13,24,48,0));
+    color:#F6F2EA; font-family:'Inter',sans-serif; font-size:.92rem; font-weight:600; letter-spacing:.01em; }
+  @media(max-width:900px){ .work-band { grid-template-columns:repeat(2,1fr); } .work-tile.wide { grid-column:span 2; } .work-tile img { height:240px; } }
+  @media(max-width:560px){ .work-band { grid-template-columns:1fr; } .work-tile.wide { grid-column:span 1; } .work-tile img { height:260px; } }
+</style>
+
 <!-- ================= SCROLLING REVIEWS BAR ================= -->
 <section class="rev-marquee-section" id="reviews">
   
@@ -1080,184 +1259,31 @@
 
 
 
-<!-- ================= BEFORE / AFTER SLIDER ================= -->
-<section class="section" id="before-after" style="background:#fff;">
-  <div class="section-inner">
-    <div class="section-header center">
-      <div class="eyebrow">Before &amp; After</div>
-      <h2 class="section-title">See it for <span class="blue">yourself</span>.</h2>
-      <p class="section-subtitle">Same window, same day. Drag either slider to see the difference a professional clean makes.</p>
-    </div>
-
-    <div class="ba-stack">
-      <div class="ba-unit">
-        <div class="ba-slider">
-          <img class="ba-img ba-after" src="before-after-1-after.webp" loading="lazy" decoding="async" alt="Window after cleaning by Clear View Window Co., crystal clear glass">
-          <div class="ba-before-wrap">
-            <img class="ba-img ba-before" src="before-after-1-before.webp" loading="lazy" decoding="async" alt="Window before cleaning, dusty, hazy glass">
-          </div>
-          <span class="ba-label ba-label-before">Before</span>
-          <span class="ba-label ba-label-after">After</span>
-          <div class="ba-handle">
-            <div class="ba-handle-line"></div>
-            <div class="ba-handle-grip">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
-            </div>
-            <div class="ba-handle-line"></div>
-          </div>
-        </div>
-        <p class="ba-caption">Exterior glass · pure-water finish</p>
-      </div>
-
-      <div class="ba-unit">
-        <div class="ba-slider">
-          <img class="ba-img ba-after" src="ba-2-after.webp" loading="lazy" decoding="async" alt="Window frame, sill and glass after a full detail clean by Clear View Window Co.">
-          <div class="ba-before-wrap">
-            <img class="ba-img ba-before" src="ba-2-before.webp" loading="lazy" decoding="async" alt="Window before cleaning, mildewed sill and water-spotted frame">
-          </div>
-          <span class="ba-label ba-label-before">Before</span>
-          <span class="ba-label ba-label-after">After</span>
-          <div class="ba-handle">
-            <div class="ba-handle-line"></div>
-            <div class="ba-handle-grip">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg>
-            </div>
-            <div class="ba-handle-line"></div>
-          </div>
-        </div>
-        <p class="ba-caption">Full detail · frame, sill &amp; glass restored</p>
-      </div>
-      <div class="ba-unit">
-        <div class="ba-slider">
-          <img class="ba-img ba-after" src="ba-sill-after.webp" loading="lazy" decoding="async" alt="Casement window sill and track after Clear View detailing, clean white channel">
-          <div class="ba-before-wrap"><img class="ba-img ba-before" src="ba-sill-before.webp" loading="lazy" decoding="async" alt="Window sill and track before cleaning, channel packed with dirt and debris"></div>
-          <span class="ba-label ba-label-before">Before</span>
-          <span class="ba-label ba-label-after">After</span>
-          <div class="ba-handle"><div class="ba-handle-line"></div><div class="ba-handle-grip"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#16284A" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/><polyline points="9 18 3 12 9 6" transform="translate(12 0)"/></svg></div><div class="ba-handle-line"></div></div>
-        </div>
-        <p class="ba-caption">Sill &amp; track detailing &middot; the difference up close</p>
+<!-- ================= SCHEDULE CTA (translucent) ================= -->
+<section class="sched-cta">
+  <div class="sched-cta-inner">
+    <div class="sched-cta-card">
+      <div class="eyebrow" style="justify-content:center;background:rgba(246,242,234,0.14);color:#F6F2EA;">Ready when you are</div>
+      <h2 class="sched-cta-title">Schedule your window cleaning <span>today.</span></h2>
+      <p class="sched-cta-desc">Clear glass starts with one call. Get your free quote in minutes, then pick the day that works for you.</p>
+      <div class="sched-cta-btns">
+        <button class="btn btn-primary btn-lg" onclick="openModal()">Get a Free Quote</button>
+        <a href="tel:+18609663149" class="btn btn-outline-light btn-lg" style="color:#F6F2EA;border-color:rgba(246,242,234,0.7);">Call (860) 966-3149</a>
       </div>
     </div>
   </div>
+  <style>
+    .sched-cta { position: relative; padding: 5rem 1.5rem; background: #16284A url('cv-team-pole.webp') center/cover no-repeat; }
+    .sched-cta::before { content: ''; position: absolute; inset: 0; background: rgba(22,40,74,0.72); }
+    .sched-cta-inner { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; }
+    .sched-cta-card { background: rgba(246,242,234,0.10); border: 1px solid rgba(246,242,234,0.22); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-radius: 28px; padding: 56px 40px; text-align: center; color: #F6F2EA; }
+    .sched-cta-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(32px, 4.6vw, 52px); font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; color: #F6F2EA; margin: 18px 0 16px; }
+    .sched-cta-title span { font-style: italic; color: #E9B9A8; }
+    .sched-cta-desc { font-size: 17px; line-height: 1.6; color: rgba(246,242,234,0.85); max-width: 580px; margin: 0 auto 34px; }
+    .sched-cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
+    @media (max-width: 640px) { .sched-cta { padding: 3.5rem 1rem; } .sched-cta-card { padding: 40px 22px; } }
+  </style>
 </section>
-
-<style>
-  .ba-slider { position:relative; max-width:560px; margin:0 auto; aspect-ratio:3/4; border-radius:20px; overflow:hidden; box-shadow:0 20px 50px rgba(22,40,74,.18); cursor:ew-resize; user-select:none; touch-action:none; }
-  .ba-img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
-  .ba-before-wrap { position:absolute; inset:0; width:50%; overflow:hidden; }
-  .ba-before-wrap .ba-before { width:auto; height:100%; max-width:none; }
-  /* before image must be sized to the slider width, not the clipped wrapper */
-  .ba-slider .ba-before-wrap .ba-before { width:560px; }
-  @media(max-width:600px){ .ba-slider .ba-before-wrap .ba-before { width:92vw; max-width:560px; } }
-  .ba-label { position:absolute; top:16px; z-index:4; background:rgba(22,40,74,.85); color:#fff; padding:.3rem .85rem; border-radius:20px; font-size:.72rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; backdrop-filter:blur(4px); }
-  .ba-label-before { left:16px; }
-  .ba-label-after { right:16px; background:var(--red); }
-  .ba-handle { position:absolute; top:0; bottom:0; left:50%; width:44px; transform:translateX(-50%); z-index:5; display:flex; flex-direction:column; align-items:center; pointer-events:none; }
-  .ba-handle-line { flex:1; width:3px; background:#fff; box-shadow:0 0 8px rgba(0,0,0,.3); }
-  .ba-handle-grip { width:44px; height:44px; border-radius:50%; background:#fff; box-shadow:0 4px 14px rgba(0,0,0,.3); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
-  .ba-caption { text-align:center; margin-top:1.2rem; font-size:.9rem; color:var(--gray-500); font-weight:500; }
-  .ba-stack { display:flex; flex-wrap:wrap; justify-content:center; align-items:flex-start; gap:2rem 2.4rem; }
-  .ba-unit { flex:1 1 360px; max-width:460px; }
-  @media(max-width:520px){ .ba-unit { flex-basis:100%; max-width:560px; } }
-</style>
-
-<script>
-(function(){
-  document.querySelectorAll('.ba-slider').forEach(function(slider){
-    const wrap = slider.querySelector('.ba-before-wrap');
-    const handle = slider.querySelector('.ba-handle');
-    const beforeImg = slider.querySelector('.ba-before');
-    if(!wrap || !handle) return;
-    let dragging = false;
-
-    // keep the "before" image exactly as wide as the slider so the two halves line up at any size
-    function sizeBefore(){ if(beforeImg) beforeImg.style.width = slider.getBoundingClientRect().width + 'px'; }
-    sizeBefore();
-    window.addEventListener('resize', sizeBefore);
-    window.addEventListener('load', sizeBefore);
-
-    function setPos(clientX){
-      const rect = slider.getBoundingClientRect();
-      let x = clientX - rect.left;
-      x = Math.max(0, Math.min(x, rect.width));
-      const pct = (x / rect.width) * 100;
-      wrap.style.width = pct + '%';
-      handle.style.left = pct + '%';
-    }
-    function start(e){ dragging = true; setPos(getX(e)); }
-    function move(e){ if(!dragging) return; setPos(getX(e)); e.preventDefault(); }
-    function end(){ dragging = false; }
-    function getX(e){ return e.touches ? e.touches[0].clientX : e.clientX; }
-
-    slider.addEventListener('mousedown', start);
-    window.addEventListener('mousemove', move);
-    window.addEventListener('mouseup', end);
-    slider.addEventListener('touchstart', start, {passive:true});
-    window.addEventListener('touchmove', move, {passive:false});
-    window.addEventListener('touchend', end);
-
-    // also let clicking anywhere jump the handle there
-    slider.addEventListener('click', e=>{ if(!dragging) setPos(getX(e)); });
-  });
-})();
-</script>
-
-
-
-<!-- ================= RECENT WORK ================= -->
-<section class="section" id="recent-work" style="background:#fff;">
-  <div class="section-inner">
-    <div class="section-header center">
-      <div class="eyebrow">Recent Work</div>
-      <h2 class="section-title">Homes we've made <span class="blue">shine.</span></h2>
-      <p class="section-subtitle">A few recent jobs along the Connecticut shoreline, every pane cleaned by hand and pure water.</p>
-    </div>
-
-    <div class="work-band">
-      <figure class="work-tile wide">
-        <img src="cv-work-estate.webp" alt="Wide view of a Connecticut shoreline home with wraparound porch and seawall, windows cleaned by Clear View" loading="lazy">
-        <figcaption>Shoreline colonial</figcaption>
-      </figure>
-      <figure class="work-tile">
-        <img src="cv-work-arch.webp" alt="Stone archway framing a poolside view of Long Island Sound at a Connecticut shoreline home cleaned by Clear View" loading="lazy">
-        <figcaption>Poolside &amp; waterfront glass</figcaption>
-      </figure>
-      <figure class="work-tile">
-        <img src="cv-work-turret.webp" alt="Cedar-shingle Connecticut estate with a turret and hydrangea beds, windows cleaned by Clear View" loading="lazy">
-        <figcaption>Shingle-style estate</figcaption>
-      </figure>
-      <figure class="work-tile">
-        <img src="cv-work-rocks.webp" alt="Connecticut home built on the rocks above the water, freshly cleaned windows by Clear View" loading="lazy">
-        <figcaption>Waterfront cottage</figcaption>
-      </figure>
-      <figure class="work-tile">
-        <img src="cv-work-pool.webp" alt="Poolside stone archways and balconies of a Connecticut shoreline home cleaned by Clear View" loading="lazy">
-        <figcaption>Pool house &amp; balconies</figcaption>
-      </figure>
-      <figure class="work-tile wide">
-        <img src="cv-ext-rear.webp" alt="Full rear elevation of a cedar-shingle Connecticut estate with freshly cleaned windows by Clear View" loading="lazy">
-        <figcaption>Full-house exterior</figcaption>
-      </figure>
-    </div>
-
-    <div style="text-align:center;margin-top:36px;">
-      <a href="gallery.html" class="btn btn-primary btn-lg">See the full gallery →</a>
-    </div>
-  </div>
-</section>
-
-<style>
-  .work-band { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
-  .work-tile { position:relative; margin:0; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(22,40,74,.12); }
-  .work-tile.wide { grid-column:span 2; }
-  .work-tile img { width:100%; height:340px; object-fit:cover; display:block; transition:transform .5s ease; }
-  .work-tile:hover img { transform:scale(1.05); }
-  .work-tile figcaption { position:absolute; left:0; right:0; bottom:0; padding:28px 16px 14px;
-    background:linear-gradient(to top, rgba(13,24,48,.82), rgba(13,24,48,0));
-    color:#F6F2EA; font-family:'Inter',sans-serif; font-size:.92rem; font-weight:600; letter-spacing:.01em; }
-  @media(max-width:900px){ .work-band { grid-template-columns:repeat(2,1fr); } .work-tile.wide { grid-column:span 2; } .work-tile img { height:240px; } }
-  @media(max-width:560px){ .work-band { grid-template-columns:1fr; } .work-tile.wide { grid-column:span 1; } .work-tile img { height:260px; } }
-</style>
 
 <!-- ================= COMMERCIAL STRIP ================= -->
 <section class="commercial-strip">
