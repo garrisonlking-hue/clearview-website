@@ -44,7 +44,7 @@
   .qb-card{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:2.5rem;min-width:0}
   @media(max-width:600px){ .qb-card{padding:1.5rem} }
 
-  /* sidebar — Property Details */
+  /* sidebar, Property Details */
   .qb-side{background:#fff;border-radius:24px;box-shadow:var(--shadow);padding:1.6rem 1.5rem;position:sticky;top:90px}
   @media(max-width:920px){ .qb-side{display:none} }
   .qb-side h2{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;margin-bottom:1.1rem}
@@ -199,7 +199,7 @@
 <div class="qb-top">
   <div class="qb-top-inner">
     <a href="index.html" class="qb-brand"><img src="logo.png" alt="Clear View"><span>CLEAR VIEW<small>WINDOW CO.</small></span></a>
-    <div class="qb-total" id="totalPill">Estimate: <b id="totalAmt">—</b></div>
+    <div class="qb-total" id="totalPill">Estimate: <b id="totalAmt">, </b></div>
   </div>
 </div>
 
@@ -244,7 +244,7 @@
     {v:9.00,t:'3–5 years',d:'Significant buildup'},
     {v:10.00,t:'Never',d:'First professional cleaning'},
   ];
-  // Storm windows — a second layer of glass over the primary window.
+  // Storm windows, a second layer of glass over the primary window.
   // Cleaning inside & out means double the surfaces, so it doubles the base.
   const STORM = [
     {v:0,   t:'No',d:'No storm windows'},
@@ -252,14 +252,14 @@
     {v:0.50,t:'Yes, about 50%',d:'Half the windows have storms'},
     {v:1.0, t:'Yes, all of them',d:'Every window has a storm window'},
   ];
-  // French panes — small % upcharge (grids take a little longer)
+  // French panes, small % upcharge (grids take a little longer)
   const FRENCH = [
     {v:0,   t:'No',d:'No french pane windows'},
     {v:0.05,t:'Yes, less than 25%',d:'A few french pane windows'},
     {v:0.08,t:'Yes, about 50%',d:'Half of windows are french pane'},
     {v:0.12,t:'Yes, all of them',d:'All windows are french pane style'},
   ];
-  // Stories barely matter — only a small bump at 3+
+  // Stories barely matter, only a small bump at 3+
   const STORIES = [{v:1.0,t:'1 Story'},{v:1.0,t:'2 Stories'},{v:1.10,t:'3+ Stories'}];
   // Interior is priced at 3/4 of exterior. Tracks are INCLUDED FREE (no toggle).
   // Screens = $4/screen (count ≈ panes). Solar = $10/panel.
@@ -308,8 +308,7 @@
   // ---------- PRICE ENGINE ----------
   // The customer picks a SCOPE (outside / inside / both). Interior is priced at
   // INT_FACTOR of exterior. Storm windows add glass, so the storm surcharge
-  // (×1 … ×2) loads onto any scope that includes the OUTSIDE (outside / both) —
-  // inside-only isn't surcharged since storm windows sit on the exterior.
+  // (×1 … ×2) loads onto any scope that includes the OUTSIDE (outside / both), // inside-only isn't surcharged since storm windows sit on the exterior.
   // Add-ons (screens, solar) stack on after, and are NOT discounted by the plan.
   function paneRate(){ return S.cleaned ?? 7.00; }
   function stormMult(){ return 1 + (S.storm ?? 0); }   // No→×1 … All→×2
@@ -358,7 +357,7 @@
   // Single firm estimate (rounded to nearest $5), after plan off + add-ons.
   function fmtRange(v, planOff){
     const b=scopeBase();
-    if(b===null) return '—';
+    if(b===null) return ', ';
     if(b===-1) return 'Custom quote';
     const off = (planOff!==undefined ? planOff : (S.plan ? (PLANS.find(p=>p.id===S.plan)?.off||0) : 0));
     const price = Math.round(priceForPlan(off)/5)*5;
@@ -422,7 +421,7 @@
       {k:'Property Size', v:S.sizeLabel},
     ];
     document.getElementById('sideRows').innerHTML = rows.map(r=>
-      `<div class="qb-side-row"><div class="qb-side-k">${r.k}</div><div class="qb-side-v ${r.v?'set':'empty'}">${r.v||'—'}</div></div>`
+      `<div class="qb-side-row"><div class="qb-side-k">${r.k}</div><div class="qb-side-v ${r.v?'set':'empty'}">${r.v||', '}</div></div>`
     ).join('');
   }
   function refreshNext(){ document.getElementById('nextBtn').disabled = !steps[cur].valid(); }
@@ -452,7 +451,7 @@
     <div class="opt-grid cols-3">${types.map(x=>optCard(S.propType===x.id,`pick('propType','${x.id}')`,x.ic,x.t,x.d)).join('')}</div>`;
   }
   function stepScope(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('scope')} of 7 · About Your Home</div><h1 class="qb-h">What do you want cleaned?</h1><p class="qb-sub">Pick the glass you'd like done — most folks do both.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('scope')} of 7 · About Your Home</div><h1 class="qb-h">What do you want cleaned?</h1><p class="qb-sub">Pick the glass you'd like done, most folks do both.</p>
     <div class="opt-grid cols-3">${SCOPE.map(x=>optCard(S.scope===x.v,`pickScope('${x.v}')`,'',x.t,x.d)).join('')}</div>`;
   }
   function stepCleaned(){
@@ -460,14 +459,14 @@
     <div class="opt-grid cols-3">${LASTCLEANED.map(x=>optCard(S.cleanedLabel===x.t,`pickCleaned(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>`;
   }
   function stepFrench(){
-    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 7 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean — this keeps your quote accurate.</p>
+    return `<div class="qb-step-eyebrow">Step ${stepNum('french')} of 7 · About Your Home</div><h1 class="qb-h">Do you have French panes?</h1><p class="qb-sub">Grid-style windows take longer to clean, this keeps your quote accurate.</p>
     <div class="opt-grid cols-2">${FRENCH.map(x=>optCard(S.frenchLabel===x.t,`pickFrench(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
     <div class="info-note"><b>Info:</b> French pane windows require additional cleaning time due to their grid patterns and multiple glass sections.</div>`;
   }
   function stepStorm(){
     return `<div class="qb-step-eyebrow">Step ${stepNum('storm')} of 7 · About Your Home</div><h1 class="qb-h">Do you have storm windows?</h1><p class="qb-sub">Storm windows add a second layer of glass over each window.</p>
     <div class="opt-grid cols-2">${STORM.map(x=>optCard(S.stormLabel===x.t,`pickStorm(${x.v},'${x.t}')`,'',x.t,x.d)).join('')}</div>
-    <div class="info-note"><b>Info:</b> Each storm window means cleaning the storm panel and the primary window, inside and out — so the quote scales with how many of your windows have storms.</div>`;
+    <div class="info-note"><b>Info:</b> Each storm window means cleaning the storm panel and the primary window, inside and out, so the quote scales with how many of your windows have storms.</div>`;
   }
   function stepSize(){
     return `<div class="qb-step-eyebrow">Step ${stepNum('size')} of 7 · About Your Home</div><h1 class="qb-h">How big is your property?</h1><p class="qb-sub">Select the option that best describes your property.</p>
@@ -496,7 +495,7 @@
       return `<div class="plan ${sel?'sel':''}" onclick="pickPlan('${p.id}')">${p.popular?'<span class="badge">★ Most Popular</span>':''}<h3>${p.t}</h3><div class="freq">${p.freq}</div>${priceHtml}<ul class="plan-perks">${perks}</ul>${annual}${btn}</div>`;
     }).join('');
     const biSave = dollarsSaved(0.10) * PLAN_VISITS.biannual;
-    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save 10%${biSave>0?` (about $${biSave}/year)`:''} with Seasonal</div><p>Two cleanings a year keeps the shine — and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="next()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save 10%</button></div></div>` : '';
+    const nudge = S.plan==='onetime' ? `<div class="plan-nudge"><div class="plan-nudge-title">Save 10%${biSave>0?` (about $${biSave}/year)`:''} with Seasonal</div><p>Two cleanings a year keeps the shine, and there's no risk. No contracts, no cancellation fees, cancel anytime.</p><div class="plan-nudge-btns"><button class="btn-keep" onclick="next()">Keep one-time</button><button class="btn-upgrade" onclick="pickPlan('biannual')">Upgrade &amp; save 10%</button></div></div>` : '';
     return `<div class="qb-step-eyebrow">Step 1 of 3 · Your Quote</div><h1 class="qb-h">Pick your plan.</h1><p class="qb-sub">The more we visit, the more you save. Cancel anytime.</p>
     <div class="plan-grid">${cards}</div>
     ${nudge}
@@ -504,7 +503,7 @@
   }
   function stepAddons(){
     const scrPrice = screenCount()*SCREEN_RATE;
-    // Optional extras only — inside/outside is chosen back on the scope step.
+    // Optional extras only, inside/outside is chosen back on the scope step.
     const items=[
       {id:'screens', t:'Screen Cleaning',price:'$'+scrPrice},
       {id:'solar',   t:'Solar Panel Cleaning',price:(S.solarPanels?('$'+(S.solarPanels*SOLAR_RATE)):'$10/panel')},
@@ -541,15 +540,15 @@
   // calendar state
   let calView=new Date(); calView.setDate(1);
   function stepSchedule(){
-    return `<div class="qb-step-eyebrow">Step 3 of 3 · Your Quote</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time — we'll confirm availability and lock it in.</p>
+    return `<div class="qb-step-eyebrow">Step 3 of 3 · Your Quote</div><h1 class="qb-h">Request your date.</h1><p class="qb-sub">Pick a preferred day and time, we'll confirm availability and lock it in.</p>
     <div id="calMount"></div>
     <div id="slotMount"></div>
-    <div class="info-note">This is a <b>request</b>, not a locked booking — we'll text or call to confirm your exact time.</div>`;
+    <div class="info-note">This is a <b>request</b>, not a locked booking, we'll text or call to confirm your exact time.</div>`;
   }
   function stepReview(){
     const addonNames={screens:'Screen Cleaning',solar:'Solar Panels'};
     const addons = S.services.map(id=>addonNames[id]||id);
-    const svc = [scopeName()||'—'].concat(addons).join(', ');
+    const svc = [scopeName()||', '].concat(addons).join(', ');
     const plan = PLANS.find(p=>p.id===S.plan);
     const off = plan?plan.off:0;
     return `<div class="qb-step-eyebrow">Review &amp; Confirm</div><h1 class="qb-h">Review &amp; submit.</h1><p class="qb-sub">Please review your details below. We'll follow up shortly to confirm.</p>
@@ -572,7 +571,7 @@
   // ---- pick handlers ----
   // No auto-advance: selecting an option just updates state + UI.
   // The customer moves forward with the Continue button.
-  function advance(){ /* auto-advance disabled — use Next button */ }
+  function advance(){ /* auto-advance disabled, use Next button */ }
   function pick(key,val){ S[key]=val; if(key==='propType'){} renderStep(); advance(); }
   function pickSize(v,i){ S.size=v; S.sizeLabel=SIZE[i].label; renderStep(); advance(); }
   function pickCleaned(v,t){ S.cleaned=v; S.cleanedLabel=t; renderStep(); advance(); }
@@ -659,8 +658,7 @@
       let h = parseInt(m[1],10); const min = parseInt(m[2],10);
       const pm = /PM/i.test(m[3]);
       if(pm && h!==12) h+=12; if(!pm && h===12) h=0;
-      // Build a Date from the customer's local wall-clock time, then send true UTC —
-      // Flyra parses these as UTC, so naive local strings showed jobs 4h early.
+      // Build a Date from the customer's local wall-clock time, then send true UTC, // Flyra parses these as UTC, so naive local strings showed jobs 4h early.
       const d = new Date(`${dateISO}T${String(h).padStart(2,'0')}:${String(min).padStart(2,'0')}:00`);
       return d.toISOString();
     }
@@ -686,14 +684,14 @@
         })
       });
       if(!r.ok){ throw new Error('lead post failed: '+r.status); }
-      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''} — we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(null, off)}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
+      document.getElementById('card').innerHTML=`<div class="success-wrap"><div style="font-size:3rem">✓</div><div class="big">Request received!</div><p style="color:var(--gray-500);max-width:480px;margin:0 auto 1rem">Thanks ${S.name.split(' ')[0]||''}, we've got your details and your requested time of <b>${S.date} at ${S.time}</b>. We'll confirm by phone or text shortly.</p><div class="price-pill">Estimated: ${fmtRange(null, off)}</div><div style="margin-top:1.5rem"><a href="index.html" class="btn btn-next">Back to home →</a></div></div>`;
       document.querySelector('.qb-nav').style.display='none';
       document.getElementById('progress').style.display='none';
       window.scrollTo({top:0,behavior:'smooth'});
     }catch(e){
       console.error(e);
       btn.disabled=false; btn.textContent='Submit Request →';
-      const el=document.getElementById('submitErr'); if(el) el.textContent='Could not submit — please call us at (860) 966-3149 and we\'ll take care of it.';
+      const el=document.getElementById('submitErr'); if(el) el.textContent='Could not submit, please call us at (860) 966-3149 and we\'ll take care of it.';
     }
   }
 
