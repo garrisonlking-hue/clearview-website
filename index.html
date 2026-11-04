@@ -1259,29 +1259,27 @@
 
 
 
-<!-- ================= SCHEDULE CTA (translucent) ================= -->
+<!-- ================= SCHEDULE CTA (fixed photo, fades to navy) ================= -->
 <section class="sched-cta">
   <div class="sched-cta-inner">
-    <div class="sched-cta-card">
-      <div class="eyebrow" style="justify-content:center;background:rgba(246,242,234,0.14);color:#F6F2EA;">Ready when you are</div>
-      <h2 class="sched-cta-title">Schedule your window cleaning <span>today.</span></h2>
-      <p class="sched-cta-desc">Clear glass starts with one call. Get your free quote in minutes, then pick the day that works for you.</p>
-      <div class="sched-cta-btns">
-        <button class="btn btn-primary btn-lg" onclick="openModal()">Get a Free Quote</button>
-        <a href="tel:+18609663149" class="btn btn-outline-light btn-lg" style="color:#F6F2EA;border-color:rgba(246,242,234,0.7);">Call (860) 966-3149</a>
-      </div>
+    <h2 class="sched-cta-title">Schedule your window cleaning <span>today.</span></h2>
+    <p class="sched-cta-desc">Clear glass starts with one call. Get your free quote in minutes, then pick the day that works for you.</p>
+    <div class="sched-cta-btns">
+      <button class="btn btn-primary btn-lg" onclick="openModal()">Get a Free Quote</button>
+      <a href="tel:+18609663149" class="btn btn-outline-light btn-lg" style="color:#F6F2EA;border-color:rgba(246,242,234,0.7);">Call (860) 966-3149</a>
     </div>
   </div>
   <style>
-    .sched-cta { position: relative; padding: 5rem 1.5rem; background: #16284A url('cv-team-pole.webp') center/cover no-repeat; }
-    .sched-cta::before { content: ''; position: absolute; inset: 0; background: rgba(22,40,74,0.72); }
-    .sched-cta-inner { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; }
-    .sched-cta-card { background: rgba(246,242,234,0.10); border: 1px solid rgba(246,242,234,0.22); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); border-radius: 28px; padding: 56px 40px; text-align: center; color: #F6F2EA; }
-    .sched-cta-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(32px, 4.6vw, 52px); font-weight: 700; line-height: 1.08; letter-spacing: -0.02em; color: #F6F2EA; margin: 18px 0 16px; }
+    .sched-cta { position: relative; overflow: hidden; min-height: 92vh; display: flex; align-items: center; justify-content: center; padding: 6rem 1.5rem; background: #16284A url('cv-team-pole.webp') center center / cover no-repeat fixed; }
+    .sched-cta::before { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(22,40,74,0.15) 0%, rgba(22,40,74,0.55) 55%, rgba(22,40,74,0.97) 100%); }
+    .sched-cta::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 45%; background: rgba(22,40,74,0.35); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 100%); mask-image: linear-gradient(to top, #000 0%, transparent 100%); }
+    .sched-cta-inner { position: relative; z-index: 1; max-width: 960px; margin: 0 auto; text-align: center; color: #F6F2EA; }
+    .sched-cta-title { font-family: 'Playfair Display', Georgia, serif; font-size: clamp(40px, 6vw, 72px); font-weight: 700; line-height: 1.04; letter-spacing: -0.025em; color: #F6F2EA; margin-bottom: 22px; text-shadow: 0 4px 24px rgba(0,0,0,0.35); }
     .sched-cta-title span { font-style: italic; color: #E9B9A8; }
-    .sched-cta-desc { font-size: 17px; line-height: 1.6; color: rgba(246,242,234,0.85); max-width: 580px; margin: 0 auto 34px; }
+    .sched-cta-desc { font-size: 18px; line-height: 1.6; color: rgba(246,242,234,0.9); max-width: 580px; margin: 0 auto 36px; }
     .sched-cta-btns { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; }
-    @media (max-width: 640px) { .sched-cta { padding: 3.5rem 1rem; } .sched-cta-card { padding: 40px 22px; } }
+    @media (max-width: 900px) { .sched-cta { background-attachment: scroll; min-height: 80vh; } }
+    @media (max-width: 640px) { .sched-cta { padding: 4rem 1.25rem; } }
   </style>
 </section>
 
