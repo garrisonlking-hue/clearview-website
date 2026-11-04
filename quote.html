@@ -264,7 +264,7 @@
   // Interior is priced at 3/4 of exterior. Tracks are INCLUDED FREE (no toggle).
   // Screens = $4/screen (count ≈ panes). Solar = $10/panel.
   const INT_FACTOR = 0.75;     // interior = 0.75 × exterior
-  const SCREEN_RATE = 4;       // $ per screen
+  const SCREEN_RATE = 5;       // $ per screen
   const SOLAR_RATE = 10;       // $ per solar panel
   const SERVICES = [
     {id:'exterior',t:'Exterior Windows',base:true,d:'Outside glass, pure-water'},
@@ -300,7 +300,7 @@
     scope:'both',
     storm:null, stormLabel:null,
     french:null, frenchLabel:null,
-    stories:null, storiesLabel:null, services:[], solarPanels:0, plan:null,
+    stories:null, storiesLabel:null, services:[], screens:0, solarPanels:0, plan:null,
     name:'',phone:'',email:'',address:'',notes:'',smsConsent:false,
     date:null, time:null
   };
@@ -327,11 +327,11 @@
     return Math.max(p, MIN_JOB);
   }
   // Screens ≈ half the panes (most windows = 2 panes but 1 screen) × $4 each.
-  function screenCount(){ return Math.round(S.size/2); }
+  function screenCount(){ return S.screens||0; }   // customer-entered count
   // Optional add-ons only: screens + solar. No interior here (it's in the scope).
   function addOnTotal(){
     let a=0;
-    if(S.services.includes('screens') && S.size>0) a += screenCount()*SCREEN_RATE;
+    if(S.services.includes('screens')) a += screenCount()*SCREEN_RATE;
     if(S.services.includes('solar')) a += (S.solarPanels||0)*SOLAR_RATE;
     return a;
   }
@@ -385,7 +385,7 @@
     {key:'size',     render:stepSize,     valid:()=>S.size!==null,       phase:1},
     {key:'contact',  render:stepContact,  valid:validContact,            phase:1, last1:true},
     {key:'plan',     render:stepPlan,     valid:()=>!!S.plan,            phase:2},
-    {key:'addons',   render:stepAddons,   valid:()=>true,                phase:2},
+    {key:'addons',   render:stepAddons,   valid:()=>!S.services.includes('screens') || S.screens>0, phase:2},
     {key:'schedule', render:stepSchedule, valid:()=>!!S.date && !!S.time,phase:2},
     {key:'review',   render:stepReview,   valid:()=>true,                phase:2},
   ];
@@ -502,27 +502,30 @@
     <div class="info-note">Recurring plans lock in your discount on every visit. Final price confirmed at your free in-person walkthrough.</div>`;
   }
   function stepAddons(){
-    const scrPrice = screenCount()*SCREEN_RATE;
-    // Optional extras only, inside/outside is chosen back on the scope step.
-    const items=[
-      {id:'screens', t:'Screen Cleaning',price:'$'+scrPrice},
-      {id:'solar',   t:'Solar Panel Cleaning',price:(S.solarPanels?('$'+(S.solarPanels*SOLAR_RATE)):'$10/panel')},
-    ];
-    const rows=items.map(x=>{
-      const on=S.services.includes(x.id);
-      return `<div class="addon ${on?'sel':''}" onclick="toggleSvc('${x.id}')">
+    const onS = S.services.includes('screens');
+    const onP = S.services.includes('solar');
+    const none = S.services.length===0;
+    const row=(id,on,title,price)=>`<div class="addon ${on?'sel':''}" onclick="toggleSvc('${id}')">
         <div class="addon-check">${on?'✓':''}</div>
-        <div class="addon-body"><div class="addon-t">${x.t}</div></div>
-        <div class="addon-price">${x.price}</div>
+        <div class="addon-body"><div class="addon-t">${title}</div></div>
+        <div class="addon-price">${price}</div>
       </div>`;
-    }).join('');
-
-    const solarInput = S.services.includes('solar')
-      ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" inputmode="numeric" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();updateTotal()" placeholder="e.g. 12"></div>`
+    const screensRow=row('screens', onS, 'Screen Cleaning', S.screens ? '$'+(S.screens*SCREEN_RATE) : '$'+SCREEN_RATE+'/screen');
+    const solarRow=row('solar', onP, 'Solar Panel Cleaning', S.solarPanels ? '$'+(S.solarPanels*SOLAR_RATE) : '$'+SOLAR_RATE+'/panel');
+    const notRow=`<div class="addon ${none?'sel':''}" onclick="noAddons()">
+        <div class="addon-check">${none?'✓':''}</div>
+        <div class="addon-body"><div class="addon-t">Not interested</div></div>
+        <div class="addon-price">$0</div>
+      </div>`;
+    const screenInput = onS
+      ? `<div class="fld" style="margin-top:1rem"><label>How many screens? <span class="req">*</span></label><input id="f_screens" type="number" inputmode="numeric" min="1" value="${S.screens||''}" oninput="S.screens=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();refreshNext();updateTotal();"></div>`
       : '';
-
+    const solarInput = onP
+      ? `<div class="fld" style="margin-top:1rem"><label>How many solar panels? <span class="req">*</span></label><input id="f_solar" type="number" inputmode="numeric" min="0" value="${S.solarPanels||''}" oninput="S.solarPanels=parseInt(this.value)||0;document.getElementById('card').innerHTML=stepAddons();refreshNext();updateTotal();"></div>`
+      : '';
     return `<div class="qb-step-eyebrow">Step 2 of 3 · Your Quote</div><h1 class="qb-h">Pick your add-ons.</h1><p class="qb-sub">Optional extras. Sill &amp; track detailing is always included free.</p>
-    <div class="addon-grid">${rows}</div>
+    <div class="addon-grid">${screensRow}${solarRow}${notRow}</div>
+    ${screenInput}
     ${solarInput}
     <div class="info-note">Add-ons apply to your initial visit and can be added to future visits anytime.</div>`;
   }
@@ -546,7 +549,7 @@
     <div class="info-note">This is a <b>request</b>, not a locked booking, we'll text or call to confirm your exact time.</div>`;
   }
   function stepReview(){
-    const addonNames={screens:'Screen Cleaning',solar:'Solar Panels'};
+    const addonNames={screens:'Screen Cleaning ('+(S.screens||0)+' screens)',solar:'Solar Panels ('+(S.solarPanels||0)+' panels)'};
     const addons = S.services.map(id=>addonNames[id]||id);
     const svc = [scopeName()||', '].concat(addons).join(', ');
     const plan = PLANS.find(p=>p.id===S.plan);
@@ -585,9 +588,11 @@
     const i=S.services.indexOf(id);
     if(i>=0) S.services.splice(i,1); else S.services.push(id);
     if(id==='solar' && i>=0) S.solarPanels=0;   // reset count if solar removed
+    if(id==='screens' && i>=0) S.screens=0;     // reset count if screens removed
     document.getElementById('card').innerHTML=stepAddons();
     refreshNext(); updateTotal();
   }
+  function noAddons(){ S.services=[]; S.screens=0; S.solarPanels=0; document.getElementById('card').innerHTML=stepAddons(); refreshNext(); updateTotal(); }
   function validContact(){ return S.name.trim() && S.phone.trim().length>=7 && S.address.trim(); }
   function cap(s){ return s? s.charAt(0).toUpperCase()+s.slice(1):''; }
 
@@ -637,7 +642,7 @@
     const scopeSvc = S.scope==='outside' ? ['Exterior Windows']
                    : S.scope==='inside'  ? ['Interior Windows']
                    : ['Exterior Windows','Interior Windows'];
-    const svcList=scopeSvc.concat(S.services.map(id=>SERVICES.find(s=>s.id===id).t)).join(', ');
+    const svcList=scopeSvc.concat(S.services.map(id=>SERVICES.find(s=>s.id===id).t + (id==='screens' ? ` (${S.screens} screens)` : id==='solar' ? ` (${S.solarPanels} panels)` : ''))).join(', ');
     const notes=[
       `Quote Builder lead`,
       `Property: ${cap(S.propType)}, ${S.sizeLabel}`,
