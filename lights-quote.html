@@ -1,0 +1,448 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Lights Quote Builder | Clear View</title>
+<style>
+:root{--green:#173F35;--cream:#FBF8F0;--line:#DDD8CB;--muted:#6B6F68;--accent:#B5541F}
+*{box-sizing:border-box}
+body{margin:0;background:#EFEBE0;color:var(--green);font-family:Verdana,"DejaVu Sans",Geneva,sans-serif;font-size:14px;line-height:1.45}
+h1,h2,h3{margin:0}
+button{font:inherit;cursor:pointer;border:1px solid var(--green);background:var(--green);color:#fff;padding:8px 14px;border-radius:6px}
+button.alt{background:#fff;color:var(--green)}
+button:disabled{opacity:.5;cursor:default}
+input,select,textarea{font:inherit;color:inherit;border:1px solid #BDB8AA;border-radius:6px;padding:7px 9px;background:#fff;max-width:100%}
+input[type=number]{width:84px}
+input[type=range]{padding:0;vertical-align:middle}
+label{font-size:12px;color:var(--muted)}
+#app{max-width:1060px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
+.card h2{font-size:16px;margin-bottom:10px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grow{flex:1 1 260px}
+.note{font-size:12px;color:var(--muted);margin-top:6px}
+.err{color:#A32020;font-size:13px;margin-top:8px;white-space:pre-wrap}
+.ok{color:#1D6B3A}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:820px){.two{grid-template-columns:1fr}}
+.imgbox{background:#1c1c1c;border-radius:8px;overflow:hidden;position:relative;min-height:120px}
+.imgbox img,.imgbox canvas{display:block;width:100%;height:auto}
+#satCanvas{cursor:crosshair;touch-action:none}
+table{border-collapse:collapse;width:100%}
+td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:middle}
+th{font-size:11px;color:var(--muted);font-weight:normal}
+.big{font-size:22px;font-weight:bold}
+.sum td{border:0;padding:3px 6px}
+.hidden{display:none!important}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes s{to{transform:rotate(360deg)}}
+
+/* ---------- proposal ---------- */
+#proposalWrap{overflow:auto;background:#555;padding:14px;border-radius:10px}
+.page{width:11in;height:8.5in;background:var(--cream);color:var(--green);padding:.42in .5in .36in;position:relative;margin:0 auto 14px;overflow:hidden;font-size:12.5px;line-height:1.42}
+.ph{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
+.brand b{font-size:27px;letter-spacing:.5px;display:block;line-height:1.05}
+.brand span{font-size:11px;letter-spacing:.3px}
+.addr{text-align:left;min-width:3.1in;font-size:12.5px}
+.addr b{font-size:14px;display:block}
+.page h1{font-size:30px;letter-spacing:.3px;line-height:1.1}
+.sub{margin:4px 0 9px;font-size:13.5px}
+.cols{display:grid;grid-template-columns:6.35in 1fr;gap:.34in}
+.mock{width:100%;height:4.3in;object-fit:cover;display:block;background:#222}
+.cap{font-size:9.5px;color:var(--muted);margin-top:6px}
+.est h3{font-size:14px;letter-spacing:.3px;margin-bottom:12px}
+.li{display:flex;justify-content:space-between;gap:10px;margin:5px 0}
+.rule{border-top:1px solid var(--line);margin:10px 0}
+.price{font-size:46px;font-weight:bold;line-height:1.1;margin:4px 0}
+.small{font-size:11px;color:var(--muted)}
+.foot2{display:grid;grid-template-columns:1fr 1fr;gap:.4in;border-top:1px solid var(--line);margin-top:10px;padding-top:9px}
+.foot2 b,.sec b{display:block;font-size:13px;margin-bottom:2px}
+.pf{position:absolute;left:.5in;right:.5in;bottom:.2in;display:flex;justify-content:space-between;font-size:9.5px;color:var(--muted)}
+.sec{margin-bottom:13px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:.2in .5in}
+.addon{display:flex;justify-content:space-between;gap:14px;border-bottom:1px solid var(--line);padding:8px 0}
+.addon b{font-size:14px}
+.addon .p{font-size:17px;font-weight:bold;white-space:nowrap}
+
+@page{size:11in 8.5in;margin:0}
+@media print{
+  body{background:#fff}
+  #app{padding:0;max-width:none;margin:0}
+  .page{height:8.48in}
+  #app>*:not(#proposalCard){display:none!important}
+  #proposalCard{border:0;padding:0;margin:0}
+  #proposalCard>*:not(#proposalWrap){display:none!important}
+  #proposalWrap{padding:0;background:none;overflow:visible;border-radius:0}
+  .page{margin:0;page-break-after:always;break-after:page;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .page:last-child{page-break-after:auto;break-after:auto}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="top">
+    <div><h1 style="font-size:20px">Lights Quote Builder</h1><div class="note" id="modeNote">Clear View Holiday Lighting. Private tool.</div></div>
+    <div class="row">
+      <button class="alt" id="checkBtn">Check setup</button>
+      <button class="alt" id="passBtn">Change passcode</button>
+    </div>
+  </div>
+  <div id="checkOut" class="card hidden"></div>
+
+  <div class="card">
+    <h2>1. Address</h2>
+    <div class="row">
+      <input class="grow" id="address" placeholder="174 Route 87, Columbia, CT" autocomplete="off">
+      <input id="custName" placeholder="Customer name (optional)" style="width:220px">
+      <button id="lookupBtn">Look up house</button>
+    </div>
+    <div id="lookupMsg" class="note"></div>
+  </div>
+
+  <div class="two">
+    <div class="card">
+      <h2>2. House photo</h2>
+      <div class="imgbox"><img id="photo" alt=""></div>
+      <div id="svControls" class="hidden" style="margin-top:8px">
+        <div class="row"><label>Turn</label><input type="range" id="heading" min="0" max="359" step="1" style="flex:1"><span id="headingV"></span></div>
+        <div class="row"><label>Zoom</label><input type="range" id="fov" min="30" max="110" step="5" value="75" style="flex:1">
+          <label>Tilt</label><input type="range" id="pitch" min="-10" max="35" step="5" value="8" style="width:110px">
+          <button class="alt" id="svRefresh">Update view</button></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <label for="upload">Or use your own photo (customer photo or Google Earth 3D screenshot):</label>
+        <input type="file" id="upload" accept="image/*">
+      </div>
+      <div id="photoMsg" class="note">No photo yet.</div>
+    </div>
+
+    <div class="card">
+      <h2>3. Measure the roofline</h2>
+      <div class="imgbox"><canvas id="satCanvas" width="640" height="640"></canvas></div>
+      <div class="row" style="margin-top:8px">
+        <button class="alt" id="undoBtn">Undo point</button>
+        <button class="alt" id="breakBtn">Start new line</button>
+        <button class="alt" id="clearBtn">Clear</button>
+        <label>Zoom</label>
+        <select id="zoom"><option>19</option><option selected>20</option><option>21</option></select>
+        <span class="big"><span id="measFt">0</span> ft</span>
+      </div>
+      <div class="note">Click along each roof edge that gets lights. "Start new line" lifts the pen for a separate section. Gable slopes look shorter from above, so add a little for peaks.</div>
+      <div class="row" style="margin-top:8px"><label>Roofline feet used in the quote</label><input type="number" id="roofFt" min="0" step="1" value="0"><label>at $</label><input type="number" id="roofRate" min="0" step="0.5" value="7"><label>per ft</label></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>4. Package and add-ons</h2>
+    <table id="items"><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>In house package</th><th>Line total</th></tr></thead><tbody></tbody></table>
+    <div class="note">Qty above zero with the box unticked shows as a priced optional add-on on page 2. Wreath and garland prices are placeholders until you confirm supplier cost.</div>
+    <div class="row" style="margin-top:12px">
+      <label><input type="checkbox" id="early"> Early bird: $200 off if booked before Thanksgiving</label>
+      <label>Minimum job $</label><input type="number" id="minJob" value="399" min="0" step="1">
+      <label>Deposit %</label><input type="number" id="depPct" value="50" min="0" max="100" step="5">
+      <label>Next-year discount %</label><input type="number" id="nextPct" value="15" min="0" max="100" step="1">
+    </div>
+    <div class="row" style="margin-top:8px"><label>Close in person when the job is at or over $</label><input type="number" id="visitMin" value="2000" min="0" step="100"></div>
+    <table class="sum" style="margin-top:10px;max-width:420px" id="sumTable"></table>
+    <div id="visitNote" class="hidden" style="margin-top:12px;border:2px solid var(--accent);border-radius:8px;padding:12px">
+      <b style="color:var(--accent)">Big job: close this one in person.</b>
+      <div class="note" style="margin:4px 0 8px">Job value is <span id="visitVal"></span>. Don't send the price. Text them to set up a visit, then bring the mockup and proposal with you.</div>
+      <textarea id="visitText" rows="4" style="width:100%"></textarea>
+      <div class="row" style="margin-top:6px"><button class="alt" id="copyVisit">Copy text</button><span class="note" id="copyMsg"></span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>5. Mockup</h2>
+    <div class="row"><label><input type="checkbox" id="showOptional"> Also draw the optional add-ons in the mockup</label><button class="alt" id="promptBtn">Rebuild prompt</button></div>
+    <textarea id="prompt" rows="7" style="width:100%;margin-top:8px"></textarea>
+    <div class="row" style="margin-top:8px"><button id="mockBtn">Generate mockup</button><span class="note">Takes up to a minute or two. Each one costs a few cents of OpenAI credit.</span></div>
+    <div id="mockMsg" class="err"></div>
+    <div class="imgbox hidden" id="mockBox" style="margin-top:10px;max-width:760px"><img id="mockImg" alt=""></div>
+  </div>
+
+  <div class="card" id="proposalCard">
+    <h2>6. Proposal</h2>
+    <div class="row" style="margin-bottom:10px"><button id="buildBtn">Build proposal</button><button id="printBtn" class="alt">Print / Save as PDF</button>
+      <span class="note">In the print window choose "Save as PDF", landscape, margins none, background graphics on.</span></div>
+    <div id="proposalWrap" class="hidden"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var $=function(id){return document.getElementById(id)};
+var DEMO=/[?&]demo=1/.test(location.search);
+var SITE='https://clearviewwindowsct.com/';
+var EARLY_END=new Date(2026,10,25,23,59,59); // last day before Thanksgiving 2026
+var S={loc:null,photo:null,photoSrc:'',portrait:false,mock:null,satImg:null,lines:[[]],zoom:20};
+
+var ITEMS=[
+ {id:'columns',name:'Porch column wraps',unit:'column',price:100,pkg:true,mock:'both porch columns wrapped in warm-white mini lights',desc:'Warm-white mini lights wrapped on the porch columns.'},
+ {id:'garage',name:'Garage door outline',unit:'ft',price:8,mock:'warm-white lights outlining the garage door',desc:'Lights outlining the garage door.'},
+ {id:'dormer',name:'Dormer window outline',unit:'each',price:100,mock:'warm-white lights outlining each dormer',desc:'Lights outlining each dormer window.'},
+ {id:'tree',name:'Tree wrap',unit:'ft of height',price:40,mock:'the main front-yard tree trunk and its main branches wrapped in warm-white mini lights',desc:'Warm-white mini lights on the trunk and selected main branches. Final height and branch selection are confirmed on site.'},
+ {id:'shrubs',name:'Front bushes',unit:'each',price:50,mock:'the front foundation bushes covered in warm-white mini lights',desc:'Warm-white mini lights on selected front plantings.'},
+ {id:'walkway',name:'Walkway lighting',unit:'ft',price:5,mock:'ground-mounted warm-white bulbs along both edges of the front walkway',desc:'Ground-mounted bulbs following the path edges.'},
+ {id:'wreath24',name:'Wreath, 24 inch pre-lit',unit:'each',price:99,mock:'a lit wreath with a red bow on the front door',desc:'Pre-lit wreath with red bow.'},
+ {id:'wreath36',name:'Wreath, 36 inch pre-lit',unit:'each',price:149,mock:'a large lit wreath with a red bow on the front of the house',desc:'Pre-lit wreath with red bow.'},
+ {id:'wreath48',name:'Wreath, 48 inch pre-lit',unit:'each',price:229,mock:'an extra-large lit wreath with a red bow on the front gable',desc:'Pre-lit wreath with red bow.'},
+ {id:'garland',name:'Garland, lit',unit:'ft',price:15,mock:'lit green garland around the front entry',desc:'Lit greenery around the entry or other agreed areas.'}
+];
+
+function money(n){return '$'+Math.round(n).toLocaleString('en-US')}
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+
+/* ---------- server calls ---------- */
+function pass(){
+  var p='';try{p=localStorage.getItem('lightsPass')||''}catch(e){}
+  if(!p&&!DEMO){p=prompt('Passcode for the quote tool:')||'';try{localStorage.setItem('lightsPass',p)}catch(e){}}
+  return p;
+}
+function api(body,asBlob){
+  return fetch('/api/lights',{method:'POST',headers:{'Content-Type':'application/json','x-lights-pass':pass()},body:JSON.stringify(body)})
+  .then(function(r){
+    if(r.status===401){try{localStorage.removeItem('lightsPass')}catch(e){}}
+    if(!r.ok){return r.json().catch(function(){return{error:'Request failed ('+r.status+'). Is api/lights.js uploaded?'}}).then(function(j){throw new Error(j.error||('Request failed ('+r.status+')'))})}
+    return asBlob?r.blob():r.json();
+  });
+}
+function blobToImg(blob){return new Promise(function(ok,no){var u=URL.createObjectURL(blob),i=new Image();i.onload=function(){ok(i)};i.onerror=no;i.src=u})}
+function imgToDataURL(img,max){
+  var w=img.naturalWidth,h=img.naturalHeight,k=Math.min(1,max/Math.max(w,h));
+  var c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);return c.toDataURL('image/jpeg',0.88);
+}
+function stub(w,h,top,bot,text){
+  var c=document.createElement('canvas');c.width=w;c.height=h;var x=c.getContext('2d');
+  var g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,top);g.addColorStop(1,bot);x.fillStyle=g;x.fillRect(0,0,w,h);
+  x.fillStyle='#8a7a5a';x.fillRect(w*.3,h*.45,w*.4,h*.25);x.fillStyle='#5b4a3a';
+  x.beginPath();x.moveTo(w*.27,h*.45);x.lineTo(w*.5,h*.3);x.lineTo(w*.73,h*.45);x.fill();
+  x.fillStyle='#fff';x.font='20px Verdana';x.fillText(text,16,30);return c.toDataURL('image/jpeg',.85);
+}
+function setPhoto(dataUrl,src){
+  var i=new Image();i.onload=function(){S.portrait=i.naturalHeight>i.naturalWidth;S.photo=dataUrl;S.photoSrc=src;$('photo').src=dataUrl;
+    $('photoMsg').textContent='Using: '+src+'. If the house is hidden or far away, upload a better photo.';};i.src=dataUrl;
+}
+
+/* ---------- 1. lookup ---------- */
+function lookup(){
+  var a=$('address').value.trim();if(!a){$('lookupMsg').textContent='Type an address first.';return}
+  $('lookupMsg').textContent='Looking up...';$('lookupMsg').className='note';
+  var p=DEMO?Promise.resolve({lat:41.716165,lng:-72.3197587,formatted:a,street:a.split(',')[0],cityLine:'Columbia, CT 06237',precise:true,streetView:{pano:'demo',date:'2023-08',heading:230}}):api({action:'lookup',address:a});
+  p.then(function(L){
+    S.loc=L;S.lines=[[]];S.mock=null;$('mockBox').classList.add('hidden');
+    $('lookupMsg').innerHTML='<span class="ok">Found:</span> '+esc(L.formatted)+(L.precise?'':' <b>(approximate match: check the satellite pin is on the right house)</b>');
+    loadSat();
+    if(L.streetView){$('svControls').classList.remove('hidden');$('heading').value=L.streetView.heading;$('headingV').textContent=L.streetView.heading+'°';loadSV()}
+    else{$('svControls').classList.add('hidden');$('photo').removeAttribute('src');S.photo=null;$('photoMsg').textContent='No Street View here. Upload a Google Earth 3D screenshot or ask the customer for a photo of the front of the house.'}
+  }).catch(function(e){$('lookupMsg').textContent=e.message;$('lookupMsg').className='err'});
+}
+function loadSV(){
+  if(!S.loc||!S.loc.streetView)return;$('photoMsg').textContent='Loading Street View...';
+  var sv=S.loc.streetView;
+  if(DEMO){setPhoto(stub(640,427,'#9fc3e8','#6f8f5a','DEMO street view'),'Street View (demo)');return}
+  api({action:'streetview',pano:sv.pano,heading:+$('heading').value,fov:+$('fov').value,pitch:+$('pitch').value},true)
+   .then(blobToImg).then(function(img){setPhoto(imgToDataURL(img,1536),'Street View'+(sv.date?' ('+sv.date+')':''))})
+   .catch(function(e){$('photoMsg').textContent=e.message});
+}
+
+/* ---------- 3. measuring ---------- */
+function ftPerPx(){ // feet per canvas pixel (canvas is 640 wide, matching a 640px map tile request)
+  if(!S.loc)return 0;return 156543.03392*Math.cos(S.loc.lat*Math.PI/180)/Math.pow(2,S.zoom)*3.28084;
+}
+function loadSat(){
+  S.zoom=+$('zoom').value;
+  if(DEMO){var i=new Image();i.onload=function(){S.satImg=i;draw()};i.src=stub(1280,1280,'#3f5a3a','#2f4a2f','DEMO satellite');return}
+  api({action:'satellite',lat:S.loc.lat,lng:S.loc.lng,zoom:S.zoom},true).then(blobToImg).then(function(img){S.satImg=img;draw()})
+   .catch(function(e){$('lookupMsg').textContent=e.message;$('lookupMsg').className='err'});
+}
+function totalFt(){
+  var f=ftPerPx(),t=0;S.lines.forEach(function(L){for(var i=1;i<L.length;i++){t+=Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1])*f}});return t;
+}
+function draw(){
+  var c=$('satCanvas'),x=c.getContext('2d');x.clearRect(0,0,640,640);
+  if(S.satImg)x.drawImage(S.satImg,0,0,640,640);else{x.fillStyle='#222';x.fillRect(0,0,640,640)}
+  if(S.loc){x.strokeStyle='#fff';x.lineWidth=1;x.beginPath();x.arc(320,320,5,0,7);x.stroke()} // geocoded point
+  var f=ftPerPx();
+  if(f){var bar=20/f;x.fillStyle='rgba(0,0,0,.6)';x.fillRect(12,612,bar+16,20);x.fillStyle='#fff';x.fillRect(20,626,bar,2);x.font='11px Verdana';x.fillText('20 ft',20,623)}
+  x.lineWidth=3;x.strokeStyle='#FFD34D';x.fillStyle='#FFD34D';
+  S.lines.forEach(function(L){
+    if(L.length>1){x.beginPath();x.moveTo(L[0][0],L[0][1]);for(var i=1;i<L.length;i++)x.lineTo(L[i][0],L[i][1]);x.stroke()}
+    L.forEach(function(p){x.beginPath();x.arc(p[0],p[1],4,0,7);x.fill()});
+  });
+  var t=Math.round(totalFt());$('measFt').textContent=t;
+  if(t>0){$('roofFt').value=t;recalc()}
+}
+$('satCanvas').addEventListener('pointerdown',function(e){
+  if(!S.loc)return;var r=this.getBoundingClientRect();
+  S.lines[S.lines.length-1].push([(e.clientX-r.left)*640/r.width,(e.clientY-r.top)*640/r.height]);draw();
+});
+$('undoBtn').onclick=function(){var L=S.lines[S.lines.length-1];if(L.length)L.pop();else if(S.lines.length>1)S.lines.pop();draw()};
+$('breakBtn').onclick=function(){if(S.lines[S.lines.length-1].length)S.lines.push([])};
+$('clearBtn').onclick=function(){S.lines=[[]];draw()};
+$('zoom').onchange=function(){S.lines=[[]];if(S.loc)loadSat()};
+
+/* ---------- 4. pricing ---------- */
+var tb=$('items').querySelector('tbody');
+ITEMS.forEach(function(it){
+  var tr=document.createElement('tr');
+  tr.innerHTML='<td>'+esc(it.name)+' <span class="small">per '+esc(it.unit)+'</span></td>'+
+   '<td><input type="number" min="0" step="1" value="0" id="q_'+it.id+'"></td>'+
+   '<td>$ <input type="number" min="0" step="1" value="'+it.price+'" id="p_'+it.id+'"></td>'+
+   '<td><input type="checkbox" id="k_'+it.id+'"'+(it.pkg?' checked':'')+'></td><td id="t_'+it.id+'"></td>';
+  tb.appendChild(tr);
+});
+function calc(){
+  var ft=Math.max(0,+$('roofFt').value||0),rate=+$('roofRate').value||0;
+  var pkg=[],opt=[];
+  if(ft>0)pkg.push({name:'Front roofline, '+ft+' ft of warm-white C9 lights',total:ft*rate,mock:null});
+  ITEMS.forEach(function(it){
+    var q=+$('q_'+it.id).value||0,p=+$('p_'+it.id).value||0,line=q*p;
+    $('t_'+it.id).textContent=q>0?money(line):'';
+    if(q<=0)return;
+    var label=it.unit==='each'?(q>1?' x '+q:''):' ('+q+' '+(it.unit==='column'&&q!==1?'columns':it.unit)+')';
+    var o={id:it.id,name:it.name+label,total:line,mock:it.mock,desc:it.desc};
+    ($('k_'+it.id).checked?pkg:opt).push(o);
+  });
+  var subtotal=pkg.reduce(function(a,b){return a+b.total},0);
+  var min=+$('minJob').value||0,base=Math.max(subtotal,min),minAdj=base-subtotal;
+  var early=$('early').checked,final=early?Math.max(min,base-200):base,disc=base-final;
+  var dep=Math.round(final*(+$('depPct').value||0)/100);
+  return{ft:ft,pkg:pkg,opt:opt,subtotal:subtotal,minAdj:minAdj,base:base,disc:disc,final:final,dep:dep,bal:final-dep,
+         next:final*(1-(+$('nextPct').value||0)/100),nextPct:+$('nextPct').value||0,hasCols:pkg.some(function(p){return p.id==='columns'})};
+}
+function recalc(){
+  var c=calc(),h='<tr><td>Package subtotal</td><td>'+money(c.subtotal)+'</td></tr>';
+  if(c.minAdj>0)h+='<tr><td>Minimum job adjustment</td><td>+'+money(c.minAdj)+'</td></tr>';
+  if(c.disc>0)h+='<tr><td>Early bird</td><td>-'+money(c.disc)+'</td></tr>';
+  else if($('early').checked)h+='<tr><td colspan="2" class="small">Early bird is ticked but the minimum job price leaves nothing to take off.</td></tr>';
+  h+='<tr><td><b>House package price</b></td><td class="big">'+money(c.final)+'</td></tr>'+
+     '<tr><td>Deposit / balance</td><td>'+money(c.dep)+' / '+money(c.bal)+'</td></tr>'+
+     '<tr><td>Next year, same display</td><td>'+money(c.next)+'</td></tr>';
+  if(c.opt.length)h+='<tr><td>Optional add-ons listed</td><td>'+money(c.opt.reduce(function(a,b){return a+b.total},0))+'</td></tr>';
+  $('sumTable').innerHTML=h;
+  // big jobs get an in-person visit instead of a texted price
+  var value=c.base+c.opt.reduce(function(a,b){return a+b.total},0),lim=+$('visitMin').value||0,big=lim>0&&value>=lim;
+  $('visitNote').classList.toggle('hidden',!big);
+  if(big){
+    $('visitVal').textContent=money(value)+(c.opt.length?' including the optional add-ons':'');
+    var first=($('custName').value.trim().split(' ')[0])||'there';
+    var msg='Hi '+first+', Garrison with Clear View. I put together a lighting design for your home. For a display this size I\'d like to stop by, walk the property with you and go over the design and pricing in person. It takes about 15 minutes. What day works best this week?';
+    if($('visitText').dataset.auto!==msg&&($('visitText').value===''||$('visitText').value===$('visitText').dataset.auto))$('visitText').value=msg;
+    $('visitText').dataset.auto=msg;
+  }
+}
+document.querySelector('#app').addEventListener('input',function(e){if(e.target.closest('#items')||['roofFt','roofRate','early','minJob','depPct','nextPct','visitMin','custName'].indexOf(e.target.id)>-1)recalc()});
+$('copyVisit').onclick=function(){var t=$('visitText');t.select();var done=function(){$('copyMsg').textContent='Copied. Paste it into the Flyra conversation.'};
+  if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(done,function(){document.execCommand('copy');done()});else{document.execCommand('copy');done()}};
+
+/* ---------- 5. mockup ---------- */
+function buildPrompt(){
+  var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the front roofline: the front gutters, eaves and the sloped edges of any front-facing gables'];
+  c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
+  $('prompt').value='Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n'+
+   'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
+   'Keep the house exactly as it is: same architecture, roof shape, siding, windows, doors, garage, chimney, trees, bushes, driveway and camera angle. Do not add, remove or move any part of the building or landscaping. Do not put lights on anything not listed above.\n\n'+
+   'Scene: dark night sky, a light dusting of fresh snow on the roof, lawn and plantings, a few gentle snowflakes falling, a soft warm glow from the windows, and a subtle warm glow from the lights on nearby surfaces. Real camera look, natural exposure, no text, no watermarks, no people, no cars added.';
+}
+function mockup(){
+  if(!S.photo){$('mockMsg').textContent='Add a house photo first (step 2).';return}
+  if(!$('prompt').value.trim())buildPrompt();
+  var b=$('mockBtn');b.disabled=true;b.innerHTML='<span class="spin"></span>Generating...';$('mockMsg').textContent='';
+  var p=DEMO?new Promise(function(ok){setTimeout(function(){ok({image:stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup')})},400)}):api({action:'mockup',image:S.photo,prompt:$('prompt').value,portrait:S.portrait});
+  p.then(function(r){S.mock=r.image;$('mockImg').src=r.image;$('mockBox').classList.remove('hidden');buildProposal()})
+   .catch(function(e){$('mockMsg').textContent=e.message})
+   .then(function(){b.disabled=false;b.textContent='Generate mockup'});
+}
+
+/* ---------- 6. proposal ---------- */
+function buildProposal(){
+  var c=calc(),L=S.loc||{street:$('address').value.split(',')[0]||'Your home',cityLine:$('address').value.split(',').slice(1).join(',').trim()};
+  var now=new Date(),exp=new Date(now.getTime()+7*864e5),season=now.getFullYear(),nextYr=season+1;
+  var title=c.hasCols?'GUTTER/ROOF LINES + COLUMNS':'FRONT ROOFLINE LIGHTING';
+  var extraPkg=c.pkg.filter(function(p){return p.id}).map(function(p){return p.name.toLowerCase()});
+  var sub='Your house-lighting package: warm-white lights along the front roofline'+(extraPkg.length?', plus '+extraPkg.join(', '):'')+'.';
+  var name=$('custName').value.trim();
+  var head='<div class="ph"><div class="brand"><b>CLEAR VIEW</b><span>HOLIDAY LIGHTING | EVERGREEN</span></div>'+
+    '<div class="addr"><b>'+esc(L.street||'')+'</b>'+esc(L.cityLine||'')+'<br>(860) 966-3149 | clearviewwindowsct.com</div></div>';
+  var foot=function(n){return '<div class="pf"><span>'+(name?'Prepared for '+esc(name)+' | ':'')+'Issued '+fmtDate(now)+' | Expires '+fmtDate(exp)+' | Preliminary estimate | USD</span><span>'+n+' / 4</span></div>'};
+  var lines=c.pkg.map(function(p){return '<div class="li"><span>'+esc(p.name)+'</span><span>'+money(p.total)+'</span></div>'}).join('');
+  var offer=c.disc>0?'<div class="li"><span>Book before Thanksgiving</span><span>-'+money(c.disc)+'</span></div>':'';
+  var mock=S.mock||S.photo||'';
+  var p1='<div class="page">'+head+'<h1>'+title+'</h1><div class="sub">'+esc(sub)+'</div><div class="cols"><div>'+
+    (mock?'<img class="mock" src="'+mock+'" alt="">':'<div class="mock"></div>')+
+    '<div class="cap">'+(S.mock?'Illustrative mockup based on a photo of your home, not a photograph of the finished installation. Exact placement, brightness and coverage will vary. Final details are confirmed before installation.':'Photo of your home. Mockup not yet generated.')+'</div></div>'+
+    '<div class="est"><h3>ITEMIZED SEASONAL ESTIMATE</h3>'+lines+
+    (c.minAdj>0?'<div class="li"><span>Minimum seasonal service</span><span>+'+money(c.minAdj)+'</span></div>':'')+
+    '<div class="rule"></div><div class="li"><span>Subtotal</span><span>'+money(c.base)+'</span></div>'+offer+
+    '<div class="price">'+money(c.final)+'</div><div class="small">House package before applicable tax.'+(c.opt.length?' Optional add-ons are priced separately.':'')+'</div>'+
+    '<p style="margin:14px 0 8px"><b>'+money(c.dep)+' deposit to book.</b><br>'+money(c.bal)+' balance on completion.<br>Plus applicable tax.</p>'+
+    '<p style="margin:0"><b>'+nextYr+' house package: '+money(c.next)+' before tax.</b><br>'+c.nextPct+'% off the final first-season price.<br>No multi-season plan is required.</p></div></div>'+
+    '<div class="foot2"><div><b>Included in your seasonal price</b>Design and mockup, leased C9 and mini lights, custom-cut cord, clips, timer, power leads, installation, repairs all season, removal in late January or early February and off-season storage.</div>'+
+    '<div><b>Design scope</b>Warm-white C9 lights on the front roofline shown'+(extraPkg.length?', plus '+esc(extraPkg.join(', ')):'')+'. Side and rear rooflines'+(c.opt.length?' and the optional add-ons on page 2':'')+' are not included unless listed.</div></div>'+foot(1)+'</div>';
+
+  var also=ITEMS.filter(function(it){return !c.pkg.concat(c.opt).some(function(p){return p.id===it.id})&&!/^wreath(36|48)/.test(it.id)});
+  var p2='<div class="page">'+head+'<h1>OPTIONAL ADD-ONS</h1><div class="sub">Personalize your display. Add only the details you want.</div><div class="grid2"><div>'+
+    (c.opt.length?'<h3 style="font-size:14px;margin-bottom:4px">PRICED FOR YOUR HOME</h3>'+c.opt.map(function(o){return '<div class="addon"><div><b>'+esc(o.name)+'</b><br>'+esc(o.desc)+'</div><div class="p">+'+money(o.total)+'</div></div>'}).join('')+'<div class="small" style="margin-top:6px">Additional seasonal price, before tax.</div>':
+      '<h3 style="font-size:14px;margin-bottom:4px">ASK US FOR A PRICE</h3><p style="margin:0">Tell us which extras interest you and we will price them for your home before you book.</p>')+
+    '</div><div><h3 style="font-size:14px;margin-bottom:4px">ALSO AVAILABLE</h3>'+also.slice(0,6).map(function(it){return '<div class="sec"><b>'+esc(it.name.replace(', 24 inch pre-lit','s'))+'</b>'+esc(it.desc)+'</div>'}).join('')+'</div></div>'+
+    '<div class="foot2" style="position:absolute;left:.5in;right:.5in;bottom:.55in"><div><b>Choose only the extras you want</b>All add-ons are optional and quoted separately from the house package.</div>'+
+    '<div><b>Clear pricing before you book</b>No add-on is included in the house-package price unless listed on page 1. We confirm your selected extras and the final total before the deposit.'+(c.disc>0?' The booking offer applies once per property.':'')+'</div></div>'+foot(2)+'</div>';
+
+  var p3='<div class="page">'+head+'<h1>THE LIGHTS WE USE</h1><div class="sub">C9 roofline bulbs with fine mini lights on columns, trees and bushes.</div>'+
+    '<div class="cols" style="grid-template-columns:5.6in 1fr"><div><img class="mock" style="height:3.75in" src="'+SITE+'evergreen-detail.webp" alt=""><div class="cap">C9 style example from our website. Final bulb selection is confirmed before installation.</div></div><div>'+
+    '<div class="sec"><b>A classic Christmas bulb</b>C9 is the larger bulb style used along roof edges. The faceted lens gives each bulb a clear, distinct point of light.</div>'+
+    '<div class="sec"><b>Clean, consistent spacing</b>We plan C9 bulbs at 12-inch spacing. The lights follow your actual gutters and roof edges, with visible space between bulbs.</div>'+
+    '<div class="sec"><b>Cut to fit your roofline</b>We size the strands for your home and use suitable clips. No nails or staples are used to attach the display.</div>'+
+    '<div class="sec"><b>Mini lights for columns, trees and bushes</b>Fine warm-white wraps are used on columns, trunks and plantings. We confirm the final scope before booking.</div></div></div>'+
+    '<div class="foot2"><div><b>A full-service seasonal display</b>You do not need to buy or store the lights. We supply the display, install it, handle failed-light repairs during the season, then remove and store it.</div>'+
+    '<div><b>Repairs are included for everyone</b>Repairs are included during every booked season. Contact us if a supplied bulb or strand goes out.</div></div>'+foot(3)+'</div>';
+
+  var p4='<div class="page">'+head+'<h1>HOW YOUR SERVICE WORKS</h1><div class="sub">We install it, care for it, take it down and store it for you.</div><div class="grid2">'+
+    '<div class="sec"><b>One seasonal price</b>Your seasonal service includes design and mockup, all leased lighting materials, installation, timer and power leads, repairs during the season, removal in late January or early February and off-season storage. The house package is '+money(c.final)+(c.disc>0?' with the booking offer':'')+', plus applicable tax.'+(c.opt.length?' Optional add-ons are extra.':'')+'</div>'+
+    '<div class="sec"><b>'+c.nextPct+'% off next season</b>The same house package is '+money(c.next)+' before tax in '+nextYr+', based on your '+money(c.final)+' first-season price. Every returning customer receives '+c.nextPct+'% off for the same display.</div>'+
+    '<div class="sec"><b>Pay half now and half when finished</b>The house package is '+money(c.dep)+' at booking and '+money(c.bal)+' after installation, plus applicable tax. If you add extras, each payment is half of your agreed total.</div>'+
+    '<div class="sec"><b>Your home and installation</b>You provide a working outdoor outlet and electricity. We confirm the lighting route, access and installation window before booking. Weather may affect dates. New electrical work is not included.</div>'+
+    '<div class="sec"><b>We own and store the lights</b>You lease the display each season. After removal, we label the strands for your house, pack them and store them at no extra charge. The lights remain ours and cannot be kept, moved or resold.</div>'+
+    '<div class="sec"><b>This is an estimated quote</b>Valid through '+fmtDate(exp)+'. '+(c.disc>0?'Book before Thanksgiving for the '+money(c.disc)+' offer; otherwise, the house package is '+money(c.base)+' before tax. ':'')+'Roofline length was measured from aerial imagery and is confirmed on site. All extras require your approval.</div></div>'+
+    '<div class="rule"></div><div><b>Ready to move forward?</b><br>Tell us if you would like the house package and which optional extras interest you. We will confirm your installation window and send the final booking agreement.<br><b>Garrison, Clear View Window Co.</b></div>'+foot(4)+'</div>';
+
+  var w=$('proposalWrap');w.innerHTML=p1+p2+p3+p4;w.classList.remove('hidden');
+}
+
+/* ---------- wiring ---------- */
+$('lookupBtn').onclick=lookup;
+$('address').addEventListener('keydown',function(e){if(e.key==='Enter')lookup()});
+$('svRefresh').onclick=loadSV;
+$('heading').oninput=function(){$('headingV').textContent=this.value+'°'};
+$('upload').onchange=function(){var f=this.files[0];if(!f)return;blobToImg(f).then(function(img){setPhoto(imgToDataURL(img,1536),'your uploaded photo')}).catch(function(){$('photoMsg').textContent='Could not read that file. Try a JPG or PNG.'})};
+$('promptBtn').onclick=buildPrompt;
+$('mockBtn').onclick=mockup;
+$('buildBtn').onclick=buildProposal;
+$('printBtn').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
+$('passBtn').onclick=function(){try{localStorage.removeItem('lightsPass')}catch(e){}pass()};
+$('checkBtn').onclick=function(){
+  var o=$('checkOut');o.classList.remove('hidden');o.textContent='Checking...';
+  api({action:'check'}).then(function(r){
+    var row=function(k,v){var good=v===true||v==='ok';return '<tr><td>'+k+'</td><td class="'+(good?'ok':'err')+'" style="margin:0">'+(good?'OK':esc(v===false?'missing in Vercel':v))+'</td></tr>'};
+    o.innerHTML='<h2>Setup check</h2><table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
+  }).catch(function(e){o.innerHTML='<div class="err">'+esc(e.message)+'</div>'});
+};
+$('early').checked=new Date()<=EARLY_END;
+if(DEMO)$('modeNote').textContent='DEMO MODE: placeholder images, no Google or OpenAI calls.';
+recalc();draw();buildPrompt();
+if(DEMO&&/[?&]auto=1/.test(location.search)){ // layout self-test: fills a sample quote
+  $('address').value='174 Route 87, Columbia, CT';$('roofFt').value=70;$('q_columns').value=2;$('q_tree').value=20;$('q_shrubs').value=4;
+  lookup();setTimeout(function(){$('roofFt').value=70;recalc();S.mock=stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup');buildProposal()},600);
+}
+window.__lights={S:S,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw};
+})();
+</script>
+</body>
+</html>
