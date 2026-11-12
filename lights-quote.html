@@ -132,7 +132,9 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
         <select id="zoom"><option>19</option><option selected>20</option><option>21</option></select>
         <span class="big"><span id="measFt">0</span> ft</span>
       </div>
-      <div class="note">Click along each roof edge that gets lights. "Start new line" lifts the pen for a separate section. Gable slopes look shorter from above, so add a little for peaks.</div>
+      <div class="row" style="margin-top:8px"><label><input type="checkbox" id="slant"> This line is a slanted edge (gable or peak)</label>
+        <label>Slant factor</label><input type="number" id="slantF" value="1.15" min="1" max="2" step="0.05" style="width:70px"></div>
+      <div class="note">Click along each roof edge that gets lights. Trace each section as its own line: front gutter, each side you can see from the road, each gable. "Start new line" lifts the pen. Tick "slanted edge" for gable and peak lines (drawn in orange) so the tool adds the slope. Use the house photo to see which sections exist and where roofs overlap.</div>
       <div class="row" style="margin-top:8px"><label>Roofline feet used in the quote</label><input type="number" id="roofFt" min="0" step="1" value="0"><label>at $</label><input type="number" id="roofRate" min="0" step="0.5" value="7"><label>per ft</label></div>
     </div>
   </div>
@@ -181,7 +183,7 @@ var $=function(id){return document.getElementById(id)};
 var DEMO=/[?&]demo=1/.test(location.search);
 var SITE='https://clearviewwindowsct.com/';
 var EARLY_END=new Date(2026,10,25,23,59,59); // last day before Thanksgiving 2026
-var S={loc:null,photo:null,photoSrc:'',portrait:false,mock:null,satImg:null,lines:[[]],zoom:20};
+var S={loc:null,photo:null,photoSrc:'',portrait:false,mock:null,satImg:null,lines:[[]],slope:[false],zoom:20};
 
 var ITEMS=[
  {id:'columns',name:'Porch column wraps',unit:'column',price:100,pkg:true,mock:'both porch columns wrapped in warm-white mini lights',desc:'Warm-white mini lights wrapped on the porch columns.'},
@@ -238,7 +240,7 @@ function lookup(){
   $('lookupMsg').textContent='Looking up...';$('lookupMsg').className='note';
   var p=DEMO?Promise.resolve({lat:41.716165,lng:-72.3197587,formatted:a,street:a.split(',')[0],cityLine:'Columbia, CT 06237',precise:true,streetView:{pano:'demo',date:'2023-08',heading:230}}):api({action:'lookup',address:a});
   p.then(function(L){
-    S.loc=L;S.lines=[[]];S.mock=null;$('mockBox').classList.add('hidden');
+    S.loc=L;S.lines=[[]];S.slope=[false];$('slant').checked=false;S.mock=null;$('mockBox').classList.add('hidden');
     $('lookupMsg').innerHTML='<span class="ok">Found:</span> '+esc(L.formatted)+(L.precise?'':' <b>(approximate match: check the satellite pin is on the right house)</b>');
     loadSat();
     if(L.streetView){$('svControls').classList.remove('hidden');$('heading').value=L.streetView.heading;$('headingV').textContent=L.streetView.heading+'°';loadSV()}
@@ -265,7 +267,7 @@ function loadSat(){
    .catch(function(e){$('lookupMsg').textContent=e.message;$('lookupMsg').className='err'});
 }
 function totalFt(){
-  var f=ftPerPx(),t=0;S.lines.forEach(function(L){for(var i=1;i<L.length;i++){t+=Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1])*f}});return t;
+  var f=ftPerPx(),t=0,sf=+$('slantF').value||1;S.lines.forEach(function(L,li){var k=S.slope[li]?sf:1;for(var i=1;i<L.length;i++){t+=Math.hypot(L[i][0]-L[i-1][0],L[i][1]-L[i-1][1])*f*k}});return t;
 }
 function draw(){
   var c=$('satCanvas'),x=c.getContext('2d');x.clearRect(0,0,640,640);
@@ -274,7 +276,8 @@ function draw(){
   var f=ftPerPx();
   if(f){var bar=20/f;x.fillStyle='rgba(0,0,0,.6)';x.fillRect(12,612,bar+16,20);x.fillStyle='#fff';x.fillRect(20,626,bar,2);x.font='11px Verdana';x.fillText('20 ft',20,623)}
   x.lineWidth=3;x.strokeStyle='#FFD34D';x.fillStyle='#FFD34D';
-  S.lines.forEach(function(L){
+  S.lines.forEach(function(L,li){
+    x.strokeStyle=x.fillStyle=S.slope[li]?'#FF7A2F':'#FFD34D';
     if(L.length>1){x.beginPath();x.moveTo(L[0][0],L[0][1]);for(var i=1;i<L.length;i++)x.lineTo(L[i][0],L[i][1]);x.stroke()}
     L.forEach(function(p){x.beginPath();x.arc(p[0],p[1],4,0,7);x.fill()});
   });
@@ -285,10 +288,12 @@ $('satCanvas').addEventListener('pointerdown',function(e){
   if(!S.loc)return;var r=this.getBoundingClientRect();
   S.lines[S.lines.length-1].push([(e.clientX-r.left)*640/r.width,(e.clientY-r.top)*640/r.height]);draw();
 });
-$('undoBtn').onclick=function(){var L=S.lines[S.lines.length-1];if(L.length)L.pop();else if(S.lines.length>1)S.lines.pop();draw()};
-$('breakBtn').onclick=function(){if(S.lines[S.lines.length-1].length)S.lines.push([])};
-$('clearBtn').onclick=function(){S.lines=[[]];draw()};
-$('zoom').onchange=function(){S.lines=[[]];if(S.loc)loadSat()};
+$('undoBtn').onclick=function(){var L=S.lines[S.lines.length-1];if(L.length)L.pop();else if(S.lines.length>1){S.lines.pop();S.slope.pop();$('slant').checked=!!S.slope[S.slope.length-1]}draw()};
+$('breakBtn').onclick=function(){if(S.lines[S.lines.length-1].length){S.lines.push([]);S.slope.push(false);$('slant').checked=false}};
+$('clearBtn').onclick=function(){S.lines=[[]];S.slope=[false];$('slant').checked=false;draw()};
+$('slant').onchange=function(){S.slope[S.lines.length-1]=this.checked;draw()};
+$('slantF').oninput=draw;
+$('zoom').onchange=function(){S.lines=[[]];S.slope=[false];$('slant').checked=false;if(S.loc)loadSat()};
 
 /* ---------- 4. pricing ---------- */
 var tb=$('items').querySelector('tbody');
