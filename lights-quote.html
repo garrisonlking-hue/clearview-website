@@ -87,7 +87,9 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
     <div><h1 style="font-size:20px">Lights Quote Builder</h1><div class="note" id="modeNote">Clear View Holiday Lighting. Private tool.</div></div>
     <div class="row">
       <button class="alt" id="checkBtn">Check setup</button>
-      <button class="alt" id="passBtn">Change passcode</button>
+      <input type="password" id="passIn" placeholder="Passcode" style="width:150px" autocomplete="off">
+      <button class="alt" id="passBtn">Save passcode</button>
+      <span class="note" id="passMsg" style="margin:0"></span>
     </div>
   </div>
   <div id="checkOut" class="card hidden"></div>
@@ -201,13 +203,13 @@ function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'nume
 /* ---------- server calls ---------- */
 function pass(){
   var p='';try{p=localStorage.getItem('lightsPass')||''}catch(e){}
-  if(!p&&!DEMO){p=prompt('Passcode for the quote tool:')||'';try{localStorage.setItem('lightsPass',p)}catch(e){}}
-  return p;
+  return p||S.pass||'';
 }
 function api(body,asBlob){
+  if(!pass()){$('passIn').focus();return Promise.reject(new Error('Type your passcode in the box at the top right and click "Save passcode" first.'))}
   return fetch('/api/lights',{method:'POST',headers:{'Content-Type':'application/json','x-lights-pass':pass()},body:JSON.stringify(body)})
   .then(function(r){
-    if(r.status===401){try{localStorage.removeItem('lightsPass')}catch(e){}}
+    if(r.status===401){S.pass='';try{localStorage.removeItem('lightsPass')}catch(e){}passState()}
     if(!r.ok){return r.json().catch(function(){return{error:'Request failed ('+r.status+'). Is api/lights.js uploaded?'}}).then(function(j){throw new Error(j.error||('Request failed ('+r.status+')'))})}
     return asBlob?r.blob():r.json();
   });
@@ -426,7 +428,10 @@ $('promptBtn').onclick=buildPrompt;
 $('mockBtn').onclick=mockup;
 $('buildBtn').onclick=buildProposal;
 $('printBtn').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
-$('passBtn').onclick=function(){try{localStorage.removeItem('lightsPass')}catch(e){}pass()};
+function passState(){$('passMsg').textContent=pass()?'Passcode saved on this device.':'No passcode saved yet.'}
+$('passBtn').onclick=function(){var v=$('passIn').value.trim();if(!v){$('passMsg').textContent='Type the passcode first.';return}
+  S.pass=v;try{localStorage.setItem('lightsPass',v)}catch(e){}$('passIn').value='';passState()};
+$('passIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('passBtn').click()});
 $('checkBtn').onclick=function(){
   var o=$('checkOut');o.classList.remove('hidden');o.textContent='Checking...';
   api({action:'check'}).then(function(r){
@@ -436,7 +441,7 @@ $('checkBtn').onclick=function(){
 };
 $('early').checked=new Date()<=EARLY_END;
 if(DEMO)$('modeNote').textContent='DEMO MODE: placeholder images, no Google or OpenAI calls.';
-recalc();draw();buildPrompt();
+recalc();draw();buildPrompt();passState();
 if(DEMO&&/[?&]auto=1/.test(location.search)){ // layout self-test: fills a sample quote
   $('address').value='174 Route 87, Columbia, CT';$('roofFt').value=70;$('q_columns').value=2;$('q_tree').value=20;$('q_shrubs').value=4;
   lookup();setTimeout(function(){$('roofFt').value=70;recalc();S.mock=stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup');buildProposal()},600);
