@@ -119,11 +119,14 @@ export default async function handler(req, res) {
       if (!prompt || !m) return res.status(400).json({ error: 'Need a prompt and a house photo.' });
       const buf = Buffer.from(m[2], 'base64');
       const ext = m[1].split('/')[1].replace('jpeg', 'jpg');
-      const params = { model: MODEL, prompt, size: b.portrait ? '1024x1536' : '1536x1024', quality: QUALITY,
+      // Image model names change over time; try the configured one, then known fallbacks.
+      const models = [...new Set([MODEL, 'gpt-image-2', 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini'])];
+      let mi = 0;
+      const params = { model: models[0], prompt, size: b.portrait ? '1024x1536' : '1536x1024', quality: QUALITY,
         input_fidelity: 'high', output_format: 'jpeg', output_compression: '85' };
 
-      let last = '';
-      for (let attempt = 0; attempt < 4; attempt++) {
+      let last = ''; const tried = [];
+      for (let attempt = 0; attempt < 12; attempt++) {
         const fd = new FormData();
         for (const [k, v] of Object.entries(params)) fd.append(k, v);
         fd.append('image', new Blob([buf], { type: m[1] }), 'house.' + ext);
@@ -135,15 +138,21 @@ export default async function handler(req, res) {
           if (j.data[0].b64_json.length > 4200000) {
             return res.status(502).json({ error: 'The image came back too large to return. Set OPENAI_IMAGE_QUALITY to "low" or "medium" in Vercel.' });
           }
-          return res.status(200).json({ image: `data:image/${fmt};base64,${j.data[0].b64_json}`, model: MODEL });
+          return res.status(200).json({ image: `data:image/${fmt};base64,${j.data[0].b64_json}`, model: params.model });
         }
         last = (j.error && j.error.message) || `OpenAI error ${r.status}`;
+        const code = (j.error && j.error.code) || '';
+        if ((code === 'model_not_found' || /does not exist|not supported|do not have access|must be verified/i.test(last)) && mi < models.length - 1) {
+          tried.push(`${params.model}: ${last}`); params.model = models[++mi];
+          Object.assign(params, { input_fidelity: 'high', output_format: 'jpeg', output_compression: '85', quality: QUALITY });
+          continue;
+        }
         // Model versions differ in which optional settings they accept: drop the one named and retry.
         const bad = (j.error && j.error.param) || (/Unknown parameter: '([a-z_]+)'/.exec(last) || [])[1];
         if (r.status === 400 && bad && bad in params && !['model', 'prompt', 'size'].includes(bad)) { delete params[bad]; continue; }
         break;
       }
-      return res.status(502).json({ error: 'Mockup failed: ' + last });
+      return res.status(502).json({ error: 'Mockup failed: ' + last + (tried.length ? '\nAlso tried: ' + tried.join(' | ') : '') });
     }
 
     return res.status(400).json({ error: 'Unknown action.' });
