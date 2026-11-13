@@ -699,6 +699,8 @@ $('retake3D').onclick=function(){
 };
 $('sameNo').onclick=function(){$('confirmBox').classList.add('hidden');S.mock=null;step('Mockup rejected. Pick the other photo or upload one.');$('pickBox').classList.remove('hidden');$('pickBox').scrollIntoView({block:'start'})};
 $('sameYes').onclick=function(){
+  if(!(+$('roofFt').value>0)){step('No roofline footage yet. Type the feet in "Roofline feet used in the quote" (step 3), or measure in the 3D view, then tap "Yes" again.','err');
+    $('roofFt').scrollIntoView({block:'center'});$('roofFt').focus();return}
   $('confirmBox').classList.add('hidden');buildProposal();
   var c=calc(),L=S.loc,name=$('custName').value.trim(),first=(name.split(' ')[0])||'there';
   var value=c.base+c.opt.reduce(function(a,b){return a+b.total},0),big=value>=(+$('visitMin').value||1e9);
@@ -709,7 +711,7 @@ $('sameYes').onclick=function(){
     ['  Price before tax: '+money(c.final)+'  (deposit '+money(c.dep)+', balance '+money(c.bal)+')'],
     c.opt.length?['','Optional add-ons:'].concat(c.opt.map(function(o){return '  '+o.name+': +'+money(o.total)})):[],
     ['',big?'BIG JOB ('+money(value)+'): set up an in-person visit instead of texting the price. Text:':'Text to send with the Flyra estimate link:',
-     big?$('visitText').value:'Hi '+first+', Garrison with Clear View. Here\'s your holiday lighting quote for '+L.street+', with a mockup of how your home would look lit up: [estimate link]. The $200 early-bird price holds if you book before Thanksgiving. Any questions, just text me back.']);
+     big?$('visitText').value:'Hi '+first+', Garrison with Clear View. Here\'s your holiday lighting quote for '+L.street+', with a mockup of how your home would look lit up: [estimate link].'+(c.disc>0?' The $200 early-bird price holds if you book before Thanksgiving.':'')+' Any questions, just text me back.']);
   $('sumText').value=lines.join('\n');
   $('doneBox').classList.remove('hidden');step(big?'Big job: close in person (summary below).':'Quote ready: save the PDF and send it through Flyra.');$('doneBox').scrollIntoView({block:'start'});
 };
