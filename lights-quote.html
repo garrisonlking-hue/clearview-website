@@ -101,8 +101,10 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
 
 @page{size:11in 8.5in;margin:0}
 @media print{
-  body{background:#fff}
+  html,body{background:#fff;margin:0}
   .topbar{display:none}
+  body>*:not(#app){display:none!important}
+  #proposalWrap .page{zoom:.88}
   #app{padding:0;max-width:none;margin:0}
   .page{height:8.48in}
   #app>*:not(#proposalCard){display:none!important}
