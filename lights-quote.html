@@ -122,7 +122,12 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
       <div class="note">Neither is good (trees, wrong house)? Upload the customer's photo in step 2, then click Generate mockup in step 5.</div>
     </div>
     <div id="mockOut" class="hidden" style="margin-top:12px"><b>Mockup</b> <span class="note">Not right? Tap a different photo above to redo it.</span>
-      <div class="imgbox" style="margin-top:8px;max-width:760px"><img id="mockOutImg" alt=""></div></div>
+      <div class="imgbox" style="margin-top:8px;max-width:760px;position:relative"><img id="mockOutImg" alt=""><canvas id="markCanvas" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none;display:none"></canvas></div>
+      <div class="row" style="margin-top:8px">
+        <button class="alt" id="markBtn">Mark missed lights</button>
+        <span id="markTools" class="hidden"><button class="alt" id="markUndo">Undo line</button> <button class="alt" id="markClear">Clear</button> <button id="markApply">Add lights where I drew</button></span>
+        <span class="note" id="markMsg"></span>
+      </div></div>
     <div id="confirmBox" class="hidden" style="margin-top:12px">
       <b>Is this the same house?</b>
       <div class="imgbox" style="margin-top:8px;max-width:760px"><img id="confirmImg" alt=""></div>
@@ -411,7 +416,7 @@ $('copyVisit').onclick=function(){var t=$('visitText');t.select();var done=funct
 /* ---------- 5. mockup ---------- */
 function buildPrompt(){
   var sides=$('sidesIn').checked,aerial=/3D/.test(S.photoSrc||'');
-  var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the roofline facing the street: the front gutters, eaves and the sloped edges of every front-facing gable (but not dormers unless they are listed below)'+(sides?', and continuing along the side rooflines and side gable edges that are visible from the street':'')];
+  var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the roofline facing the street: the front gutters, eaves and the sloped edges of every front-facing gable (but not dormers unless they are listed below)'+(sides?', and continuing along the side rooflines and side gable edges that are visible from the street':'')+'. Light the COMPLETE outline of every one of those roof edges from end to end, including both sloped sides of each gable and the far corners at the edges of the picture, even where they are partly hidden or hard to see'];
   c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
   $('prompt').value=(aerial?'This image is a blurry 3D aerial model of a real house, used only as a reference for its design. Create a NEW photorealistic nighttime photograph of this same house as seen from the street in front of it, at eye level (camera about 5 feet off the ground, standing at the end of the driveway or the front lawn), not from the air. Keep the house the same: same shape and layout, number of stories, roof lines and gables, dormers, garage position and doors, window layout, siding color and front entry. Clean up the 3D model look: real, sharp trees, bushes and lawn. Connecticut in December, professionally decorated with Christmas lights.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
    'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
@@ -729,6 +734,39 @@ function finishQuote(){
   $('doneBox').classList.remove('hidden');step(big?'Big job: close in person (summary below).':'Quote ready: save the PDF and send it through Flyra.');$('doneBox').scrollIntoView({block:'start'});
 }
 $('sameYes').onclick=finishQuote;
+/* ---------- mark missed lights: draw on the mockup, then let the image model fill them in ---------- */
+var MK={on:false,lines:[],cur:null};
+function mkSize(){var c=$('markCanvas'),i=$('mockOutImg');c.width=i.naturalWidth||1536;c.height=i.naturalHeight||1024}
+function mkDraw(){var c=$('markCanvas'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);
+  x.strokeStyle='#ff1a1a';x.lineWidth=Math.max(6,c.width/160);x.lineCap='round';x.lineJoin='round';
+  MK.lines.forEach(function(L){if(L.length<2)return;x.beginPath();x.moveTo(L[0][0],L[0][1]);L.forEach(function(p){x.lineTo(p[0],p[1])});x.stroke()})}
+function mkPt(e){var c=$('markCanvas'),r=c.getBoundingClientRect();return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]}
+$('markCanvas').addEventListener('pointerdown',function(e){if(!MK.on)return;this.setPointerCapture(e.pointerId);MK.cur=[mkPt(e)];MK.lines.push(MK.cur);mkDraw()});
+$('markCanvas').addEventListener('pointermove',function(e){if(!MK.cur)return;MK.cur.push(mkPt(e));mkDraw()});
+$('markCanvas').addEventListener('pointerup',function(){MK.cur=null});
+$('markBtn').onclick=function(){
+  MK.on=!MK.on;$('markCanvas').style.display=MK.on?'block':'none';$('markTools').classList.toggle('hidden',!MK.on);
+  this.textContent=MK.on?'Cancel marking':'Mark missed lights';
+  if(MK.on){mkSize();MK.lines=[];mkDraw();$('markMsg').textContent='Draw along every roof edge that should have lights but doesn\'t.'}else $('markMsg').textContent='';
+};
+$('markUndo').onclick=function(){MK.lines.pop();mkDraw()};
+$('markClear').onclick=function(){MK.lines=[];mkDraw()};
+$('markApply').onclick=function(){
+  if(!MK.lines.length){$('markMsg').textContent='Draw at least one line first.';return}
+  var c=document.createElement('canvas'),i=$('mockOutImg');c.width=i.naturalWidth;c.height=i.naturalHeight;var x=c.getContext('2d');
+  x.drawImage(i,0,0);x.drawImage($('markCanvas'),0,0,c.width,c.height);
+  var marked=c.toDataURL('image/jpeg',0.9),b=$('markApply');b.disabled=true;b.innerHTML='<span class="spin"></span>Adding lights...';
+  $('markMsg').textContent='About a minute.';
+  api({action:'mockup',image:marked,portrait:c.height>c.width,fidelity:'high',prompt:
+    'This is a nighttime photo of a house with Christmas lights. Bright red lines have been drawn on it to mark roof edges that are missing lights. '+
+    'Add warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, exactly along every red line, following the real roof edge under it, matching the style and brightness of the existing lights. '+
+    'Then remove every red line completely. Change nothing else: same house, same lights elsewhere, same snow, sky, trees and camera angle. No text, no watermarks.'})
+  .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;
+    MK.lines=[];MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Mark missed lights';
+    $('markMsg').textContent='Lights added. Mark again if anything is still missing.';buildProposal()})
+  .catch(function(e){$('markMsg').textContent='Could not add the lights: '+e.message})
+  .then(function(){b.disabled=false;b.textContent='Add lights where I drew'});
+};
 $('runPrint').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
 $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement('a');a.href=S.mock;a.download=((S.loc&&S.loc.street)||'house').replace(/[^a-z0-9]+/gi,'-')+'-mockup.jpg';document.body.appendChild(a);a.click();a.remove()};
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
