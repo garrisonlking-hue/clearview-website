@@ -50,8 +50,9 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
 .addr b{font-size:14px;display:block}
 .page h1{font-size:30px;letter-spacing:.3px;line-height:1.1}
 .sub{margin:4px 0 9px;font-size:13.5px}
-.cols{display:grid;grid-template-columns:6.35in 1fr;gap:.34in}
-.mock{width:100%;height:4.3in;object-fit:cover;display:block;background:#222}
+.cols{display:grid;grid-template-columns:6.4in 1fr;gap:.32in}
+.mock{width:100%;height:5.6in;object-fit:cover;display:block;background:#222;border-radius:4px}
+.terms{position:absolute;left:.5in;right:.5in;bottom:.3in;font-size:9.5px;line-height:1.45;color:var(--muted);border-top:1px solid var(--line);padding-top:7px}
 .cap{font-size:9.5px;color:var(--muted);margin-top:6px}
 .est h3{font-size:14px;letter-spacing:.3px;margin-bottom:12px}
 .li{display:flex;justify-content:space-between;gap:10px;margin:5px 0}
@@ -238,7 +239,7 @@ var EARLY_END=new Date(2026,10,25,23,59,59); // last day before Thanksgiving 202
 var S={loc:null,photo:null,photoSrc:'',portrait:false,mock:null,satImg:null,lines:[[]],slope:[false],zoom:20};
 
 var ITEMS=[
- {id:'columns',name:'Porch column wraps',unit:'column',price:100,pkg:true,mock:'both porch columns wrapped in warm-white mini lights',desc:'Warm-white mini lights wrapped on the porch columns.'},
+ {id:'columns',name:'Porch column wraps',unit:'column',price:100,pkg:true,mock:'the porch columns wrapped in warm-white mini lights',desc:'Warm-white mini lights wrapped on the porch columns.'},
  {id:'garage',name:'Garage door outline',unit:'ft',price:8,mock:'warm-white lights outlining the garage door',desc:'Lights outlining the garage door.'},
  {id:'dormer',name:'Dormer window outline',unit:'each',price:100,mock:'warm-white lights outlining each dormer',desc:'Lights outlining each dormer window.'},
  {id:'tree',name:'Tree wrap',unit:'ft of height',price:40,mock:'the main front-yard tree trunk and its main branches wrapped in warm-white mini lights',desc:'Warm-white mini lights on the trunk and selected main branches. Final height and branch selection are confirmed on site.'},
@@ -371,7 +372,7 @@ function calc(){
     $('t_'+it.id).textContent=q>0?money(line):'';
     if(q<=0)return;
     var label=it.unit==='each'?(q>1?' x '+q:''):' ('+q+' '+(it.unit==='column'&&q!==1?'columns':it.unit)+')';
-    var o={id:it.id,name:it.name+label,total:line,mock:it.mock,desc:it.desc};
+    var o={id:it.id,name:it.name+label,total:line,mock:it.id==='columns'?('exactly '+q+' porch column'+(q>1?'s':'')+' wrapped in warm-white mini lights'):it.mock,desc:it.desc};
     ($('k_'+it.id).checked?pkg:opt).push(o);
   });
   var subtotal=pkg.reduce(function(a,b){return a+b.total},0);
@@ -430,57 +431,31 @@ function mockup(){
 /* ---------- 6. proposal ---------- */
 function buildProposal(){
   var c=calc(),L=S.loc||{street:$('address').value.split(',')[0]||'Your home',cityLine:$('address').value.split(',').slice(1).join(',').trim()};
-  var now=new Date(),exp=new Date(now.getTime()+7*864e5),season=now.getFullYear(),nextYr=season+1;
-  var sides=$('sidesIn').checked,where=sides?'front and visible side rooflines':'front roofline';
-  var title=c.hasCols?'GUTTER/ROOF LINES + COLUMNS':(sides?'ROOFLINE LIGHTING':'FRONT ROOFLINE LIGHTING');
-  var extraPkg=c.pkg.filter(function(p){return p.id}).map(function(p){return p.name.toLowerCase()});
-  var sub='Your house-lighting package: warm-white lights along the '+where+(extraPkg.length?', plus '+extraPkg.join(', '):'')+'.';
-  var name=$('custName').value.trim();
-  var head='<div class="ph"><div class="brand"><b>CLEAR VIEW</b><span>HOLIDAY LIGHTING | EVERGREEN</span></div>'+
-    '<div class="addr"><b>'+esc(L.street||'')+'</b>'+esc(L.cityLine||'')+'<br>(860) 966-3149 | clearviewwindowsct.com</div></div>';
-  var foot=function(n){return '<div class="pf"><span>'+(name?'Prepared for '+esc(name)+' | ':'')+'Issued '+fmtDate(now)+' | Expires '+fmtDate(exp)+' | Preliminary estimate | USD</span><span>'+n+' / 4</span></div>'};
-  var lines=c.pkg.map(function(p){return '<div class="li"><span>'+esc(p.name)+'</span><span>'+money(p.total)+'</span></div>'}).join('');
-  var offer=c.disc>0?'<div class="li"><span>Book before Thanksgiving</span><span>-'+money(c.disc)+'</span></div>':'';
+  var now=new Date(),exp=new Date(now.getTime()+7*864e5),nextYr=now.getFullYear()+1,name=$('custName').value.trim();
   var mock=S.mock||S.photo||'';
-  var p1='<div class="page">'+head+'<h1>'+title+'</h1><div class="sub">'+esc(sub)+'</div><div class="cols"><div>'+
-    (mock?'<img class="mock" src="'+mock+'" alt="">':'<div class="mock"></div>')+
-    '<div class="cap">'+(S.mock?'Illustrative mockup based on a photo of your home, not a photograph of the finished installation. Exact placement, brightness and coverage will vary. Final details are confirmed before installation.':'Photo of your home. Mockup not yet generated.')+'</div></div>'+
-    '<div class="est"><h3>ITEMIZED SEASONAL ESTIMATE</h3>'+lines+
+  var lines=c.pkg.map(function(p){return '<div class="li"><span>'+esc(p.name)+'</span><span>'+money(p.total)+'</span></div>'}).join('')+
     (c.minAdj>0?'<div class="li"><span>Minimum seasonal service</span><span>+'+money(c.minAdj)+'</span></div>':'')+
-    '<div class="rule"></div><div class="li"><span>Subtotal</span><span>'+money(c.base)+'</span></div>'+offer+
-    '<div class="price">'+money(c.final)+'</div><div class="small">House package before applicable tax.'+(c.opt.length?' Optional add-ons are priced separately.':'')+'</div>'+
-    '<p style="margin:14px 0 8px"><b>'+money(c.dep)+' deposit to book.</b><br>'+money(c.bal)+' balance on completion.<br>Plus applicable tax.</p>'+
-    '<p style="margin:0"><b>'+nextYr+' house package: '+money(c.next)+' before tax.</b><br>'+c.nextPct+'% off the final first-season price.<br>No multi-season plan is required.</p></div></div>'+
-    '<div class="foot2"><div><b>Included in your seasonal price</b>Design and mockup, leased C9 and mini lights, custom-cut cord, clips, timer, power leads, installation, repairs all season, removal in late January or early February and off-season storage.</div>'+
-    '<div><b>Design scope</b>Warm-white C9 lights on the '+where+' shown'+(extraPkg.length?', plus '+esc(extraPkg.join(', ')):'')+'. '+(sides?'Rear rooflines':'Side and rear rooflines')+(c.opt.length?' and the optional add-ons on page 2':'')+' are not included unless listed.</div></div>'+foot(1)+'</div>';
-
-  var also=ITEMS.filter(function(it){return !c.pkg.concat(c.opt).some(function(p){return p.id===it.id})&&!/^wreath(36|48)/.test(it.id)});
-  var p2='<div class="page">'+head+'<h1>OPTIONAL ADD-ONS</h1><div class="sub">Personalize your display. Add only the details you want.</div><div class="grid2"><div>'+
-    (c.opt.length?'<h3 style="font-size:14px;margin-bottom:4px">PRICED FOR YOUR HOME</h3>'+c.opt.map(function(o){return '<div class="addon"><div><b>'+esc(o.name)+'</b><br>'+esc(o.desc)+'</div><div class="p">+'+money(o.total)+'</div></div>'}).join('')+'<div class="small" style="margin-top:6px">Additional seasonal price, before tax.</div>':
-      '<h3 style="font-size:14px;margin-bottom:4px">ASK US FOR A PRICE</h3><p style="margin:0">Tell us which extras interest you and we will price them for your home before you book.</p>')+
-    '</div><div><h3 style="font-size:14px;margin-bottom:4px">ALSO AVAILABLE</h3>'+also.slice(0,6).map(function(it){return '<div class="sec"><b>'+esc(it.name.replace(', 24 inch pre-lit','s'))+'</b>'+esc(it.desc)+'</div>'}).join('')+'</div></div>'+
-    '<div class="foot2" style="position:absolute;left:.5in;right:.5in;bottom:.55in"><div><b>Choose only the extras you want</b>All add-ons are optional and quoted separately from the house package.</div>'+
-    '<div><b>Clear pricing before you book</b>No add-on is included in the house-package price unless listed on page 1. We confirm your selected extras and the final total before the deposit.'+(c.disc>0?' The booking offer applies once per property.':'')+'</div></div>'+foot(2)+'</div>';
-
-  var p3='<div class="page">'+head+'<h1>THE LIGHTS WE USE</h1><div class="sub">C9 roofline bulbs with fine mini lights on columns, trees and bushes.</div>'+
-    '<div class="cols" style="grid-template-columns:5.6in 1fr"><div><img class="mock" style="height:3.75in" src="'+SITE+'evergreen-detail.webp" alt=""><div class="cap">C9 style example from our website. Final bulb selection is confirmed before installation.</div></div><div>'+
-    '<div class="sec"><b>A classic Christmas bulb</b>C9 is the larger bulb style used along roof edges. The faceted lens gives each bulb a clear, distinct point of light.</div>'+
-    '<div class="sec"><b>Clean, consistent spacing</b>We plan C9 bulbs at 12-inch spacing. The lights follow your actual gutters and roof edges, with visible space between bulbs.</div>'+
-    '<div class="sec"><b>Cut to fit your roofline</b>We size the strands for your home and use suitable clips. No nails or staples are used to attach the display.</div>'+
-    '<div class="sec"><b>Mini lights for columns, trees and bushes</b>Fine warm-white wraps are used on columns, trunks and plantings. We confirm the final scope before booking.</div></div></div>'+
-    '<div class="foot2"><div><b>A full-service seasonal display</b>You do not need to buy or store the lights. We supply the display, install it, handle failed-light repairs during the season, then remove and store it.</div>'+
-    '<div><b>Repairs are included for everyone</b>Repairs are included during every booked season. Contact us if a supplied bulb or strand goes out.</div></div>'+foot(3)+'</div>';
-
-  var p4='<div class="page">'+head+'<h1>HOW YOUR SERVICE WORKS</h1><div class="sub">We install it, care for it, take it down and store it for you.</div><div class="grid2">'+
-    '<div class="sec"><b>One seasonal price</b>Your seasonal service includes design and mockup, all leased lighting materials, installation, timer and power leads, repairs during the season, removal in late January or early February and off-season storage. The house package is '+money(c.final)+(c.disc>0?' with the booking offer':'')+', plus applicable tax.'+(c.opt.length?' Optional add-ons are extra.':'')+'</div>'+
-    '<div class="sec"><b>'+c.nextPct+'% off next season</b>The same house package is '+money(c.next)+' before tax in '+nextYr+', based on your '+money(c.final)+' first-season price. Every returning customer receives '+c.nextPct+'% off for the same display.</div>'+
-    '<div class="sec"><b>Pay half now and half when finished</b>The house package is '+money(c.dep)+' at booking and '+money(c.bal)+' after installation, plus applicable tax. If you add extras, each payment is half of your agreed total.</div>'+
-    '<div class="sec"><b>Your home and installation</b>You provide a working outdoor outlet and electricity. We confirm the lighting route, access and installation window before booking. Weather may affect dates. New electrical work is not included.</div>'+
-    '<div class="sec"><b>We own and store the lights</b>You lease the display each season. After removal, we label the strands for your house, pack them and store them at no extra charge. The lights remain ours and cannot be kept, moved or resold.</div>'+
-    '<div class="sec"><b>This is an estimated quote</b>Valid through '+fmtDate(exp)+'. '+(c.disc>0?'Book before Thanksgiving for the '+money(c.disc)+' offer; otherwise, the house package is '+money(c.base)+' before tax. ':'')+'Roofline length was measured from aerial imagery and is confirmed on site. All extras require your approval.</div></div>'+
-    '<div class="rule"></div><div><b>Ready to move forward?</b><br>Tell us if you would like the house package and which optional extras interest you. We will confirm your installation window and send the final booking agreement.<br><b>Garrison, Clear View Window Co.</b></div>'+foot(4)+'</div>';
-
-  var w=$('proposalWrap');w.innerHTML=p1+p2+p3+p4;w.classList.remove('hidden');
+    (c.disc>0?'<div class="li"><span>Early bird (book before Thanksgiving)</span><span>-'+money(c.disc)+'</span></div>':'');
+  var extras=c.opt.length?'<div class="sec"><b>Optional extras for your home</b>'+c.opt.map(function(o){return esc(o.name)+' +'+money(o.total)}).join(' &middot; ')+'</div>':'';
+  var page='<div class="page">'+
+    '<div class="ph"><div class="brand"><b>CLEAR VIEW</b><span>HOLIDAY LIGHTING | EVERGREEN</span></div>'+
+    '<div class="addr"><b>'+(name?esc(name)+'<br>':'')+esc(L.street||'')+'</b>'+esc(L.cityLine||'')+'</div></div>'+
+    '<div class="cols">'+
+      '<div>'+(mock?'<img class="mock" src="'+mock+'" alt="">':'<div class="mock"></div>')+
+        '<div class="cap">Illustration of your home lit up. Not a photo of a finished install; final placement is confirmed before installation.</div></div>'+
+      '<div class="est">'+
+        '<h3>YOUR HOLIDAY LIGHTING QUOTE</h3>'+lines+
+        '<div class="rule"></div><div class="price">'+money(c.final)+'</div><div class="small">for the season, plus applicable tax</div>'+
+        '<p style="margin:10px 0 0"><b>'+money(c.dep)+'</b> to book, <b>'+money(c.bal)+'</b> when installed.<br>Next year, same display: <b>'+money(c.next)+'</b> ('+c.nextPct+'% off).</p>'+
+        '<div class="sec" style="margin-top:12px"><b>Included</b>Custom design, warm-white commercial lights, installation, repairs all season, takedown in late January or early February, and storage until next year.</div>'+
+        extras+
+        '<div class="sec"><b>We also offer</b>Tree and bush wraps, wreaths, garland, walkway lights and garage outlines. Just ask.</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="terms"><b>Terms.</b> Clear View Window Co. is a local Connecticut company. The lights are leased and remain ours; we install, maintain, remove and store them each season. Roofline length was measured from aerial 3D imagery and is confirmed on site; any change is approved by you first. You provide a working outdoor outlet; new electrical work is not included. 50% deposit to book, balance due when installation is finished. Quote valid through '+fmtDate(exp)+'.'+
+    ' (860) 966-3149 &middot; clearviewwindowsct.com</div>'+
+  '</div>';
+  var w=$('proposalWrap');w.innerHTML=page;w.classList.remove('hidden');
 }
 
 /* ---------- wiring ---------- */
