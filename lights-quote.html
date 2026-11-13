@@ -759,7 +759,7 @@ $('markApply').onclick=function(){
   $('markMsg').textContent='About a minute.';
   api({action:'mockup',image:marked,portrait:c.height>c.width,fidelity:'high',prompt:
     'This is a nighttime photo of a house with Christmas lights. Bright red lines have been drawn on it to mark roof edges that are missing lights. '+
-    'Add warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, exactly along every red line, following the real roof edge under it, matching the style and brightness of the existing lights. '+
+    'Add warm-white Christmas lights exactly where each red line is drawn, in the same position and length as the line, attached to whatever the line runs along (a roof edge or gutter, a garage door frame, a railing, a column, a bush or a tree). Use C9 bulbs about 12 inches apart on buildings and fine mini lights on plants, matching the brightness of the existing lights. '+
     'Then remove every red line completely. Change nothing else: same house, same lights elsewhere, same snow, sky, trees and camera angle. No text, no watermarks.'})
   .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;
     MK.lines=[];MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Mark missed lights';
