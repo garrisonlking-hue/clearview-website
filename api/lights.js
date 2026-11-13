@@ -12,6 +12,37 @@
 export const config = { maxDuration: 300 };
 
 const G = 'https://maps.googleapis.com/maps/api';
+const FLYRA = 'https://app.flyra.io/v2026-06-01';
+
+// Flyra customers, cached in the function for 10 minutes (used for address suggestions and name autofill)
+let CUST = { at: 0, list: [] };
+async function flyraCustomers(key) {
+  if (!key) return [];
+  if (Date.now() - CUST.at < 600000 && CUST.list.length) return CUST.list;
+  const out = [];
+  for (let off = 0; off < 3000; off += 100) {
+    const r = await fetch(`${FLYRA}/customers?limit=100&offset=${off}`, { headers: { Authorization: 'Bearer ' + key } });
+    if (!r.ok) break;
+    const j = await r.json().catch(() => ({}));
+    const rows = j.data || [];
+    rows.forEach((c) => out.push({
+      name: c.display_name || [c.first_name, c.last_name].filter(Boolean).join(' '),
+      first: c.first_name || '', phone: c.mobile_phone || '',
+      address: String(c.address || '').split('\n')[0].trim(),
+      city: c.city || '', state: c.state || '', zip: c.zip || c.zipcode || '',
+      full: String(c.address || '').replace(/\n/g, ', ') }));
+    if (rows.length < 100) break;
+  }
+  CUST = { at: Date.now(), list: out };
+  return out;
+}
+const norm = (x) => String(x || '').toLowerCase().replace(/[.,#]/g, ' ').replace(/\b(road)\b/g, 'rd').replace(/\b(lane)\b/g, 'ln')
+  .replace(/\b(street)\b/g, 'st').replace(/\b(drive)\b/g, 'dr').replace(/\b(avenue)\b/g, 'ave').replace(/\b(court)\b/g, 'ct')
+  .replace(/\b(circle)\b/g, 'cir').replace(/\b(route)\b/g, 'rt').replace(/\s+/g, ' ').trim();
+function sameStreet(a, b) {
+  const x = norm(a).split(' '), y = norm(b).split(' ');
+  return x.length > 1 && y.length > 1 && x[0] === y[0] && /^\d/.test(x[0]) && x[1] === y[1];
+}
 
 function bearing(lat1, lng1, lat2, lng2) {
   const r = Math.PI / 180;
@@ -41,6 +72,7 @@ export default async function handler(req, res) {
   b = b || {};
 
   const PASS = process.env.LIGHTS_PASSCODE;
+  const FKEY = process.env.FLYRA_API_KEY;
   const GKEY = process.env.GOOGLE_MAPS_API_KEY;
   const OKEY = process.env.OPENAI_API_KEY;
   const MODEL = process.env.OPENAI_IMAGE_MODEL || 'gpt-image-1';
@@ -53,6 +85,8 @@ export default async function handler(req, res) {
     // ---- setup check: which keys exist and whether each service answers
     if (b.action === 'check') {
       const out = { passcode: true, googleKey: !!GKEY, openaiKey: !!OKEY, model: MODEL };
+      if (FKEY) { const fr = await fetch(`${FLYRA}/customers?limit=1`, { headers: { Authorization: 'Bearer ' + FKEY } }); out.flyra = fr.ok ? 'ok' : `failed (${fr.status})`; }
+      else out.flyra = 'FLYRA_API_KEY missing in Vercel';
       if (GKEY) {
         const j = await (await fetch(`${G}/geocode/json?address=${encodeURIComponent('Columbia, CT')}&key=${GKEY}`)).json();
         out.geocoding = j.status === 'OK' ? 'ok' : `${j.status}: ${j.error_message || ''}`;
@@ -64,6 +98,9 @@ export default async function handler(req, res) {
         out.tiles3d = t.ok ? 'ok' : `failed (${t.status}): ` + (await t.text()).slice(0, 200);
         const so = await fetch(`https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=41.7161&location.longitude=-72.3197&requiredQuality=LOW&key=${GKEY}`);
         out.solar = (so.ok || so.status === 404) ? 'ok' : `failed (${so.status}): ` + (await so.text()).slice(0, 200);
+        const pl = await fetch('https://places.googleapis.com/v1/places:autocomplete', { method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': GKEY }, body: JSON.stringify({ input: '57 Jasmine Ln' }) });
+        out.places = pl.ok ? 'ok' : `failed (${pl.status}): ` + (await pl.text()).slice(0, 160);
       }
       if (OKEY) {
         const r = await fetch('https://api.openai.com/v1/models/' + encodeURIComponent(MODEL),
@@ -71,6 +108,47 @@ export default async function handler(req, res) {
         out.openai = r.ok ? 'ok' : `failed (${r.status}): ` + (await r.text()).slice(0, 200);
       }
       return res.status(200).json(out);
+    }
+
+    // ---- address suggestions while typing: Flyra customers first, then Google addresses
+    if (b.action === 'suggest') {
+      const q = String(b.q || '').trim();
+      if (q.length < 3) return res.status(200).json({ items: [] });
+      const items = [];
+      try {
+        const nq = norm(q);
+        (await flyraCustomers(FKEY)).forEach((c) => {
+          if (items.length >= 4) return;
+          const hay = norm(c.name + ' ' + c.full + ' ' + c.city);
+          if (nq.split(' ').every((w) => hay.includes(w)) && c.address) {
+            items.push({ type: 'customer', name: c.name, first: c.first,
+              address: [c.address, c.city, [c.state, c.zip].filter(Boolean).join(' ')].filter(Boolean).join(', ') });
+          }
+        });
+      } catch (e) { /* Flyra unavailable: just Google */ }
+      let googleNote = '';
+      if (GKEY) {
+        const r = await fetch('https://places.googleapis.com/v1/places:autocomplete', { method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': GKEY },
+          body: JSON.stringify({ input: q, includedRegionCodes: ['us'], sessionToken: String(b.session || '').slice(0, 64) || undefined,
+            includedPrimaryTypes: ['street_address', 'premise', 'subpremise', 'route'],
+            locationBias: { circle: { center: { latitude: 41.6, longitude: -72.7 }, radius: 50000 } } }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok) (j.suggestions || []).slice(0, 5).forEach((x) => {
+          const t = x.placePrediction && x.placePrediction.text && x.placePrediction.text.text;
+          if (t) items.push({ type: 'address', address: t.replace(/, USA$/, '') });
+        });
+        else googleNote = (j.error && j.error.message) || 'Google suggestions unavailable';
+      }
+      return res.status(200).json({ items, googleNote });
+    }
+
+    // ---- is this address already a Flyra customer? (autofills the name)
+    if (b.action === 'flyraMatch') {
+      try {
+        const c = (await flyraCustomers(FKEY)).find((x) => x.address && sameStreet(x.address, b.street));
+        return res.status(200).json(c ? { name: c.name, first: c.first, phone: c.phone } : {});
+      } catch (e) { return res.status(200).json({}); }
     }
 
     // ---- Google 3D tiles are loaded straight by the browser, so the page needs the key (passcode holders only)
