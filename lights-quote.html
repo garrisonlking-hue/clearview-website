@@ -61,6 +61,9 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
 .sugg div{padding:9px 12px;cursor:pointer;font-size:14px;border-bottom:1px solid #F1EEE6}
 .sugg div:last-child{border-bottom:0}.sugg div:hover,.sugg div.on{background:#F3F6F4}
 .sugg small{display:block;color:var(--muted);font-size:12px}
+.chip{border:1px solid #CFCABD;background:#fff;color:#1E2B27;font-weight:500;padding:6px 10px;border-radius:20px;font-size:13px}
+.chip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0}
+.chip.on{border-color:var(--green);box-shadow:0 0 0 2px rgba(23,63,53,.2);background:#F3F6F4}
 .sugg .tag{display:inline-block;font-size:10.5px;font-weight:700;color:#1D6B3A;background:#E6F1EB;border-radius:4px;padding:1px 5px;margin-right:6px;vertical-align:1px}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes s{to{transform:rotate(360deg)}}
@@ -154,8 +157,10 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     <div id="mockOut" class="hidden" style="margin-top:16px"><b>Mockup</b>
       <div class="imgbox" style="margin-top:8px;max-width:760px;position:relative"><img id="mockOutImg" alt=""><canvas id="markCanvas" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none;display:none"></canvas></div>
       <div class="row" style="margin-top:10px">
-        <button class="alt" id="markBtn">Mark missed lights</button>
-        <span id="markTools" class="hidden"><button class="alt" id="markUndo">Undo line</button> <button class="alt" id="markClear">Clear</button> <button id="markApply">Add lights where I drew</button></span>
+        <button class="alt" id="markBtn">Edit mockup</button>
+        <span id="markTools" class="hidden" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+          <span id="mkChips" style="display:flex;gap:6px;flex-wrap:wrap"></span>
+          <button class="alt" id="markUndo">Undo</button> <button class="alt" id="markClear">Clear</button> <button id="markApply">Apply changes</button></span>
         <button class="alt" id="redoMock">Redo mockup</button>
         <span class="note" id="markMsg" style="margin:0"></span>
       </div>
@@ -799,39 +804,57 @@ function finishQuote(){
   $('doneBox').classList.remove('hidden');step(big?'Big job: close in person (summary below).':'Quote ready: save the PDF and send it through Flyra.');$('doneBox').scrollIntoView({block:'start'});
 }
 $('sameYes').onclick=finishQuote;
-/* ---------- mark missed lights: draw on the mockup, then let the image model fill them in ---------- */
-var MK={on:false,lines:[],cur:null};
+/* ---------- edit mockup: draw with a tool, then the image model applies every mark ---------- */
+var MKT={
+  lights:{label:'Add lights',color:'#ff1a1a',name:'RED',tip:'Draw along roof edges, railings or columns that need lights.',
+    rule:'RED lines: add warm-white Christmas lights exactly along each red line (C9 bulbs about 12 inches apart on buildings, mini lights on plants), attached to whatever the line runs along. If a red line runs over a tree or branch that blocks that edge of the house, remove or trim just that part of the tree so the lights sit on the house realistically.'},
+  erase:{label:'Erase lights',color:'#1a6bff',name:'BLUE',tip:'Scribble over lights that should not be there.',
+    rule:'BLUE marks: remove every Christmas light under the blue marks and restore what is underneath (roof, siding, gutter or plant) so it looks natural and unlit.'},
+  wreath:{label:'Wreath',color:'#00c853',name:'GREEN',dot:true,tip:'Tap where a wreath goes (door, gable, garage).',
+    rule:'GREEN dots: hang a lit evergreen wreath with a red bow centered on each green dot, sized to fit the spot (about 24 inches on a door, 36 to 48 inches on a gable or garage), with warm-white mini lights.'},
+  garland:{label:'Garland',color:'#b000ff',name:'PURPLE',tip:'Draw where garland drapes (around the door, porch railing, columns).',
+    rule:'PURPLE lines: add lit green evergreen garland with warm-white mini lights following each purple line.'},
+  walk:{label:'Walkway lights',color:'#ffd400',name:'YELLOW',tip:'Draw along both edges of the walkway or driveway.',
+    rule:'YELLOW lines: add ground-stake warm-white C9 pathway lights about 12 to 18 inches apart along each yellow line, on the ground.'},
+  wrap:{label:'Wrap tree / bush',color:'#ff8a00',name:'ORANGE',tip:'Scribble over the tree trunk or bush to wrap it.',
+    rule:'ORANGE scribbles: wrap that tree (trunk and main branches) or bush in warm-white mini lights.'}
+};
+var MK={on:false,lines:[],cur:null,tool:'lights'};
 function mkSize(){var c=$('markCanvas'),i=$('mockOutImg');c.width=i.naturalWidth||1536;c.height=i.naturalHeight||1024}
-function mkDraw(){var c=$('markCanvas'),x=c.getContext('2d');x.clearRect(0,0,c.width,c.height);
-  x.strokeStyle='#ff1a1a';x.lineWidth=Math.max(6,c.width/160);x.lineCap='round';x.lineJoin='round';
-  MK.lines.forEach(function(L){if(L.length<2)return;x.beginPath();x.moveTo(L[0][0],L[0][1]);L.forEach(function(p){x.lineTo(p[0],p[1])});x.stroke()})}
+function mkDraw(){var c=$('markCanvas'),x=c.getContext('2d'),w=Math.max(6,c.width/160);x.clearRect(0,0,c.width,c.height);x.lineCap='round';x.lineJoin='round';
+  MK.lines.forEach(function(L){var t=MKT[L.tool];x.strokeStyle=x.fillStyle=t.color;x.lineWidth=t.tool==='erase'?w*2.2:w;
+    if(t.dot){var p=L.pts[0];x.beginPath();x.arc(p[0],p[1],w*2.4,0,7);x.fill();return}
+    if(L.pts.length<2)return;x.lineWidth=L.tool==='erase'?w*2.2:L.tool==='wrap'?w*1.6:w;
+    x.beginPath();x.moveTo(L.pts[0][0],L.pts[0][1]);L.pts.forEach(function(p){x.lineTo(p[0],p[1])});x.stroke()})}
 function mkPt(e){var c=$('markCanvas'),r=c.getBoundingClientRect();return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]}
-$('markCanvas').addEventListener('pointerdown',function(e){if(!MK.on)return;this.setPointerCapture(e.pointerId);MK.cur=[mkPt(e)];MK.lines.push(MK.cur);mkDraw()});
-$('markCanvas').addEventListener('pointermove',function(e){if(!MK.cur)return;MK.cur.push(mkPt(e));mkDraw()});
+function mkChips(){$('mkChips').innerHTML=Object.keys(MKT).map(function(k){return '<button class="chip'+(k===MK.tool?' on':'')+'" data-k="'+k+'"><i style="background:'+MKT[k].color+'"></i>'+MKT[k].label+'</button>'}).join('');
+  [].forEach.call($('mkChips').children,function(b){b.onclick=function(){MK.tool=b.dataset.k;mkChips();$('markMsg').textContent=MKT[MK.tool].tip}})}
+$('markCanvas').addEventListener('pointerdown',function(e){if(!MK.on)return;this.setPointerCapture(e.pointerId);var L={tool:MK.tool,pts:[mkPt(e)]};MK.lines.push(L);MK.cur=MKT[MK.tool].dot?null:L;mkDraw()});
+$('markCanvas').addEventListener('pointermove',function(e){if(!MK.cur)return;MK.cur.pts.push(mkPt(e));mkDraw()});
 $('markCanvas').addEventListener('pointerup',function(){MK.cur=null});
+function mkOff(){MK.lines=[];MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Edit mockup'}
 $('markBtn').onclick=function(){
-  MK.on=!MK.on;$('markCanvas').style.display=MK.on?'block':'none';$('markTools').classList.toggle('hidden',!MK.on);
-  this.textContent=MK.on?'Cancel marking':'Mark missed lights';
-  if(MK.on){mkSize();MK.lines=[];mkDraw();$('markMsg').textContent='Draw along every roof edge that should have lights but doesn\'t.'}else $('markMsg').textContent='';
+  if(MK.on){mkOff();$('markMsg').textContent='';return}
+  MK.on=true;$('markCanvas').style.display='block';$('markTools').classList.remove('hidden');this.textContent='Cancel';
+  mkSize();MK.lines=[];mkDraw();mkChips();$('markMsg').textContent='Pick a tool, draw on the picture, then Apply changes. '+MKT[MK.tool].tip;
 };
 $('markUndo').onclick=function(){MK.lines.pop();mkDraw()};
 $('markClear').onclick=function(){MK.lines=[];mkDraw()};
 $('markApply').onclick=function(){
-  if(!MK.lines.length){$('markMsg').textContent='Draw at least one line first.';return}
+  if(!MK.lines.length){$('markMsg').textContent='Draw something first.';return}
+  var used={};MK.lines.forEach(function(L){used[L.tool]=1});
   var c=document.createElement('canvas'),i=$('mockOutImg');c.width=i.naturalWidth;c.height=i.naturalHeight;var x=c.getContext('2d');
   x.drawImage(i,0,0);x.drawImage($('markCanvas'),0,0,c.width,c.height);
-  var marked=c.toDataURL('image/jpeg',0.9),b=$('markApply');b.disabled=true;b.innerHTML='<span class="spin"></span>Adding lights...';
+  var marked=c.toDataURL('image/jpeg',0.9),b=$('markApply');b.disabled=true;b.innerHTML='<span class="spin"></span>Applying...';
   $('markMsg').textContent='About a minute.';
   api({action:'mockup',image:marked,portrait:c.height>c.width,fidelity:'high',prompt:
-    'This is a nighttime photo of a house with Christmas lights. Bright red lines have been drawn on it to mark roof edges that are missing lights. '+
-    'Add warm-white Christmas lights exactly where each red line is drawn, in the same position and length as the line, attached to whatever the line runs along (a roof edge or gutter, a garage door frame, a railing, a column, a bush or a tree). Use C9 bulbs about 12 inches apart on buildings and fine mini lights on plants, matching the brightness of the existing lights. '+
-    'If a red line runs over a tree or branch that blocks that edge of the house, remove or trim just that part of the tree so the lights sit on the house realistically. '+
-    'Then remove every red line completely. Change nothing else: same house shape, same lights elsewhere, same snow, sky and camera angle. No text, no watermarks.'})
-  .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;
-    MK.lines=[];MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Mark missed lights';
-    $('markMsg').textContent='Lights added. Mark again if anything is still missing.';buildProposal()})
-  .catch(function(e){$('markMsg').textContent='Could not add the lights: '+e.message})
-  .then(function(){b.disabled=false;b.textContent='Add lights where I drew'});
+    'This is a nighttime photo of a house decorated for Christmas. Colored marks have been drawn on it as editing instructions:\n- '+
+    Object.keys(used).map(function(k){return MKT[k].rule}).join('\n- ')+
+    '\n\nPlace everything exactly where it is marked, at a realistic size. Then remove every colored mark completely so none remain. Change nothing else: same house shape, same lights elsewhere, same snow, sky and camera angle. No text, no watermarks.'})
+  .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;mkOff();
+    $('markMsg').textContent='Done. Edit again if anything is off.'+((used.wreath||used.garland||used.walk||used.wrap)?' Remember to price any extras under Pricing.':'');buildProposal()})
+  .catch(function(e){$('markMsg').textContent='Could not apply the changes: '+e.message})
+  .then(function(){b.disabled=false;b.textContent='Apply changes'});
 };
 /* ---------- address suggestions + Flyra name autofill ---------- */
 var SG={t:0,items:[],on:-1,session:''};
