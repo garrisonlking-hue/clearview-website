@@ -290,7 +290,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
   <div class="card" id="proposalCard">
     <h2>Quote</h2>
     <div class="row" style="margin-bottom:12px"><button id="buildBtn">Rebuild quote</button><button id="printBtn" class="alt">Save as PDF</button>
-      <span class="note" style="margin:0">In the print window choose "Save as PDF", landscape, margins none, background graphics on.</span></div>
+      <span class="note" style="margin:0">Downloads a one-page PDF, ready to text or attach.</span></div>
     <div id="proposalWrap" class="hidden"></div>
   </div>
 </div>
@@ -544,7 +544,24 @@ $('promptBtn').onclick=buildPrompt;
 $('mockBtn').onclick=mockup;
 $('buildBtn').onclick=function(){if(S.loc&&S.mock&&!$('runCard').classList.contains('hidden'))finishQuote();else buildProposal()};
 $('redoMock').onclick=function(){if(S.cands&&S.lastPick!=null)makeMock(S.lastPick);else mockup().then(function(img){if(img){$('mockOutImg').src=img}})};
-$('printBtn').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
+// Save the quote as a one-page, edge-to-edge PDF directly (no print dialog settings needed)
+function loadJs(u){return new Promise(function(ok,no){if(document.querySelector('script[src="'+u+'"]'))return ok();var t=document.createElement('script');t.src=u;t.onload=ok;t.onerror=function(){no(new Error('Could not load '+u))};document.head.appendChild(t)})}
+function savePDF(btn){
+  buildProposal();var pg=document.querySelector('#proposalWrap .page');if(!pg)return;
+  var label=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span>Making PDF...'}
+  var done=function(){if(btn){btn.disabled=false;btn.textContent=label}};
+  Promise.all([loadJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')])
+  .then(function(){
+    var wrap=$('proposalWrap'),z=wrap.style.zoom;wrap.style.zoom='';
+    return html2canvas(pg,{scale:2,backgroundColor:'#FBF8F0',useCORS:true,logging:false}).then(function(cv){wrap.style.zoom=z;return cv});
+  }).then(function(cv){
+    var pdf=new window.jspdf.jsPDF({orientation:'landscape',unit:'in',format:'letter'});
+    pdf.addImage(cv.toDataURL('image/jpeg',0.92),'JPEG',0,0,11,8.5);
+    var nm=($('custName').value.trim()||((S.loc&&S.loc.street)||'Customer')).replace(/[^a-z0-9 ]+/gi,'').trim();
+    pdf.save('Holiday Lighting Quote - '+nm+'.pdf');done();
+  }).catch(function(e){done();alert('Could not make the PDF ('+e.message+'). Use your browser\'s Print instead.')});
+}
+$('printBtn').onclick=function(){savePDF(this)};
 function passState(){$('passMsg').textContent=pass()?'Passcode saved on this device.':'No passcode saved yet. Type it and click Save passcode.';if(!pass())$('setBox').open=true}
 $('passBtn').onclick=function(){var v=$('passIn').value.trim();if(!v){$('passMsg').textContent='Type the passcode first.';return}
   S.pass=v;try{localStorage.setItem('lightsPass',v)}catch(e){}$('passIn').value='';passState()};
@@ -1008,7 +1025,7 @@ $('flyraPhotosBtn').onclick=function(){
     }});
   }).catch(function(e){$('photoPickMsg').textContent=e.message}).then(function(){b.disabled=false});
 };
-$('runPrint').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
+$('runPrint').onclick=function(){savePDF(this)};
 $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement('a');a.href=S.mock;a.download=((S.loc&&S.loc.street)||'house').replace(/[^a-z0-9]+/gi,'-')+'-mockup.jpg';document.body.appendChild(a);a.click();a.remove()};
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
 $('runBtn').onclick=runQuote;
