@@ -140,6 +140,29 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
   </div>
 
   <div class="card">
+    <h2>3D view (Google Earth data)</h2>
+    <div class="note" style="margin:0 0 8px">Same 3D model Google Earth shows. Drag to orbit. Use it to see every roof section and to measure true lengths, slopes included. If trees block the street photo, spin around, stop at the best front angle and click "Use this view as the house photo".</div>
+    <div id="v3" style="height:480px;border-radius:8px;overflow:hidden;background:#111;position:relative"></div>
+    <div class="row" style="margin-top:8px">
+      <button class="alt" id="v3load">Load 3D view</button>
+      <button class="alt" id="v3spin">Spin around house</button>
+      <label>Turn</label><input type="range" id="v3h" min="0" max="359" step="1" value="0" style="width:150px">
+      <label>Tilt</label><input type="range" id="v3p" min="-85" max="-5" step="1" value="-25" style="width:100px">
+      <label>Distance</label><input type="range" id="v3r" min="20" max="160" step="1" value="55" style="width:100px">
+    </div>
+    <div class="row" style="margin-top:8px">
+      <label><input type="checkbox" id="v3measure"> Measure mode (click roof edges)</label>
+      <button class="alt" id="v3undo">Undo point</button>
+      <button class="alt" id="v3break">Start new section</button>
+      <button class="alt" id="v3clear">Clear</button>
+      <span class="big"><span id="v3ft">0</span> ft</span>
+      <button id="v3photo">Use this view as the house photo</button>
+    </div>
+    <div class="row" style="margin-top:8px"><label><input type="checkbox" id="sidesIn" checked> Sides visible from the road are lit (front + sides package)</label></div>
+    <div id="v3msg" class="note"></div>
+  </div>
+
+  <div class="card">
     <h2>4. Package and add-ons</h2>
     <table id="items"><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>In house package</th><th>Line total</th></tr></thead><tbody></tbody></table>
     <div class="note">Qty above zero with the box unticked shows as a priced optional add-on on page 2. Wreath and garland prices are placeholders until you confirm supplier cost.</div>
@@ -308,7 +331,8 @@ ITEMS.forEach(function(it){
 function calc(){
   var ft=Math.max(0,+$('roofFt').value||0),rate=+$('roofRate').value||0;
   var pkg=[],opt=[];
-  if(ft>0)pkg.push({name:'Front roofline, '+ft+' ft of warm-white C9 lights',total:ft*rate,mock:null});
+  var sides=$('sidesIn')&&$('sidesIn').checked;
+  if(ft>0)pkg.push({name:(sides?'Roofline, front and visible sides, ':'Front roofline, ')+ft+' ft of warm-white C9 lights',total:ft*rate,mock:null});
   ITEMS.forEach(function(it){
     var q=+$('q_'+it.id).value||0,p=+$('p_'+it.id).value||0,line=q*p;
     $('t_'+it.id).textContent=q>0?money(line):'';
@@ -351,9 +375,10 @@ $('copyVisit').onclick=function(){var t=$('visitText');t.select();var done=funct
 
 /* ---------- 5. mockup ---------- */
 function buildPrompt(){
-  var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the front roofline: the front gutters, eaves and the sloped edges of any front-facing gables'];
+  var sides=$('sidesIn').checked,aerial=/3D/.test(S.photoSrc||'');
+  var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the roofline facing the street: the front gutters, eaves and the sloped edges of every front-facing gable and dormer'+(sides?', and continuing along the side rooflines and side gable edges that are visible from the street':'')];
   c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
-  $('prompt').value='Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n'+
+  $('prompt').value=(aerial?'This image is a 3D aerial view of a real house, built from satellite data, so trees and lawn look blurry and melted. Turn it into a photorealistic nighttime aerial photograph of the SAME house from the SAME angle, in Connecticut in December, professionally decorated with Christmas lights. Render the trees, bushes and lawn as real, sharp vegetation in the same places.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
    'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
    'Keep the house exactly as it is: same architecture, roof shape, siding, windows, doors, garage, chimney, trees, bushes, driveway and camera angle. Do not add, remove or move any part of the building or landscaping. Do not put lights on anything not listed above.\n\n'+
    'Scene: dark night sky, a light dusting of fresh snow on the roof, lawn and plantings, a few gentle snowflakes falling, a soft warm glow from the windows, and a subtle warm glow from the lights on nearby surfaces. Real camera look, natural exposure, no text, no watermarks, no people, no cars added.';
@@ -372,9 +397,10 @@ function mockup(){
 function buildProposal(){
   var c=calc(),L=S.loc||{street:$('address').value.split(',')[0]||'Your home',cityLine:$('address').value.split(',').slice(1).join(',').trim()};
   var now=new Date(),exp=new Date(now.getTime()+7*864e5),season=now.getFullYear(),nextYr=season+1;
-  var title=c.hasCols?'GUTTER/ROOF LINES + COLUMNS':'FRONT ROOFLINE LIGHTING';
+  var sides=$('sidesIn').checked,where=sides?'front and visible side rooflines':'front roofline';
+  var title=c.hasCols?'GUTTER/ROOF LINES + COLUMNS':(sides?'ROOFLINE LIGHTING':'FRONT ROOFLINE LIGHTING');
   var extraPkg=c.pkg.filter(function(p){return p.id}).map(function(p){return p.name.toLowerCase()});
-  var sub='Your house-lighting package: warm-white lights along the front roofline'+(extraPkg.length?', plus '+extraPkg.join(', '):'')+'.';
+  var sub='Your house-lighting package: warm-white lights along the '+where+(extraPkg.length?', plus '+extraPkg.join(', '):'')+'.';
   var name=$('custName').value.trim();
   var head='<div class="ph"><div class="brand"><b>CLEAR VIEW</b><span>HOLIDAY LIGHTING | EVERGREEN</span></div>'+
     '<div class="addr"><b>'+esc(L.street||'')+'</b>'+esc(L.cityLine||'')+'<br>(860) 966-3149 | clearviewwindowsct.com</div></div>';
@@ -392,7 +418,7 @@ function buildProposal(){
     '<p style="margin:14px 0 8px"><b>'+money(c.dep)+' deposit to book.</b><br>'+money(c.bal)+' balance on completion.<br>Plus applicable tax.</p>'+
     '<p style="margin:0"><b>'+nextYr+' house package: '+money(c.next)+' before tax.</b><br>'+c.nextPct+'% off the final first-season price.<br>No multi-season plan is required.</p></div></div>'+
     '<div class="foot2"><div><b>Included in your seasonal price</b>Design and mockup, leased C9 and mini lights, custom-cut cord, clips, timer, power leads, installation, repairs all season, removal in late January or early February and off-season storage.</div>'+
-    '<div><b>Design scope</b>Warm-white C9 lights on the front roofline shown'+(extraPkg.length?', plus '+esc(extraPkg.join(', ')):'')+'. Side and rear rooflines'+(c.opt.length?' and the optional add-ons on page 2':'')+' are not included unless listed.</div></div>'+foot(1)+'</div>';
+    '<div><b>Design scope</b>Warm-white C9 lights on the '+where+' shown'+(extraPkg.length?', plus '+esc(extraPkg.join(', ')):'')+'. '+(sides?'Rear rooflines':'Side and rear rooflines')+(c.opt.length?' and the optional add-ons on page 2':'')+' are not included unless listed.</div></div>'+foot(1)+'</div>';
 
   var also=ITEMS.filter(function(it){return !c.pkg.concat(c.opt).some(function(p){return p.id===it.id})&&!/^wreath(36|48)/.test(it.id)});
   var p2='<div class="page">'+head+'<h1>OPTIONAL ADD-ONS</h1><div class="sub">Personalize your display. Add only the details you want.</div><div class="grid2"><div>'+
@@ -441,7 +467,7 @@ $('checkBtn').onclick=function(){
   var o=$('checkOut');o.classList.remove('hidden');o.textContent='Checking...';
   api({action:'check'}).then(function(r){
     var row=function(k,v){var good=v===true||v==='ok';return '<tr><td>'+k+'</td><td class="'+(good?'ok':'err')+'" style="margin:0">'+(good?'OK':esc(v===false?'missing in Vercel':v))+'</td></tr>'};
-    o.innerHTML='<h2>Setup check</h2><table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
+    o.innerHTML='<h2>Setup check</h2><table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap)+row('Map Tiles API (3D view)',r.tiles3d):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
   }).catch(function(e){o.innerHTML='<div class="err">'+esc(e.message)+'</div>'});
 };
 $('early').checked=new Date()<=EARLY_END;
@@ -451,7 +477,97 @@ if(DEMO&&/[?&]auto=1/.test(location.search)){ // layout self-test: fills a sampl
   $('address').value='174 Route 87, Columbia, CT';$('roofFt').value=70;$('q_columns').value=2;$('q_tree').value=20;$('q_shrubs').value=4;
   lookup();setTimeout(function(){$('roofFt').value=70;recalc();S.mock=stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup');buildProposal()},600);
 }
-window.__lights={S:S,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw};
+/* ---------- 3D view: Google Photorealistic 3D Tiles (the data behind Google Earth) in CesiumJS ---------- */
+var V={viewer:null,tiles:null,center:null,lines:[[]],ents:[],spin:0,key:'',loading:null};
+var CES='https://cdn.jsdelivr.net/npm/cesium@1.105.0/Build/Cesium/';
+function loadCesium(){
+  if(window.Cesium)return Promise.resolve();
+  if(V.loading)return V.loading;
+  window.CESIUM_BASE_URL=CES;
+  V.loading=new Promise(function(ok,no){
+    var l=document.createElement('link');l.rel='stylesheet';l.href=CES+'Widgets/widgets.css';document.head.appendChild(l);
+    var sc=document.createElement('script');sc.src=CES+'Cesium.js';sc.onload=ok;sc.onerror=function(){no(new Error('Could not load the 3D viewer.'))};document.head.appendChild(sc);
+  });
+  return V.loading;
+}
+function v3view(){
+  if(!V.viewer||!V.center)return;var C=window.Cesium;
+  V.viewer.camera.lookAt(V.center,new C.HeadingPitchRange(C.Math.toRadians(+$('v3h').value),C.Math.toRadians(+$('v3p').value),+$('v3r').value));
+  V.viewer.scene.requestRender();
+}
+function draw3D(){
+  if(!V.viewer)return;var C=window.Cesium,t=0;
+  V.ents.forEach(function(e){V.viewer.entities.remove(e)});V.ents=[];
+  var col=C.Color.fromCssColorString('#FFD34D');
+  V.lines.forEach(function(L){
+    L.forEach(function(p){V.ents.push(V.viewer.entities.add({position:p,point:{pixelSize:8,color:col,disableDepthTestDistance:Number.POSITIVE_INFINITY}}))});
+    if(L.length>1){
+      V.ents.push(V.viewer.entities.add({polyline:{positions:L.slice(),width:4,material:col,depthFailMaterial:col}}));
+      for(var i=1;i<L.length;i++)t+=C.Cartesian3.distance(L[i-1],L[i])*3.28084;
+    }
+  });
+  t=Math.round(t);$('v3ft').textContent=t;
+  if(t>0){$('roofFt').value=t;recalc()}
+  V.viewer.scene.requestRender();
+}
+function init3D(){
+  if(!S.loc){$('v3msg').textContent='Look up an address first.';return}
+  $('v3msg').textContent='Loading Google 3D view...';
+  var kp=V.key?Promise.resolve({key:V.key}):api({action:'tilesKey'});
+  Promise.all([loadCesium(),kp]).then(function(r){
+    V.key=r[1].key;var C=window.Cesium;
+    if(!V.viewer){
+      C.RequestScheduler.requestsByServer['tile.googleapis.com:443']=18;
+      V.viewer=new C.Viewer('v3',{imageryProvider:false,baseLayerPicker:false,geocoder:false,globe:false,animation:false,timeline:false,
+        homeButton:false,sceneModePicker:false,navigationHelpButton:false,fullscreenButton:false,infoBox:false,selectionIndicator:false,
+        requestRenderMode:true,contextOptions:{webgl:{preserveDrawingBuffer:true}}});
+      var h=new C.ScreenSpaceEventHandler(V.viewer.scene.canvas);
+      h.setInputAction(function(e){
+        if(!$('v3measure').checked)return;
+        var p=V.viewer.scene.pickPosition(e.position);
+        if(!C.defined(p)){$('v3msg').textContent='Missed the model there. Click right on the roof edge.';return}
+        V.lines[V.lines.length-1].push(p);draw3D();
+      },C.ScreenSpaceEventType.LEFT_CLICK);
+      return C.Cesium3DTileset.fromUrl('https://tile.googleapis.com/v1/3dtiles/root.json?key='+V.key,{showCreditsOnScreen:true}).then(function(ts){
+        V.tiles=V.viewer.scene.primitives.add(ts);
+      });
+    }
+  }).then(function(){
+    var C=window.Cesium;V.lines=[[]];draw3D();
+    var guess=C.Cartesian3.fromDegrees(S.loc.lng,S.loc.lat,60);
+    V.center=guess;
+    $('v3h').value=S.loc.streetView?S.loc.streetView.heading:0;
+    V.viewer.camera.lookAt(guess,new C.HeadingPitchRange(C.Math.toRadians(+$('v3h').value),C.Math.toRadians(-45),300));
+    V.viewer.scene.requestRender();
+    // let tiles stream in, then find the real ground/roof height at the address
+    return new Promise(function(ok){setTimeout(ok,2500)}).then(function(){
+      return V.viewer.scene.clampToHeightMostDetailed([C.Cartesian3.fromDegrees(S.loc.lng,S.loc.lat,0)]);
+    }).then(function(res){
+      if(res&&res[0])V.center=res[0];
+      v3view();
+      $('v3msg').textContent='3D view loaded. Drag to look around; the sliders turn, tilt and zoom around the house. Blurry or flat buildings mean Google has no detailed 3D here: use Street View or ask for a photo.';
+    });
+  }).catch(function(e){$('v3msg').textContent='3D view failed: '+e.message});
+}
+$('v3load').onclick=init3D;
+['v3h','v3p','v3r'].forEach(function(id){$(id).oninput=v3view});
+$('v3spin').onclick=function(){
+  if(!V.viewer)return;if(V.spin){cancelAnimationFrame(V.spin);V.spin=0;$('v3spin').textContent='Spin around house';return}
+  $('v3spin').textContent='Stop here';var last=performance.now();
+  (function step(now){var h=(+$('v3h').value+(now-last)*0.03)%360;last=now;$('v3h').value=h;v3view();V.spin=requestAnimationFrame(step)})(last);
+};
+$('v3undo').onclick=function(){var L=V.lines[V.lines.length-1];if(L.length)L.pop();else if(V.lines.length>1)V.lines.pop();draw3D()};
+$('v3break').onclick=function(){if(V.lines[V.lines.length-1].length)V.lines.push([])};
+$('v3clear').onclick=function(){V.lines=[[]];$('v3ft').textContent='0';draw3D()};
+$('sidesIn').onchange=function(){recalc();buildPrompt()};
+$('v3photo').onclick=function(){
+  if(!V.viewer){$('v3msg').textContent='Load the 3D view first.';return}
+  V.ents.forEach(function(e){e.show=false});V.viewer.render();
+  var url=V.viewer.scene.canvas.toDataURL('image/jpeg',0.92);
+  V.ents.forEach(function(e){e.show=true});V.viewer.scene.requestRender();
+  var i=new Image();i.onload=function(){setPhoto(imgToDataURL(i,1536),'Google Earth 3D view');setTimeout(buildPrompt,50);$('v3msg').textContent='This view is now the house photo. Generate the mockup in step 5.'};i.src=url;
+};
+window.__lights={S:S,V:V,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
 })();
 </script>
 </body>
