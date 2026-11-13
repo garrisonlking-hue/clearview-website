@@ -117,7 +117,7 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
       <b>Tap the photo that clearly shows the front of this house</b>
       <div class="two" style="margin-top:8px">
         <div><div class="imgbox"><img id="pickSV" alt=""></div><button class="alt" id="useSV" style="margin-top:6px">Use Street View</button></div>
-        <div><div class="imgbox"><img id="pick3D" alt=""></div><button class="alt" id="use3D" style="margin-top:6px">Use 3D view</button></div>
+        <div><div class="imgbox"><img id="pick3D" alt=""></div><button class="alt" id="use3D" style="margin-top:6px">Use 3D view</button> <button class="alt" id="retake3D" style="margin-top:6px">Retake 3D</button></div>
       </div>
       <div class="note">Neither is good (trees, wrong house)? Upload the customer's photo in step 2, then click Generate mockup in step 5.</div>
     </div>
@@ -602,8 +602,11 @@ function capture3D(){
   if(!V.viewer){$('v3msg').textContent='Load the 3D view first.';return Promise.resolve(null)}
   $('v3msg').textContent='Capturing the 3D view...';
   $('v3').scrollIntoView({block:'center'});
-  return sleep(800).then(function(){v3view();var tries=0;
-    return (function wait(){return (V.tiles&&V.tiles.tilesLoaded)||tries++>20?sleep(500):sleep(500).then(wait)})();
+  // wait for Google to stream the detailed model: loaded and steady for 2 seconds (max ~25 s)
+  return sleep(800).then(function(){v3view();return sleep(3000)}).then(function(){var tries=0,steady=0;
+    return (function wait(){V.viewer.scene.requestRender();tries++;
+      steady=(V.tiles&&V.tiles.tilesLoaded)?steady+1:0;
+      return (steady>=4||tries>44)?sleep(300):sleep(500).then(wait)})();
   }).then(function(){
     V.ents.forEach(function(e){e.show=false});V.viewer.render();
     var url=V.viewer.scene.canvas.toDataURL('image/jpeg',0.92);
@@ -688,6 +691,12 @@ function usePhoto(which){
 }
 $('useSV').onclick=function(){usePhoto('sv')};
 $('use3D').onclick=function(){usePhoto('3d')};
+$('retake3D').onclick=function(){
+  if(!V.viewer){init3D().then(function(){$('retake3D').click()});return}
+  var b=$('retake3D');b.disabled=true;b.textContent='Capturing...';
+  capture3D().then(function(d){if(d){S.v3Photo=d;$('pick3D').src=d;$('use3D').disabled=false}
+    b.disabled=false;b.textContent='Retake 3D';$('pickBox').scrollIntoView({block:'start'})});
+};
 $('sameNo').onclick=function(){$('confirmBox').classList.add('hidden');S.mock=null;step('Mockup rejected. Pick the other photo or upload one.');$('pickBox').classList.remove('hidden');$('pickBox').scrollIntoView({block:'start'})};
 $('sameYes').onclick=function(){
   $('confirmBox').classList.add('hidden');buildProposal();
