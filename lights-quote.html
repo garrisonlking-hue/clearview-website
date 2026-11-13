@@ -608,12 +608,21 @@ function roofEstimate(R,streetDir){
     var rake=Rn/Math.cos(g.pitch*Math.PI/180),df=angDiff(g.azimuth,streetDir);
     var face=df<=55?'front':df<=125?'side':'back',gable=fill>0.78,ft=0,what='';
     if(face==='front'&&A<6){what='small front roof (dormer/porch)';}
-    else if(face==='front'){ft=W+(gable?2*rake:0);what=gable?'eave + one gable end (both slopes)':'eave (hip roof)'}
+    else if(face==='front'){ft=W;what=gable?'eave + gable end':'eave (hip roof)'}
     else if(face==='side'&&sides){ft=W;what='side eave'}
     else what=face==='side'?'side (not lit)':'back (not lit)';
-    ft*=3.28084;total+=ft;
-    rows.push({face:face,eave:W*3.28084,rake:rake*3.28084,pitch:g.pitch,ft:ft,what:what});
+    rows.push({face:face,eave:W*3.28084,rake:rake*3.28084,pitch:g.pitch,ft:ft*3.28084,what:what,gable:face==='front'&&A>=6&&gable,h:g.height||0});
   });
+  // Google often splits one roof into several pieces (around dormers). Front pieces at about the same
+  // height belong to one roof section: that section gets ONE gable end (both slopes), not one per piece.
+  var groups=[];
+  rows.filter(function(r){return r.gable}).forEach(function(r){
+    var g=groups.find(function(x){return Math.abs(x.h-r.h)<1.5});
+    if(!g){g={h:r.h,rake:0,owner:r};groups.push(g)}
+    if(r.rake>g.rake){g.rake=r.rake;g.owner=r}
+  });
+  groups.forEach(function(g){g.owner.ft+=2*g.rake;g.owner.what='eave + gable end (both slopes)'});
+  rows.forEach(function(r){total+=r.ft});
   return {rows:rows,total:Math.round(total)};
 }
 function step(t,cls){var li=document.createElement('li');li.textContent=t;if(cls)li.className=cls;$('runSteps').appendChild(li);return li}
