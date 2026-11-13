@@ -62,6 +62,8 @@ export default async function handler(req, res) {
         out.staticMap = s.ok ? 'ok' : 'failed: ' + (await s.text()).slice(0, 200);
         const t = await fetch(`https://tile.googleapis.com/v1/3dtiles/root.json?key=${GKEY}`);
         out.tiles3d = t.ok ? 'ok' : `failed (${t.status}): ` + (await t.text()).slice(0, 200);
+        const so = await fetch(`https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=41.7161&location.longitude=-72.3197&requiredQuality=LOW&key=${GKEY}`);
+        out.solar = (so.ok || so.status === 404) ? 'ok' : `failed (${so.status}): ` + (await so.text()).slice(0, 200);
       }
       if (OKEY) {
         const r = await fetch('https://api.openai.com/v1/models/' + encodeURIComponent(MODEL),
@@ -75,6 +77,26 @@ export default async function handler(req, res) {
     if (b.action === 'tilesKey') {
       if (!GKEY) return res.status(503).json({ error: 'GOOGLE_MAPS_API_KEY is not set in Vercel yet.' });
       return res.status(200).json({ key: GKEY });
+    }
+
+    // ---- roof planes from Google Solar API (pitch, facing, size) for the automatic footage estimate
+    if (b.action === 'roof') {
+      if (!GKEY) return res.status(503).json({ error: 'GOOGLE_MAPS_API_KEY is not set.' });
+      let last = '';
+      for (const q of ['HIGH', 'MEDIUM', 'LOW']) {
+        const r = await fetch(`https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${Number(b.lat)}&location.longitude=${Number(b.lng)}&requiredQuality=${q}&exactQualityRequired=true&key=${GKEY}`);
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.solarPotential) {
+          const segs = (j.solarPotential.roofSegmentStats || []).map((g) => ({
+            pitch: g.pitchDegrees || 0, azimuth: g.azimuthDegrees || 0,
+            area: (g.stats && g.stats.areaMeters2) || 0, ground: (g.stats && g.stats.groundAreaMeters2) || 0,
+            bbox: g.boundingBox, center: g.center, height: g.planeHeightAtCenterMeters }));
+          return res.status(200).json({ quality: j.imageryQuality, center: j.center, bbox: j.boundingBox, segments: segs });
+        }
+        last = (j.error && j.error.message) || `Solar API error ${r.status}`;
+        if (r.status === 403) break;
+      }
+      return res.status(502).json({ error: 'No roof data: ' + last });
     }
 
     // ---- address -> coordinates + nearest Street View
