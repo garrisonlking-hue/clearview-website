@@ -219,6 +219,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <label>Minimum job $</label><input type="number" id="minJob" value="399" min="0" step="1">
       <label>Deposit %</label><input type="number" id="depPct" value="50" min="0" max="100" step="5">
       <label>Next-year discount %</label><input type="number" id="nextPct" value="15" min="0" max="100" step="1">
+      <label><input type="checkbox" id="roundPx" checked> Round to a clean price (ends in 49 or 99)</label>
       <label>Close in person at $</label><input type="number" id="visitMin" value="2000" min="0" step="100">
     </div>
     <table class="sum" style="margin-top:12px;max-width:420px" id="sumTable"></table>
@@ -419,6 +420,12 @@ function calc(){
   var subtotal=pkg.reduce(function(a,b){return a+b.total},0);
   var min=+$('minJob').value||0,base=Math.max(subtotal,min),minAdj=base-subtotal;
   var early=$('early').checked,final=early?Math.max(min,base-200):base,disc=base-final;
+  // Clean price: round the total to the nearest $50, ending in 49 or 99 (871 -> 849), by adjusting the roofline line
+  if($('roundPx').checked&&pkg.length&&final>min){
+    var nice=Math.round((final+1)/50)*50-1,delta=nice-final;
+    if(delta&&pkg[0].total+delta>0){pkg[0].total+=delta;subtotal+=delta;base=Math.max(subtotal,min);minAdj=base-subtotal;
+      final=early?Math.max(min,base-200):base;disc=base-final}
+  }
   var dep=Math.round(final*(+$('depPct').value||0)/100);
   return{ft:ft,pkg:pkg,opt:opt,subtotal:subtotal,minAdj:minAdj,base:base,disc:disc,final:final,dep:dep,bal:final-dep,
          next:final*(1-(+$('nextPct').value||0)/100),nextPct:+$('nextPct').value||0,hasCols:pkg.some(function(p){return p.id==='columns'})};
@@ -444,7 +451,7 @@ function recalc(){
     $('visitText').dataset.auto=msg;
   }
 }
-document.querySelector('#app').addEventListener('input',function(e){if(e.target.closest('#items')||['roofFt','roofRate','early','minJob','depPct','nextPct','visitMin','custName'].indexOf(e.target.id)>-1)recalc()});
+document.querySelector('#app').addEventListener('input',function(e){if(e.target.closest('#items')||['roofFt','roofRate','early','minJob','depPct','nextPct','visitMin','custName','roundPx'].indexOf(e.target.id)>-1)recalc()});
 $('copyVisit').onclick=function(){var t=$('visitText');t.select();var done=function(){$('copyMsg').textContent='Copied. Paste it into the Flyra conversation.'};
   if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(done,function(){document.execCommand('copy');done()});else{document.execCommand('copy');done()}};
 
