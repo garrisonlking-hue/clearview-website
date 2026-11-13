@@ -694,6 +694,16 @@ function runQuote(){
       return sleep(2500).then(function(){return searchViews(base,s3,L.formatted)});
     });
     return Promise.all([svP,v3P]).then(function(r){
+      // No usable 3D model here: look harder with Street View instead (turn left/right, zoom in/out)
+      S.no3D=!r[1].length;
+      if(!S.no3D||!r[0]||!L.streetView)return r;
+      s3.textContent='No usable 3D model here. Trying more Street View angles...';
+      var sv=L.streetView,vars=[[-20,75,'turned left'],[20,75,'turned right'],[0,50,'zoomed in'],[0,95,'zoomed out']];
+      return seq(vars.map(function(v){return function(){
+        return api({action:'streetview',pano:sv.pano,heading:(sv.heading+v[0]+360)%360,fov:v[1],pitch:8},true).then(blobToImg)
+          .then(function(img){return {img:imgToDataURL(img,1536),label:'Street View, '+v[2]}}).catch(function(){return null})}}))
+        .then(function(extra){return [r[0],extra.filter(Boolean)]});
+    }).then(function(r){
       var cands=[];if(r[0])cands.push({img:r[0],label:'Street View'});cands=cands.concat(r[1]);
       S.cands=cands;
       if(!cands.length){s3.textContent='No photos of this house. Text the customer for a photo of the front.';s3.className='err';showPhotoAsk();return}
@@ -703,6 +713,8 @@ function runQuote(){
       }).then(function(pk){
         (pk.scores||[]).forEach(function(sc,i){if(cands[i])cands[i].score=sc});
         drawCands(pk.best);$('pickBox').classList.remove('hidden');
+        var bestScore=(pk.scores||[])[pk.best]||0;
+        if(!pk.usable&&S.no3D&&bestScore>=3){pk.usable=true;pk.reason='no 3D model here, so using the best Street View'}
         if(!pk.usable){s3.textContent='No clear view of the front ('+(pk.reason||'blocked')+'). Text the customer for a photo.';s3.className='err';showPhotoAsk();return}
         s3.textContent='Best view: '+cands[pk.best].label+' ('+(pk.reason||'')+')';
         return makeMock(pk.best);
