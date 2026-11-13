@@ -60,6 +60,8 @@ export default async function handler(req, res) {
         out.streetView = (m.status === 'OK' || m.status === 'ZERO_RESULTS') ? 'ok' : `${m.status}: ${m.error_message || ''}`;
         const s = await fetch(`${G}/staticmap?center=41.7,-72.3&zoom=18&size=64x64&maptype=satellite&key=${GKEY}`);
         out.staticMap = s.ok ? 'ok' : 'failed: ' + (await s.text()).slice(0, 200);
+        const t = await fetch(`https://tile.googleapis.com/v1/3dtiles/root.json?key=${GKEY}`);
+        out.tiles3d = t.ok ? 'ok' : `failed (${t.status}): ` + (await t.text()).slice(0, 200);
       }
       if (OKEY) {
         const r = await fetch('https://api.openai.com/v1/models/' + encodeURIComponent(MODEL),
@@ -67,6 +69,12 @@ export default async function handler(req, res) {
         out.openai = r.ok ? 'ok' : `failed (${r.status}): ` + (await r.text()).slice(0, 200);
       }
       return res.status(200).json(out);
+    }
+
+    // ---- Google 3D tiles are loaded straight by the browser, so the page needs the key (passcode holders only)
+    if (b.action === 'tilesKey') {
+      if (!GKEY) return res.status(503).json({ error: 'GOOGLE_MAPS_API_KEY is not set in Vercel yet.' });
+      return res.status(200).json({ key: GKEY });
     }
 
     // ---- address -> coordinates + nearest Street View
