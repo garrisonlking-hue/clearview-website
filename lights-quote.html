@@ -57,6 +57,11 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
 .big{font-size:22px;font-weight:700;color:var(--green)}
 .sum td{border:0;padding:3px 6px}
 .hidden{display:none!important}
+.sugg{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 8px 24px rgba(20,40,30,.12);z-index:20;overflow:hidden}
+.sugg div{padding:9px 12px;cursor:pointer;font-size:14px;border-bottom:1px solid #F1EEE6}
+.sugg div:last-child{border-bottom:0}.sugg div:hover,.sugg div.on{background:#F3F6F4}
+.sugg small{display:block;color:var(--muted);font-size:12px}
+.sugg .tag{display:inline-block;font-size:10.5px;font-weight:700;color:#1D6B3A;background:#E6F1EB;border-radius:4px;padding:1px 5px;margin-right:6px;vertical-align:1px}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
 @keyframes s{to{transform:rotate(360deg)}}
 
@@ -124,7 +129,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     <h1>New holiday lighting quote</h1>
     <div class="note" style="margin:0 0 14px">Type the address. The tool measures the roofline, looks all the way around the house for the best view, makes the night mockup and builds the quote. About three minutes.</div>
     <div class="row">
-      <input class="grow" id="address" placeholder="Street address, town" autocomplete="off">
+      <div class="grow" style="position:relative"><input id="address" placeholder="Start typing an address or customer name" autocomplete="off" style="width:100%"><div id="sugg" class="sugg hidden"></div></div>
       <input id="custName" placeholder="Customer name" style="width:210px">
       <button id="runBtn" class="lg">Run quote</button>
     </div>
@@ -153,7 +158,17 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
         <span id="markTools" class="hidden"><button class="alt" id="markUndo">Undo line</button> <button class="alt" id="markClear">Clear</button> <button id="markApply">Add lights where I drew</button></span>
         <button class="alt" id="redoMock">Redo mockup</button>
         <span class="note" id="markMsg" style="margin:0"></span>
-      </div></div>
+      </div>
+      <details class="sub" id="mock2Box" style="margin-top:14px"><summary>Add a second view to the quote (tree wrap, wreath, another angle)</summary>
+        <div class="row" style="margin-top:8px">
+          <input class="grow" id="mock2Note" placeholder="What to show, e.g. the big spruce by the driveway wrapped in lights">
+          <select id="mock2Src"></select>
+          <button id="mock2Btn">Make second view</button>
+          <button class="alt hidden" id="mock2Del">Remove it</button>
+        </div>
+        <div class="note" id="mock2Msg">It goes on the quote under the main picture. Price any extras under Pricing.</div>
+        <div class="imgbox hidden" id="mock2Wrap" style="margin-top:8px;max-width:520px"><img id="mock2Img" alt=""></div>
+      </details></div>
     <div id="confirmBox" class="hidden"><img id="confirmImg" alt=""><button id="sameYes"></button><button id="sameNo"></button></div>
     <div id="doneBox" class="hidden" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
       <div class="row"><button id="runPrint">Save quote as PDF</button><button class="alt" id="saveMock">Download mockup image</button><button class="alt" id="copySum">Copy summary</button><span class="note" id="copySumMsg" style="margin:0"></span></div>
@@ -433,7 +448,8 @@ function buildPrompt(){
   c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
   $('prompt').value=(aerial?'This image is a blurry 3D aerial model of a real house, used only as a reference for its design. Turn it into a photorealistic nighttime photograph of this same house from a lower viewpoint in front of it, as if taken from the front lawn, keeping the same side of the house facing the camera. Keep the house identical: same shape and layout, number of stories, roof lines and gables, dormers, garage position and number of garage doors, window layout, siding color and front entry. Do not invent or rearrange anything. Clean up the 3D model look: real, sharp trees, bushes and lawn. Connecticut in December, professionally decorated with Christmas lights.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
    'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
-   'This is the customer\'s real home, so change as little as possible. Keep the house exactly as it is: same architecture, roof shape, siding, windows, doors, chimney, trees, bushes and driveway. The number, size and position of garage doors, windows, doors, dormers and chimneys must stay exactly the same. Do not add, remove, move or resize any part of the building or landscaping, and do not add decorations. '+
+   'This is the customer\'s real home, so change as little as possible. Keep the house exactly as it is: same architecture, roof shape, siding, windows, doors, chimney, trees, bushes and driveway. The number, size and position of garage doors, windows, doors, dormers and chimneys must stay exactly the same. Do not add, remove, move or resize any part of the building, and do not add decorations. '+
+   'Use judgment on things in the way: remove parked cars, and remove or trim trees and branches only where they block the roof edges that get lights, so the lights sit on the house realistically instead of floating over leaves. Leave every other tree and bush where it is. Never change the shape of the house or invent anything that is not there. '+
    'Only put lights where listed above. In particular: NO lights along the roof ridge (the peak line across the very top of the roof), none on chimneys, none around windows, doors or garage doors, and none on trees or bushes unless they are listed above.\n\n'+
    'Scene: dark night sky, a light dusting of fresh snow on the roof, lawn and plantings, a few gentle snowflakes falling, a soft warm glow from the windows, and a subtle warm glow from the lights on nearby surfaces. Real camera look, natural exposure, no text, no watermarks, no people, no cars added.';
 }
@@ -463,7 +479,8 @@ function buildProposal(){
     '<div class="cols">'+
       '<div>'+(mock?'<img class="mock" src="'+mock+'"'+(S.portrait?' style="object-fit:contain"':'')+' alt="">':'<div class="mock"></div>')+
         '<div class="cap">Illustration of your home lit up. Not a photo of a finished install; final placement is confirmed before installation.</div>'+
-        '<div class="how"><div><b>1. Book</b>Approve the quote and pay the deposit to hold your install date.</div><div><b>2. We install</b>Our crew hangs and tests everything, and fixes any outage all season.</div><div><b>3. We take down and store</b>We remove the lights in late January or early February and store them for next year.</div></div></div>'+
+        (S.mock2?'<div style="display:grid;grid-template-columns:3.2in 1fr;gap:.2in;margin-top:.14in;align-items:start"><img src="'+S.mock2+'" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:6px" alt=""><div style="font-size:11.5px"><b style="display:block;font-size:12.5px;margin-bottom:2px">Also shown</b>'+esc(S.mock2Note||'')+'</div></div>':'')+
+        (S.mock2?'':'<div class="how"><div><b>1. Book</b>Approve the quote and pay the deposit to hold your install date.</div><div><b>2. We install</b>Our crew hangs and tests everything, and fixes any outage all season.</div><div><b>3. We take down and store</b>We remove the lights in late January or early February and store them for next year.</div></div>')+'</div>'+
       '<div class="est">'+
         '<h3>YOUR HOLIDAY LIGHTING QUOTE</h3>'+lines+
         '<div class="rule"></div><div class="price">'+money(c.final)+'</div><div class="small">for the season, plus applicable tax</div>'+
@@ -498,7 +515,7 @@ $('checkBtn').onclick=function(){
   var o=$('checkOut');o.classList.remove('hidden');o.textContent='Checking...';
   api({action:'check'}).then(function(r){
     var row=function(k,v){var good=v===true||v==='ok';return '<tr><td>'+k+'</td><td class="'+(good?'ok':'err')+'" style="margin:0">'+(good?'OK':esc(v===false?'missing in Vercel':v))+'</td></tr>'};
-    o.innerHTML='<table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap)+row('Map Tiles API (3D view)',r.tiles3d)+row('Solar API (roof data)',r.solar):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
+    o.innerHTML='<table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap)+row('Map Tiles API (3D view)',r.tiles3d)+row('Solar API (roof data)',r.solar)+row('Places API (address suggestions)',r.places):'')+row('Flyra customers',r.flyra)+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
   }).catch(function(e){o.innerHTML='<div class="err">'+esc(e.message)+'</div>'});
 };
 $('early').checked=new Date()<=EARLY_END;
@@ -655,6 +672,7 @@ function runQuote(){
   var s1=step('Looking up the house...');
   lookup().then(function(L){
     s1.textContent='Found '+L.formatted+(L.streetView?' (Street View from '+(L.streetView.date||'unknown date')+')':' (no Street View)');
+    autofillName(L);S.mock2=null;$('mock2Wrap').classList.add('hidden');$('mock2Del').classList.add('hidden');
     var streetDir=L.streetView?(L.streetView.heading+180)%360:null;
     var s2=step('Measuring the roofline from Google roof data...');
     var roofP=api({action:'roof',lat:L.lat,lng:L.lng}).then(function(R){
@@ -795,13 +813,57 @@ $('markApply').onclick=function(){
   api({action:'mockup',image:marked,portrait:c.height>c.width,fidelity:'high',prompt:
     'This is a nighttime photo of a house with Christmas lights. Bright red lines have been drawn on it to mark roof edges that are missing lights. '+
     'Add warm-white Christmas lights exactly where each red line is drawn, in the same position and length as the line, attached to whatever the line runs along (a roof edge or gutter, a garage door frame, a railing, a column, a bush or a tree). Use C9 bulbs about 12 inches apart on buildings and fine mini lights on plants, matching the brightness of the existing lights. '+
-    'Then remove every red line completely. Change nothing else: same house, same lights elsewhere, same snow, sky, trees and camera angle. No text, no watermarks.'})
+    'If a red line runs over a tree or branch that blocks that edge of the house, remove or trim just that part of the tree so the lights sit on the house realistically. '+
+    'Then remove every red line completely. Change nothing else: same house shape, same lights elsewhere, same snow, sky and camera angle. No text, no watermarks.'})
   .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;
     MK.lines=[];MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Mark missed lights';
     $('markMsg').textContent='Lights added. Mark again if anything is still missing.';buildProposal()})
   .catch(function(e){$('markMsg').textContent='Could not add the lights: '+e.message})
   .then(function(){b.disabled=false;b.textContent='Add lights where I drew'});
 };
+/* ---------- address suggestions + Flyra name autofill ---------- */
+var SG={t:0,items:[],on:-1,session:''};
+function sgHide(){$('sugg').classList.add('hidden');SG.on=-1}
+function sgPick(it){$('address').value=it.address;if(it.type==='customer'&&it.name)$('custName').value=it.name;sgHide();SG.session='';recalc()}
+function sgShow(){
+  var box=$('sugg');if(!SG.items.length){sgHide();return}
+  box.innerHTML=SG.items.map(function(it,i){return '<div data-i="'+i+'"'+(i===SG.on?' class="on"':'')+'>'+(it.type==='customer'?'<span class="tag">FLYRA</span>'+esc(it.name)+'<small>'+esc(it.address)+'</small>':esc(it.address))+'</div>'}).join('');
+  box.classList.remove('hidden');
+  [].forEach.call(box.children,function(d){d.onmousedown=function(e){e.preventDefault();sgPick(SG.items[+d.dataset.i])}});
+}
+$('address').addEventListener('input',function(){
+  clearTimeout(SG.t);var q=this.value.trim();if(q.length<3||!pass()){sgHide();return}
+  if(!SG.session)SG.session=Math.random().toString(36).slice(2)+Date.now().toString(36);
+  SG.t=setTimeout(function(){api({action:'suggest',q:q,session:SG.session}).then(function(r){if($('address').value.trim()!==q)return;SG.items=r.items||[];SG.on=-1;sgShow()}).catch(function(){})},250);
+});
+$('address').addEventListener('keydown',function(e){
+  if($('sugg').classList.contains('hidden'))return;
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();SG.on=(SG.on+(e.key==='ArrowDown'?1:-1)+SG.items.length)%SG.items.length;sgShow()}
+  else if(e.key==='Enter'&&SG.on>=0){e.preventDefault();e.stopImmediatePropagation();sgPick(SG.items[SG.on])}
+  else if(e.key==='Escape')sgHide();
+},true);
+$('address').addEventListener('blur',function(){setTimeout(sgHide,150)});
+function autofillName(L){
+  if($('custName').value.trim()||!L)return Promise.resolve();
+  return api({action:'flyraMatch',street:L.street||L.formatted}).then(function(c){if(c&&c.name&&!$('custName').value.trim()){$('custName').value=c.name;step('Flyra customer: '+c.name+' (name filled in)');recalc()}}).catch(function(){});
+}
+/* ---------- optional second view ---------- */
+function mock2Sources(){
+  var sel=$('mock2Src'),o='<option value="main">Same photo as the main mockup</option>';
+  (S.cands||[]).forEach(function(c,i){o+='<option value="'+i+'">'+esc(c.label)+'</option>'});sel.innerHTML=o;
+}
+$('mock2Box').addEventListener('toggle',mock2Sources);
+$('mock2Btn').onclick=function(){
+  var note=$('mock2Note').value.trim();if(!note){$('mock2Msg').textContent='Describe what the second view should show.';return}
+  var v=$('mock2Src').value,img=v==='main'?S.photo:(S.cands[+v]||{}).img;if(!img){$('mock2Msg').textContent='Pick a photo.';return}
+  var b=this;b.disabled=true;b.innerHTML='<span class="spin"></span>Making it...';$('mock2Msg').textContent='About a minute.';
+  api({action:'mockup',image:img,fidelity:'high',portrait:false,prompt:$('prompt').value+'\n\nThis is an extra view for the quote. In addition to the lights above, show: '+note+'.'})
+  .then(function(r){S.mock2=r.image;S.mock2Note=note.charAt(0).toUpperCase()+note.slice(1);$('mock2Img').src=r.image;$('mock2Wrap').classList.remove('hidden');$('mock2Del').classList.remove('hidden');
+    $('mock2Msg').textContent='Added to the quote.';buildProposal()})
+  .catch(function(e){$('mock2Msg').textContent='Could not make it: '+e.message})
+  .then(function(){b.disabled=false;b.textContent='Make second view'});
+};
+$('mock2Del').onclick=function(){S.mock2=null;S.mock2Note='';$('mock2Wrap').classList.add('hidden');this.classList.add('hidden');$('mock2Msg').textContent='Removed.';buildProposal()};
 $('runPrint').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
 $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement('a');a.href=S.mock;a.download=((S.loc&&S.loc.street)||'house').replace(/[^a-z0-9]+/gi,'-')+'-mockup.jpg';document.body.appendChild(a);a.click();a.remove()};
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
