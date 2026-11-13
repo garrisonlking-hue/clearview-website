@@ -25,7 +25,7 @@ async function flyraCustomers(key) {
     if (!r.ok) break;
     const j = await r.json().catch(() => ({}));
     const rows = j.data || [];
-    rows.forEach((c) => out.push({
+    rows.forEach((c) => out.push({ id: c.id,
       name: c.display_name || [c.first_name, c.last_name].filter(Boolean).join(' '),
       first: c.first_name || '', phone: c.mobile_phone || '',
       address: String(c.address || '').split('\n')[0].trim(),
@@ -149,6 +149,37 @@ export default async function handler(req, res) {
         const c = (await flyraCustomers(FKEY)).find((x) => x.address && sameStreet(x.address, b.street));
         return res.status(200).json(c ? { name: c.name, first: c.first, phone: c.phone } : {});
       } catch (e) { return res.status(200).json({}); }
+    }
+
+    // ---- photos from this customer's past Flyra jobs (window cleaning photos etc.)
+    if (b.action === 'flyraPhotos') {
+      if (!FKEY) return res.status(503).json({ error: 'FLYRA_API_KEY is not set in Vercel.' });
+      const c = (await flyraCustomers(FKEY)).find((x) => x.address && sameStreet(x.address, b.street));
+      if (!c) return res.status(200).json({ photos: [], note: 'No Flyra customer at this address.' });
+      const H = { Authorization: 'Bearer ' + FKEY, 'Content-Type': 'application/json' };
+      const jr = await fetch(`${FLYRA}/jobs?customer_id=${c.id}&limit=20`, { headers: H });
+      const jobs = ((await jr.json().catch(() => ({}))).data || []).slice(0, 8);
+      const photos = [];
+      const grab = (o, when) => { // collect any image URL in the action's answer, whatever the field is called
+        if (!o || typeof o !== 'object') return;
+        if (Array.isArray(o)) return o.forEach((x) => grab(x, when));
+        const u = Object.values(o).find((v) => typeof v === 'string' && /^https:\/\//.test(v) && !/\.(mp4|mov)(\?|$)/i.test(v));
+        if (u && (o.id || o.photo_id || o.url || o.download_url)) photos.push({ url: u, when, type: o.photo_type || o.type || '' });
+        else Object.values(o).forEach((v) => { if (v && typeof v === 'object') grab(v, when); });
+      };
+      for (const j of jobs) {
+        const r = await fetch(`${FLYRA}/actions/flyra_list_job_photos`, { method: 'POST', headers: H, body: JSON.stringify({ job_id: j.id, limit: 12 }) });
+        if (r.ok) grab((await r.json().catch(() => ({}))).data, j.scheduled_start || j.created_at || '');
+        if (photos.length >= 24) break;
+      }
+      return res.status(200).json({ name: c.name, photos: photos.filter((p) => !/video/i.test(p.type)).slice(0, 24) });
+    }
+
+    // ---- fetch one image for the page (when the photo host blocks direct browser use)
+    if (b.action === 'imageProxy') {
+      const u = String(b.url || '');
+      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\//i.test(u) && !/^https:\/\/app\.flyra\.io\//i.test(u)) return res.status(400).json({ error: 'Not a Flyra photo link.' });
+      return googleImage(res, u);
     }
 
     // ---- Google 3D tiles are loaded straight by the browser, so the page needs the key (passcode holders only)
