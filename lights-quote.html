@@ -115,13 +115,14 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
       <div class="note">Change the footage in step 3 if this looks off. Check it against the 3D view.</div>
     </div>
     <div id="pickBox" class="hidden">
-      <b>Tap the photo that clearly shows the front of this house</b>
-      <div class="two" style="margin-top:8px">
-        <div><div class="imgbox"><img id="pickSV" alt=""></div><button class="alt" id="useSV" style="margin-top:6px">Use Street View</button></div>
-        <div><div class="imgbox"><img id="pick3D" alt=""></div><button class="alt" id="use3D" style="margin-top:6px">Use 3D view</button> <button class="alt" id="retake3D" style="margin-top:6px">Retake 3D</button></div>
-      </div>
+      <b>Photos found</b> <span class="note" id="pickNote"></span>
+      <div id="pickGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px"></div>
+      <div class="row" style="margin-top:6px"><button class="alt" id="retake3D">Add the current 3D view</button></div>
+      <img id="pickSV" class="hidden" alt=""><img id="pick3D" class="hidden" alt=""><button id="useSV" class="hidden"></button><button id="use3D" class="hidden"></button>
       <div class="note">Neither is good (trees, wrong house)? Upload the customer's photo in step 2, then click Generate mockup in step 5.</div>
     </div>
+    <div id="mockOut" class="hidden" style="margin-top:12px"><b>Mockup</b> <span class="note">Not right? Tap a different photo above to redo it.</span>
+      <div class="imgbox" style="margin-top:8px;max-width:760px"><img id="mockOutImg" alt=""></div></div>
     <div id="confirmBox" class="hidden" style="margin-top:12px">
       <b>Is this the same house?</b>
       <div class="imgbox" style="margin-top:8px;max-width:760px"><img id="confirmImg" alt=""></div>
@@ -152,8 +153,9 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
     </div>
 
     <div class="card">
-      <h2>3. Measure the roofline</h2>
-      <div class="imgbox"><canvas id="satCanvas" width="640" height="640"></canvas></div>
+      <h2>3. Roofline footage</h2>
+      <div class="note" style="margin:0 0 8px">Filled in automatically from Google's roof data. To check or measure by hand, use Measure mode in the 3D view below.</div>
+      <div class="hidden"><div class="imgbox"><canvas id="satCanvas" width="640" height="640"></canvas></div>
       <div class="row" style="margin-top:8px">
         <button class="alt" id="undoBtn">Undo point</button>
         <button class="alt" id="breakBtn">Start new line</button>
@@ -164,7 +166,7 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
       </div>
       <div class="row" style="margin-top:8px"><label><input type="checkbox" id="slant"> This line is a slanted edge (gable or peak)</label>
         <label>Slant factor</label><input type="number" id="slantF" value="1.15" min="1" max="2" step="0.05" style="width:70px"></div>
-      <div class="note">Click along each roof edge that gets lights. Trace each section as its own line: front gutter, each side you can see from the road, each gable. "Start new line" lifts the pen. Tick "slanted edge" for gable and peak lines (drawn in orange) so the tool adds the slope. Use the house photo to see which sections exist and where roofs overlap.</div>
+      <div class="note">Click along each roof edge that gets lights. Trace each section as its own line: front gutter, each side you can see from the road, each gable. "Start new line" lifts the pen. Tick "slanted edge" for gable and peak lines (drawn in orange) so the tool adds the slope. Use the house photo to see which sections exist and where roofs overlap.</div></div>
       <div class="row" style="margin-top:8px"><label>Roofline feet used in the quote</label><input type="number" id="roofFt" min="0" step="1" value="0"><label>at $</label><input type="number" id="roofRate" min="0" step="0.5" value="7"><label>per ft</label></div>
     </div>
   </div>
@@ -296,7 +298,6 @@ function lookup(){
   var q=p.then(function(L){
     S.loc=L;S.lines=[[]];S.slope=[false];$('slant').checked=false;S.mock=null;$('mockBox').classList.add('hidden');
     $('lookupMsg').innerHTML='<span class="ok">Found:</span> '+esc(L.formatted)+(L.precise?'':' <b>(approximate match: check the satellite pin is on the right house)</b>');
-    loadSat();
     if(L.streetView){$('svControls').classList.remove('hidden');$('heading').value=L.streetView.heading;$('headingV').textContent=L.streetView.heading+'°';loadSV()}
     else{$('svControls').classList.add('hidden');$('photo').removeAttribute('src');S.photo=null;$('photoMsg').textContent='No Street View here. Upload a Google Earth 3D screenshot or ask the customer for a photo of the front of the house.'}
     return L;
@@ -412,7 +413,7 @@ function buildPrompt(){
   var sides=$('sidesIn').checked,aerial=/3D/.test(S.photoSrc||'');
   var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the roofline facing the street: the front gutters, eaves and the sloped edges of every front-facing gable (but not dormers unless they are listed below)'+(sides?', and continuing along the side rooflines and side gable edges that are visible from the street':'')];
   c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
-  $('prompt').value=(aerial?'This image is a 3D aerial view of a real house, built from satellite data, so trees and lawn look blurry and melted. Turn it into a photorealistic nighttime aerial photograph of the SAME house from the SAME angle, in Connecticut in December, professionally decorated with Christmas lights. Render the trees, bushes and lawn as real, sharp vegetation in the same places.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
+  $('prompt').value=(aerial?'This image is a blurry 3D aerial model of a real house, used only as a reference for its design. Create a NEW photorealistic nighttime photograph of this same house as seen from the street in front of it, at eye level (camera about 5 feet off the ground, standing at the end of the driveway or the front lawn), not from the air. Keep the house the same: same shape and layout, number of stories, roof lines and gables, dormers, garage position and doors, window layout, siding color and front entry. Clean up the 3D model look: real, sharp trees, bushes and lawn. Connecticut in December, professionally decorated with Christmas lights.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
    'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
    'Keep the house exactly as it is: same architecture, roof shape, siding, windows, doors, garage, chimney, trees, bushes, driveway and camera angle. Do not add, remove or move any part of the building or landscaping. Do not put lights on anything not listed above.\n\n'+
    'Scene: dark night sky, a light dusting of fresh snow on the roof, lawn and plantings, a few gentle snowflakes falling, a soft warm glow from the windows, and a subtle warm glow from the lights on nearby surfaces. Real camera look, natural exposure, no text, no watermarks, no people, no cars added.';
@@ -422,7 +423,7 @@ function mockup(){
   if(S.photoDark){$('mockMsg').textContent='The house photo is blank or almost black. Capture or upload a real photo first.';return}
   if(!$('prompt').value.trim())buildPrompt();
   var b=$('mockBtn');b.disabled=true;b.innerHTML='<span class="spin"></span>Generating...';$('mockMsg').textContent='';
-  var p=DEMO?new Promise(function(ok){setTimeout(function(){ok({image:stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup')})},400)}):api({action:'mockup',image:S.photo,prompt:$('prompt').value,portrait:S.portrait});
+  var p=DEMO?new Promise(function(ok){setTimeout(function(){ok({image:stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup')})},400)}):api({action:'mockup',image:S.photo,prompt:$('prompt').value,portrait:S.portrait,fidelity:/3D/.test(S.photoSrc||'')?'low':'high'});
   return p.then(function(r){S.mock=r.image;$('mockImg').src=r.image;$('mockBox').classList.remove('hidden');buildProposal();return r.image})
    .catch(function(e){$('mockMsg').textContent=e.message;return null})
    .then(function(x){b.disabled=false;b.textContent='Generate mockup';return x});
@@ -637,44 +638,72 @@ function runQuote(){
       s2.textContent='Roofline estimate: '+e.total+' ft (check the table; edit in step 3 if needed)';
       if(R.bbox){var dx=(R.bbox.ne.longitude-R.bbox.sw.longitude)*111320*Math.cos(L.lat*Math.PI/180),dy=(R.bbox.ne.latitude-R.bbox.sw.latitude)*110540;$('v3r').value=Math.min(150,Math.max(35,Math.round(Math.hypot(dx,dy)*1.6)))}
     }).catch(function(err){s2.textContent='No automatic footage: '+err.message+'. Measure in the 3D view (step 3).';s2.className='err'});
-    var s3=step('Getting photos: Street View and Google 3D view...');
+    var s3=step('Looking around the house: Street View plus 5 angles of the 3D model...');
     var svP=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
+    var base=L.streetView?L.streetView.heading:0;
     var v3P=roofP.then(function(){return init3D()}).then(function(ok){
-      if(!ok)return null;
-      $('v3h').value=L.streetView?L.streetView.heading:$('v3h').value;$('v3p').value=-26;
-      return sleep(4000).then(capture3D);
+      if(!ok)return [];
+      var out=[],offs=[0,-35,35,-70,70];
+      return offs.reduce(function(pr,o){return pr.then(function(){
+        $('v3h').value=((base+o)%360+360)%360;$('v3p').value=-22;
+        return capture3D().then(function(d){if(d)out.push({img:d,label:'3D view, turned '+(o>0?'+':'')+o+'°'})});
+      })},sleep(2500)).then(function(){return out});
     });
-    return Promise.all([svP,v3P]).then(function(ph){
-      S.svPhoto=ph[0];S.v3Photo=ph[1];
-      $('pickSV').src=ph[0]||'';$('pick3D').src=ph[1]||'';
-      $('useSV').disabled=!ph[0];$('use3D').disabled=!ph[1];
-      s3.textContent=(ph[0]||ph[1])?'Photos ready. Tap the one that clearly shows the front of the house.':'No usable photo. Ask the customer for a photo of the front of the house.';
-      $('pickBox').classList.remove('hidden');$('runCard').scrollIntoView({block:'start'});
+    return Promise.all([svP,v3P]).then(function(r){
+      var cands=[];if(r[0])cands.push({img:r[0],label:'Street View'});cands=cands.concat(r[1]);
+      S.cands=cands;
+      if(!cands.length){s3.textContent='No photos of this house. Text the customer for a photo of the front.';s3.className='err';showPhotoAsk();return}
+      s3.textContent='Comparing '+cands.length+' photos to find the clearest view of the front...';
+      return Promise.all(cands.map(function(c){return shrink(c.img,512)})).then(function(small){
+        return api({action:'pick',images:small,address:L.formatted});
+      }).then(function(pk){
+        (pk.scores||[]).forEach(function(sc,i){if(cands[i])cands[i].score=sc});
+        drawCands(pk.best);$('pickBox').classList.remove('hidden');
+        if(!pk.usable){s3.textContent='No clear view of the front ('+(pk.reason||'blocked')+'). Text the customer for a photo.';s3.className='err';showPhotoAsk();return}
+        s3.textContent='Best view: '+cands[pk.best].label+' ('+(pk.reason||'')+')';
+        return makeMock(pk.best);
+      }).catch(function(e){s3.textContent='Could not compare photos automatically ('+e.message+'). Tap the best one.';drawCands(-1);$('pickBox').classList.remove('hidden')});
     });
   }).catch(function(e){step('Stopped: '+e.message,'err')}).then(function(){$('runBtn').disabled=false});
 }
-function usePhoto(which){
-  var d=which==='sv'?S.svPhoto:S.v3Photo;if(!d)return;S.lastPick=which;
-  setPhoto(d,which==='sv'?'Street View':'Google Earth 3D view');
-  $('pickBox').classList.add('hidden');$('confirmBox').classList.add('hidden');
-  var s4=step('Making the night mockup (about a minute)...');
-  setTimeout(function(){buildPrompt();mockup().then(function(img){
-    if(!img){s4.textContent='Mockup failed: '+$('mockMsg').textContent;s4.className='err';$('pickBox').classList.remove('hidden');return}
-    s4.textContent='Mockup ready. Check it is the same house.';
-    $('confirmImg').src=img;$('confirmBox').classList.remove('hidden');$('confirmBox').scrollIntoView({block:'start'});
-  })},300);
+function shrink(d,max){return new Promise(function(ok){var i=new Image();i.onload=function(){ok(imgToDataURL(i,max))};i.onerror=function(){ok(d)};i.src=d})}
+function drawCands(best){
+  var g=$('pickGrid');g.innerHTML='';
+  (S.cands||[]).forEach(function(c,i){
+    var d=document.createElement('div');d.style.cssText='border:3px solid '+(i===best?'#1D6B3A':'transparent')+';border-radius:8px;padding:2px';
+    d.innerHTML='<img src="'+c.img+'" style="width:100%;border-radius:6px;display:block"><div class="small">'+esc(c.label)+(c.score!=null?' · score '+c.score:'')+(i===best?' · <b>picked</b>':'')+'</div><button class="alt" style="margin-top:4px;padding:4px 8px;font-size:12px">Use this</button>';
+    d.querySelector('button').onclick=function(){makeMock(i)};g.appendChild(d);
+  });
+  $('pickNote').textContent=best>=0?'The green one was picked automatically. Tap another to redo the mockup with it.':'Tap the photo that shows the front of the house best.';
 }
+function showPhotoAsk(){
+  var first=($('custName').value.trim().split(' ')[0])||'there';
+  $('sumText').value='Hi '+first+', Garrison with Clear View. I\'m putting together your holiday lighting mockup, but trees are blocking my view of the front of your house. Could you text me a photo of the front of the house? Thanks!';
+  $('doneBox').classList.remove('hidden');
+}
+function makeMock(i){
+  var c=(S.cands||[])[i];if(!c)return;S.lastPick=i;drawCands(i);
+  setPhoto(c.img,c.label==='Street View'?'Street View':'Google Earth 3D view');
+  $('mockOut').classList.add('hidden');$('doneBox').classList.add('hidden');
+  var s4=step('Making the night mockup from "'+c.label+'" (about a minute)...');
+  return sleep(300).then(function(){buildPrompt();return mockup()}).then(function(img){
+    if(!img){s4.textContent='Mockup failed: '+$('mockMsg').textContent;s4.className='err';return}
+    s4.textContent='Mockup ready.';$('mockOutImg').src=img;$('mockOut').classList.remove('hidden');
+    finishQuote();
+  });
+}
+function usePhoto(which){var i=(S.cands||[]).findIndex(function(c){return which==='sv'?c.label==='Street View':c.label!=='Street View'});if(i>=0)makeMock(i)}
 $('useSV').onclick=function(){usePhoto('sv')};
 $('use3D').onclick=function(){usePhoto('3d')};
 $('retake3D').onclick=function(){
-  if(!V.viewer){init3D().then(function(){$('retake3D').click()});return}
+  if(!V.viewer){init3D();return}
   var b=$('retake3D');b.disabled=true;b.textContent='Capturing...';
-  capture3D().then(function(d){if(d){S.v3Photo=d;$('pick3D').src=d;$('use3D').disabled=false}
-    b.disabled=false;b.textContent='Retake 3D';$('pickBox').scrollIntoView({block:'start'})});
+  capture3D().then(function(d){if(d){S.cands=(S.cands||[]).concat([{img:d,label:'3D view (your angle)'}]);drawCands(-1)}
+    b.disabled=false;b.textContent='Add the current 3D view';$('pickBox').scrollIntoView({block:'start'})});
 };
 $('sameNo').onclick=function(){$('confirmBox').classList.add('hidden');S.mock=null;step('Mockup rejected. Pick the other photo or upload one.');$('pickBox').classList.remove('hidden');$('pickBox').scrollIntoView({block:'start'})};
-$('sameYes').onclick=function(){
-  if(!(+$('roofFt').value>0)){step('No roofline footage yet. Type the feet in "Roofline feet used in the quote" (step 3), or measure in the 3D view, then tap "Yes" again.','err');
+function finishQuote(){
+  if(!(+$('roofFt').value>0)){step('No roofline footage yet: Google roof data is missing for this house. Type the feet in step 3 (or measure in the 3D view), then click "Build proposal".','err');
     $('roofFt').scrollIntoView({block:'center'});$('roofFt').focus();return}
   $('confirmBox').classList.add('hidden');buildProposal();
   var c=calc(),L=S.loc,name=$('custName').value.trim(),first=(name.split(' ')[0])||'there';
@@ -689,7 +718,8 @@ $('sameYes').onclick=function(){
      big?$('visitText').value:'Hi '+first+', Garrison with Clear View. Here\'s your holiday lighting quote for '+L.street+', with a mockup of how your home would look lit up: [estimate link].'+(c.disc>0?' The $200 early-bird price holds if you book before Thanksgiving.':'')+' Any questions, just text me back.']);
   $('sumText').value=lines.join('\n');
   $('doneBox').classList.remove('hidden');step(big?'Big job: close in person (summary below).':'Quote ready: save the PDF and send it through Flyra.');$('doneBox').scrollIntoView({block:'start'});
-};
+}
+$('sameYes').onclick=finishQuote;
 $('runPrint').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
 $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement('a');a.href=S.mock;a.download=((S.loc&&S.loc.street)||'house').replace(/[^a-z0-9]+/gi,'-')+'-mockup.jpg';document.body.appendChild(a);a.click();a.remove()};
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
