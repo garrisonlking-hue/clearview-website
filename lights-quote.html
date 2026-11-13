@@ -99,9 +99,38 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
     <div class="row">
       <input class="grow" id="address" placeholder="174 Route 87, Columbia, CT" autocomplete="off">
       <input id="custName" placeholder="Customer name (optional)" style="width:220px">
-      <button id="lookupBtn">Look up house</button>
+      <button id="runBtn">Run quote</button>
+      <button class="alt" id="lookupBtn">Look up only</button>
     </div>
     <div id="lookupMsg" class="note"></div>
+  </div>
+
+  <div class="card hidden" id="runCard">
+    <h2>Quick quote</h2>
+    <ol id="runSteps" style="margin:0 0 10px;padding-left:20px;font-size:13px"></ol>
+    <div id="roofBox" class="hidden" style="margin-bottom:12px">
+      <b>Roofline estimate from Google roof data</b>
+      <table id="roofTable" style="margin-top:4px"></table>
+      <div class="note">Change the footage in step 3 if this looks off. Check it against the 3D view.</div>
+    </div>
+    <div id="pickBox" class="hidden">
+      <b>Tap the photo that clearly shows the front of this house</b>
+      <div class="two" style="margin-top:8px">
+        <div><div class="imgbox"><img id="pickSV" alt=""></div><button class="alt" id="useSV" style="margin-top:6px">Use Street View</button></div>
+        <div><div class="imgbox"><img id="pick3D" alt=""></div><button class="alt" id="use3D" style="margin-top:6px">Use 3D view</button></div>
+      </div>
+      <div class="note">Neither is good (trees, wrong house)? Upload the customer's photo in step 2, then click Generate mockup in step 5.</div>
+    </div>
+    <div id="confirmBox" class="hidden" style="margin-top:12px">
+      <b>Is this the same house?</b>
+      <div class="imgbox" style="margin-top:8px;max-width:760px"><img id="confirmImg" alt=""></div>
+      <div class="row" style="margin-top:8px"><button id="sameYes">Yes, build the proposal</button><button class="alt" id="sameNo">No, try the other photo</button></div>
+    </div>
+    <div id="doneBox" class="hidden" style="margin-top:12px">
+      <b>Quote ready.</b> <span class="note">Save the PDF, then put the numbers below into a Flyra estimate and attach the mockup.</span>
+      <div class="row" style="margin-top:8px"><button id="runPrint">Print / Save as PDF</button><button class="alt" id="saveMock">Download mockup image</button><button class="alt" id="copySum">Copy summary</button><span class="note" id="copySumMsg"></span></div>
+      <textarea id="sumText" rows="9" style="width:100%;margin-top:8px"></textarea>
+    </div>
   </div>
 
   <div class="two">
@@ -263,20 +292,23 @@ function lookup(){
   var a=$('address').value.trim();if(!a){$('lookupMsg').textContent='Type an address first.';return}
   $('lookupMsg').textContent='Looking up...';$('lookupMsg').className='note';
   var p=DEMO?Promise.resolve({lat:41.716165,lng:-72.3197587,formatted:a,street:a.split(',')[0],cityLine:'Columbia, CT 06237',precise:true,streetView:{pano:'demo',date:'2023-08',heading:230}}):api({action:'lookup',address:a});
-  p.then(function(L){
+  var q=p.then(function(L){
     S.loc=L;S.lines=[[]];S.slope=[false];$('slant').checked=false;S.mock=null;$('mockBox').classList.add('hidden');
     $('lookupMsg').innerHTML='<span class="ok">Found:</span> '+esc(L.formatted)+(L.precise?'':' <b>(approximate match: check the satellite pin is on the right house)</b>');
     loadSat();
     if(L.streetView){$('svControls').classList.remove('hidden');$('heading').value=L.streetView.heading;$('headingV').textContent=L.streetView.heading+'°';loadSV()}
     else{$('svControls').classList.add('hidden');$('photo').removeAttribute('src');S.photo=null;$('photoMsg').textContent='No Street View here. Upload a Google Earth 3D screenshot or ask the customer for a photo of the front of the house.'}
-  }).catch(function(e){$('lookupMsg').textContent=e.message;$('lookupMsg').className='err'});
+    return L;
+  });
+  q.catch(function(e){$('lookupMsg').textContent=e.message;$('lookupMsg').className='err'});
+  return q;
 }
 function loadSV(){
   if(!S.loc||!S.loc.streetView)return;$('photoMsg').textContent='Loading Street View...';
   var sv=S.loc.streetView;
   if(DEMO){setPhoto(stub(640,427,'#9fc3e8','#6f8f5a','DEMO street view'),'Street View (demo)');return}
-  api({action:'streetview',pano:sv.pano,heading:+$('heading').value,fov:+$('fov').value,pitch:+$('pitch').value},true)
-   .then(blobToImg).then(function(img){setPhoto(imgToDataURL(img,1536),'Street View'+(sv.date?' ('+sv.date+')':''))})
+  return api({action:'streetview',pano:sv.pano,heading:+$('heading').value,fov:+$('fov').value,pitch:+$('pitch').value},true)
+   .then(blobToImg).then(function(img){var d=imgToDataURL(img,1536);S.svPhoto=d;setPhoto(d,'Street View'+(sv.date?' ('+sv.date+')':''));return d})
    .catch(function(e){$('photoMsg').textContent=e.message});
 }
 
@@ -390,9 +422,9 @@ function mockup(){
   if(!$('prompt').value.trim())buildPrompt();
   var b=$('mockBtn');b.disabled=true;b.innerHTML='<span class="spin"></span>Generating...';$('mockMsg').textContent='';
   var p=DEMO?new Promise(function(ok){setTimeout(function(){ok({image:stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup')})},400)}):api({action:'mockup',image:S.photo,prompt:$('prompt').value,portrait:S.portrait});
-  p.then(function(r){S.mock=r.image;$('mockImg').src=r.image;$('mockBox').classList.remove('hidden');buildProposal()})
-   .catch(function(e){$('mockMsg').textContent=e.message})
-   .then(function(){b.disabled=false;b.textContent='Generate mockup'});
+  return p.then(function(r){S.mock=r.image;$('mockImg').src=r.image;$('mockBox').classList.remove('hidden');buildProposal();return r.image})
+   .catch(function(e){$('mockMsg').textContent=e.message;return null})
+   .then(function(x){b.disabled=false;b.textContent='Generate mockup';return x});
 }
 
 /* ---------- 6. proposal ---------- */
@@ -453,7 +485,7 @@ function buildProposal(){
 
 /* ---------- wiring ---------- */
 $('lookupBtn').onclick=lookup;
-$('address').addEventListener('keydown',function(e){if(e.key==='Enter')lookup()});
+
 $('svRefresh').onclick=loadSV;
 $('heading').oninput=function(){$('headingV').textContent=this.value+'°'};
 $('upload').onchange=function(){var f=this.files[0];if(!f)return;blobToImg(f).then(function(img){setPhoto(imgToDataURL(img,1536),'your uploaded photo')}).catch(function(){$('photoMsg').textContent='Could not read that file. Try a JPG or PNG.'})};
@@ -469,7 +501,7 @@ $('checkBtn').onclick=function(){
   var o=$('checkOut');o.classList.remove('hidden');o.textContent='Checking...';
   api({action:'check'}).then(function(r){
     var row=function(k,v){var good=v===true||v==='ok';return '<tr><td>'+k+'</td><td class="'+(good?'ok':'err')+'" style="margin:0">'+(good?'OK':esc(v===false?'missing in Vercel':v))+'</td></tr>'};
-    o.innerHTML='<h2>Setup check</h2><table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap)+row('Map Tiles API (3D view)',r.tiles3d):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
+    o.innerHTML='<h2>Setup check</h2><table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap)+row('Map Tiles API (3D view)',r.tiles3d)+row('Solar API (roof data)',r.solar):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
   }).catch(function(e){o.innerHTML='<div class="err">'+esc(e.message)+'</div>'});
 };
 $('early').checked=new Date()<=EARLY_END;
@@ -516,7 +548,7 @@ function init3D(){
   if(!S.loc){$('v3msg').textContent='Look up an address first.';return}
   $('v3msg').textContent='Loading Google 3D view...';
   var kp=V.key?Promise.resolve({key:V.key}):api({action:'tilesKey'});
-  Promise.all([loadCesium(),kp]).then(function(r){
+  return Promise.all([loadCesium(),kp]).then(function(r){
     V.key=r[1].key;var C=window.Cesium;
     if(!V.viewer){
       C.RequestScheduler.requestsByServer['tile.googleapis.com:443']=18;
@@ -548,8 +580,9 @@ function init3D(){
       if(res&&res[0])V.center=res[0];
       v3view();
       $('v3msg').textContent='3D view loaded. Drag to look around; the sliders turn, tilt and zoom around the house. Blurry or flat buildings mean Google has no detailed 3D here: use Street View or ask for a photo.';
+      return true;
     });
-  }).catch(function(e){$('v3msg').textContent='3D view failed: '+e.message});
+  }).catch(function(e){$('v3msg').textContent='3D view failed: '+e.message;return false});
 }
 $('v3load').onclick=init3D;
 ['v3h','v3p','v3r'].forEach(function(id){$(id).oninput=v3view});
@@ -565,23 +598,118 @@ $('sidesIn').onchange=function(){recalc();buildPrompt()};
 function brightness(url){return new Promise(function(ok){var i=new Image();i.onload=function(){var c=document.createElement('canvas');c.width=64;c.height=32;var x=c.getContext('2d');x.drawImage(i,0,0,64,32);
   var d=x.getImageData(0,0,64,32).data,t=0;for(var k=0;k<d.length;k+=4)t+=(d[k]+d[k+1]+d[k+2])/3;ok(t/(d.length/4))};i.onerror=function(){ok(0)};i.src=url})}
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
-$('v3photo').onclick=function(){
-  if(!V.viewer){$('v3msg').textContent='Load the 3D view first.';return}
+function capture3D(){
+  if(!V.viewer){$('v3msg').textContent='Load the 3D view first.';return Promise.resolve(null)}
   $('v3msg').textContent='Capturing the 3D view...';
   $('v3').scrollIntoView({block:'center'});
-  sleep(800).then(function(){v3view();var tries=0;
+  return sleep(800).then(function(){v3view();var tries=0;
     return (function wait(){return (V.tiles&&V.tiles.tilesLoaded)||tries++>20?sleep(500):sleep(500).then(wait)})();
   }).then(function(){
     V.ents.forEach(function(e){e.show=false});V.viewer.render();
     var url=V.viewer.scene.canvas.toDataURL('image/jpeg',0.92);
     V.ents.forEach(function(e){e.show=true});V.viewer.scene.requestRender();
     return brightness(url).then(function(b){
-      if(b<15){$('v3msg').textContent='The 3D view came out blank. Wait a few seconds for it to load, then click again.';return}
-      var i=new Image();i.onload=function(){setPhoto(imgToDataURL(i,1536),'Google Earth 3D view');setTimeout(buildPrompt,50);$('v3msg').textContent='This view is now the house photo. Generate the mockup in step 5.'};i.src=url;
+      if(b<15){$('v3msg').textContent='The 3D view came out blank. Wait a few seconds for it to load, then click again.';return null}
+      return new Promise(function(ok){var i=new Image();i.onload=function(){ok(imgToDataURL(i,1536))};i.src=url});
     });
   });
+}
+$('v3photo').onclick=function(){capture3D().then(function(d){if(!d)return;setPhoto(d,'Google Earth 3D view');setTimeout(buildPrompt,50);$('v3msg').textContent='This view is now the house photo. Generate the mockup in step 5.'})};
+/* ---------- Run quote: one button ---------- */
+function angDiff(a,b){var d=Math.abs(((a-b)%360+360)%360);return d>180?360-d:d}
+function roofEstimate(R,streetDir){
+  var lat=S.loc.lat,mx=111320*Math.cos(lat*Math.PI/180),my=110540,rows=[],total=0,sides=$('sidesIn').checked;
+  (R.segments||[]).forEach(function(g){
+    if(!g.bbox||g.pitch<5||g.ground<3)return;
+    var bx=(g.bbox.ne.longitude-g.bbox.sw.longitude)*mx,by=(g.bbox.ne.latitude-g.bbox.sw.latitude)*my,A=g.ground;
+    var th=g.azimuth*Math.PI/180,c=Math.abs(Math.cos(th)),sn=Math.abs(Math.sin(th)),c2=c*c-sn*sn,W,Rn;
+    if(Math.abs(c2)>0.35){W=(bx*c-by*sn)/c2;Rn=(by*c-bx*sn)/c2}
+    if(!(W>0&&Rn>0)){var Sm=(bx+by)/(c+sn),d=Math.sqrt(Math.max(0,Sm*Sm-4*A));W=(Sm+d)/2;Rn=(Sm-d)/2}
+    var fill=A/(W*Rn);var k=Math.sqrt(A/(W*Rn));W*=k;Rn*=k;
+    var rake=Rn/Math.cos(g.pitch*Math.PI/180),df=angDiff(g.azimuth,streetDir);
+    var face=df<=55?'front':df<=125?'side':'back',gable=fill>0.78,ft=0,what='';
+    if(face==='front'&&A<6){what='small front roof (dormer/porch)';}
+    else if(face==='front'){ft=W+(gable?2*rake:0);what=gable?'eave + one gable end (both slopes)':'eave (hip roof)'}
+    else if(face==='side'&&sides){ft=W;what='side eave'}
+    else what=face==='side'?'side (not lit)':'back (not lit)';
+    ft*=3.28084;total+=ft;
+    rows.push({face:face,eave:W*3.28084,rake:rake*3.28084,pitch:g.pitch,ft:ft,what:what});
+  });
+  return {rows:rows,total:Math.round(total)};
+}
+function step(t,cls){var li=document.createElement('li');li.textContent=t;if(cls)li.className=cls;$('runSteps').appendChild(li);return li}
+function runQuote(){
+  if(!$('address').value.trim()){$('lookupMsg').textContent='Type an address first.';return}
+  ['roofBox','pickBox','confirmBox','doneBox'].forEach(function(id){$(id).classList.add('hidden')});
+  $('runSteps').innerHTML='';$('runCard').classList.remove('hidden');$('runBtn').disabled=true;
+  S.mock=null;S.svPhoto=null;S.v3Photo=null;
+  var s1=step('Looking up the house...');
+  lookup().then(function(L){
+    s1.textContent='Found '+L.formatted+(L.streetView?' (Street View from '+(L.streetView.date||'unknown date')+')':' (no Street View)');
+    var streetDir=L.streetView?(L.streetView.heading+180)%360:null;
+    var s2=step('Measuring the roofline from Google roof data...');
+    var roofP=api({action:'roof',lat:L.lat,lng:L.lng}).then(function(R){
+      if(streetDir===null){var big=(R.segments||[]).slice().sort(function(a,b){return b.ground-a.ground})[0];streetDir=big?big.azimuth:0}
+      var e=roofEstimate(R,streetDir);
+      $('roofTable').innerHTML='<tr><th>Facing</th><th>Pitch</th><th>Eave</th><th>Slope</th><th>Counted</th><th></th></tr>'+e.rows.map(function(r){
+        return '<tr><td>'+r.face+'</td><td>'+Math.round(r.pitch)+'°</td><td>'+Math.round(r.eave)+' ft</td><td>'+Math.round(r.rake)+' ft</td><td><b>'+Math.round(r.ft)+' ft</b></td><td class="small">'+esc(r.what)+'</td></tr>'}).join('')+
+        '<tr><td colspan="4"><b>Total</b></td><td><b>'+e.total+' ft</b></td><td class="small">Google imagery quality: '+esc(R.quality||'?')+'</td></tr>';
+      $('roofBox').classList.remove('hidden');
+      if(e.total>0){$('roofFt').value=e.total;recalc()}
+      s2.textContent='Roofline estimate: '+e.total+' ft (check the table; edit in step 3 if needed)';
+      if(R.bbox){var dx=(R.bbox.ne.longitude-R.bbox.sw.longitude)*111320*Math.cos(L.lat*Math.PI/180),dy=(R.bbox.ne.latitude-R.bbox.sw.latitude)*110540;$('v3r').value=Math.min(150,Math.max(35,Math.round(Math.hypot(dx,dy)*1.6)))}
+    }).catch(function(err){s2.textContent='No automatic footage: '+err.message+'. Measure in the 3D view (step 3).';s2.className='err'});
+    var s3=step('Getting photos: Street View and Google 3D view...');
+    var svP=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
+    var v3P=roofP.then(function(){return init3D()}).then(function(ok){
+      if(!ok)return null;
+      $('v3h').value=L.streetView?L.streetView.heading:$('v3h').value;$('v3p').value=-26;
+      return sleep(4000).then(capture3D);
+    });
+    return Promise.all([svP,v3P]).then(function(ph){
+      S.svPhoto=ph[0];S.v3Photo=ph[1];
+      $('pickSV').src=ph[0]||'';$('pick3D').src=ph[1]||'';
+      $('useSV').disabled=!ph[0];$('use3D').disabled=!ph[1];
+      s3.textContent=(ph[0]||ph[1])?'Photos ready. Tap the one that clearly shows the front of the house.':'No usable photo. Ask the customer for a photo of the front of the house.';
+      $('pickBox').classList.remove('hidden');$('runCard').scrollIntoView({block:'start'});
+    });
+  }).catch(function(e){step('Stopped: '+e.message,'err')}).then(function(){$('runBtn').disabled=false});
+}
+function usePhoto(which){
+  var d=which==='sv'?S.svPhoto:S.v3Photo;if(!d)return;S.lastPick=which;
+  setPhoto(d,which==='sv'?'Street View':'Google Earth 3D view');
+  $('pickBox').classList.add('hidden');$('confirmBox').classList.add('hidden');
+  var s4=step('Making the night mockup (about a minute)...');
+  setTimeout(function(){buildPrompt();mockup().then(function(img){
+    if(!img){s4.textContent='Mockup failed: '+$('mockMsg').textContent;s4.className='err';$('pickBox').classList.remove('hidden');return}
+    s4.textContent='Mockup ready. Check it is the same house.';
+    $('confirmImg').src=img;$('confirmBox').classList.remove('hidden');$('confirmBox').scrollIntoView({block:'start'});
+  })},300);
+}
+$('useSV').onclick=function(){usePhoto('sv')};
+$('use3D').onclick=function(){usePhoto('3d')};
+$('sameNo').onclick=function(){$('confirmBox').classList.add('hidden');S.mock=null;step('Mockup rejected. Pick the other photo or upload one.');$('pickBox').classList.remove('hidden');$('pickBox').scrollIntoView({block:'start'})};
+$('sameYes').onclick=function(){
+  $('confirmBox').classList.add('hidden');buildProposal();
+  var c=calc(),L=S.loc,name=$('custName').value.trim(),first=(name.split(' ')[0])||'there';
+  var value=c.base+c.opt.reduce(function(a,b){return a+b.total},0),big=value>=(+$('visitMin').value||1e9);
+  var lines=['Customer: '+(name||'(add name)'),'Address: '+L.formatted,'',
+    'House package:'].concat(c.pkg.map(function(p){return '  '+p.name+': '+money(p.total)}),
+    c.minAdj>0?['  Minimum job adjustment: +'+money(c.minAdj)]:[],
+    c.disc>0?['  Early bird (book before Thanksgiving): -'+money(c.disc)]:[],
+    ['  Price before tax: '+money(c.final)+'  (deposit '+money(c.dep)+', balance '+money(c.bal)+')'],
+    c.opt.length?['','Optional add-ons:'].concat(c.opt.map(function(o){return '  '+o.name+': +'+money(o.total)})):[],
+    ['',big?'BIG JOB ('+money(value)+'): set up an in-person visit instead of texting the price. Text:':'Text to send with the Flyra estimate link:',
+     big?$('visitText').value:'Hi '+first+', Garrison with Clear View. Here\'s your holiday lighting quote for '+L.street+', with a mockup of how your home would look lit up: [estimate link]. The $200 early-bird price holds if you book before Thanksgiving. Any questions, just text me back.']);
+  $('sumText').value=lines.join('\n');
+  $('doneBox').classList.remove('hidden');step(big?'Big job: close in person (summary below).':'Quote ready: save the PDF and send it through Flyra.');$('doneBox').scrollIntoView({block:'start'});
 };
-window.__lights={S:S,V:V,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
+$('runPrint').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
+$('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement('a');a.href=S.mock;a.download=((S.loc&&S.loc.street)||'house').replace(/[^a-z0-9]+/gi,'-')+'-mockup.jpg';document.body.appendChild(a);a.click();a.remove()};
+$('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
+$('runBtn').onclick=runQuote;
+$('address').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runQuote()}},true);
+window.__lights={S:S,V:V,roofEstimate:roofEstimate,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
 })();
 </script>
 </body>
