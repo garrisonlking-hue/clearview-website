@@ -141,6 +141,33 @@ export default async function handler(req, res) {
       return googleImage(res, `${G}/staticmap?${q}`);
     }
 
+    // ---- pick the photo that shows the front of the house best (small, cheap vision call)
+    if (b.action === 'pick') {
+      if (!OKEY) return res.status(503).json({ error: 'OPENAI_API_KEY is not set in Vercel yet.' });
+      const imgs = (Array.isArray(b.images) ? b.images : []).filter((u) => /^data:image\/(jpeg|png|webp);base64,/.test(u)).slice(0, 8);
+      if (!imgs.length) return res.status(400).json({ error: 'No photos to compare.' });
+      const content = [{ type: 'text', text:
+        `These ${imgs.length} images (numbered 0 to ${imgs.length - 1}) all try to show the same house at ${String(b.address || 'the address')}. ` +
+        'Image 0 may be a street-level photo; the rest are views of a 3D map model (those look a bit blurry, which is fine). ' +
+        'Score each 0-10 for how well it works as the reference for a front-of-house Christmas lights mockup: the front of the house and its roofline clearly visible, ' +
+        'house large in frame, not hidden by trees, not the back of the house, not a different building. Score 0 for blank, garbage or the wrong subject. ' +
+        'Reply as JSON: {"scores":[...],"best":index,"usable":true|false,"reason":"one short sentence"}. usable is false if no image scores 5 or more.' }];
+      imgs.forEach((u) => content.push({ type: 'image_url', image_url: { url: u, detail: 'low' } }));
+      let last = '';
+      for (const model of [process.env.OPENAI_VISION_MODEL, 'gpt-4.1-mini', 'gpt-4o-mini'].filter(Boolean)) {
+        const r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST',
+          headers: { Authorization: 'Bearer ' + OKEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model, response_format: { type: 'json_object' }, max_tokens: 300, messages: [{ role: 'user', content }] }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.choices && j.choices[0]) {
+          try { const out = JSON.parse(j.choices[0].message.content); out.model = model; return res.status(200).json(out); }
+          catch (e) { last = 'Could not read the answer.'; continue; }
+        }
+        last = (j.error && j.error.message) || `OpenAI error ${r.status}`;
+      }
+      return res.status(502).json({ error: 'Photo pick failed: ' + last });
+    }
+
     // ---- mockup: house photo + prompt -> edited image
     if (b.action === 'mockup') {
       if (!OKEY) return res.status(503).json({ error: 'OPENAI_API_KEY is not set in Vercel yet.' });
@@ -153,7 +180,7 @@ export default async function handler(req, res) {
       const models = [...new Set([MODEL, 'gpt-image-2', 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini'])];
       let mi = 0;
       const params = { model: models[0], prompt, size: b.portrait ? '1024x1536' : '1536x1024', quality: QUALITY,
-        input_fidelity: 'high', output_format: 'jpeg', output_compression: '85' };
+        input_fidelity: b.fidelity === 'low' ? 'low' : 'high', output_format: 'jpeg', output_compression: '85' };
 
       let last = ''; const tried = [];
       for (let attempt = 0; attempt < 12; attempt++) {
@@ -174,7 +201,7 @@ export default async function handler(req, res) {
         const code = (j.error && j.error.code) || '';
         if ((code === 'model_not_found' || /does not exist|not supported|do not have access|must be verified/i.test(last)) && mi < models.length - 1) {
           tried.push(`${params.model}: ${last}`); params.model = models[++mi];
-          Object.assign(params, { input_fidelity: 'high', output_format: 'jpeg', output_compression: '85', quality: QUALITY });
+          Object.assign(params, { input_fidelity: b.fidelity === 'low' ? 'low' : 'high', output_format: 'jpeg', output_compression: '85', quality: QUALITY });
           continue;
         }
         // Model versions differ in which optional settings they accept: drop the one named and retry.
