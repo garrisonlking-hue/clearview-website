@@ -213,6 +213,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <label>Roofline feet</label><input type="number" id="roofFt" min="0" step="1" value="0">
       <label>at $</label><input type="number" id="roofRate" min="0" step="0.5" value="7"><label>per ft</label>
       <label><input type="checkbox" id="sidesIn" checked> Sides visible from the road are lit</label>
+      <label><input type="checkbox" id="ridgeIn"> Light the roof ridge (top line)</label>
     </div>
     <table id="items"><thead><tr><th>Add-on</th><th>Qty</th><th>Unit price</th><th>In package</th><th>Line total</th></tr></thead><tbody></tbody></table>
     <div class="note">Tick "In package" to include an item in the price and the mockup. Left unticked, it shows on the quote as an optional extra.</div>
@@ -460,13 +461,14 @@ $('copyVisit').onclick=function(){var t=$('visitText');t.select();var done=funct
 /* ---------- 5. mockup ---------- */
 function buildPrompt(){
   var sides=$('sidesIn').checked,aerial=/3D/.test(S.photoSrc||'');
-  var c=calc(),parts=['warm-white C9 Christmas bulbs about 12 inches apart that OUTLINE THE ROOFS like a line drawing: each roof (main house, garage, any wing'+(sides?', including the sides visible from the street':'')+') is traced along its bottom edge AND both of its slanted left and right edges, from each bottom corner up to the peak, so every roof shape is fully outlined against the night sky. The lights sit only on roof edges. The walls of the house stay completely dark, and the dormers stay dark unless listed below'];
+  var ridge=$('ridgeIn').checked;
+  var c=calc(),parts=['warm-white C9 Christmas bulbs about 12 inches apart along the roof edges of the main house, garage and any wing'+(sides?', including the sides visible from the street':'')+': the bottom horizontal edge (eave and gutter line) of each roof, and the two slanted edges at the left and right ends of each roof that rise from the bottom corners and meet at the peak (an upside-down V on every gable end). '+(ridge?'Also light the ridge, the horizontal line along the very top of each roof. ':'The ridge, the horizontal line along the very top of each roof, has NO lights: leave it completely dark. ')+'The walls of the house stay completely dark, and the dormers stay dark unless listed below'];
   c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
   $('prompt').value=(aerial?'This image is a blurry 3D aerial model of a real house, used only as a reference for its design. Turn it into a photorealistic nighttime photograph of this same house from a lower viewpoint in front of it, as if taken from the front lawn, keeping the same side of the house facing the camera. Keep the house identical: same shape and layout, number of stories, roof lines and gables, dormers, garage position and number of garage doors, window layout, siding color and front entry. Do not invent or rearrange anything. Clean up the 3D model look: real, sharp trees, bushes and lawn. Connecticut in December, professionally decorated with Christmas lights.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
    'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
    'This is the customer\'s real home, so change as little as possible. Keep the house exactly as it is: same architecture, the same roof shape (gable ends stay gable ends, nothing becomes a hip roof), siding, windows, doors, chimney, trees, bushes and driveway. The number, size and position of garage doors, windows, doors, dormers and chimneys must stay exactly the same. Do not add, remove, move or resize any part of the building, and do not add decorations. '+
    'Use judgment on things in the way: remove parked cars, and remove or trim trees and branches only where they block the roof edges that get lights, so the lights sit on the house realistically instead of floating over leaves. Leave every other tree and bush where it is. Never change the shape of the house or invent anything that is not there. '+
-   'Only put lights where listed above. The ridge line across the top of the roof, chimneys, windows, doors, garage doors, walls, trees and bushes stay unlit unless listed above.\n\n'+
+   'Only put lights where listed above. '+(ridge?'':'The ridge line across the top of the roof stays dark. ')+'Chimneys, windows, doors, garage doors, walls, trees and bushes stay unlit unless listed above.\n\n'+
    'Scene: dark night sky, a light dusting of fresh snow on the roof, lawn and plantings, a few gentle snowflakes falling, a soft warm glow from the windows, and a subtle warm glow from the lights on nearby surfaces. Real camera look, natural exposure, no text, no watermarks, no people, no cars added.';
 }
 function mockup(){
@@ -625,6 +627,7 @@ $('v3undo').onclick=function(){var L=V.lines[V.lines.length-1];if(L.length)L.pop
 $('v3break').onclick=function(){if(V.lines[V.lines.length-1].length)V.lines.push([])};
 $('v3clear').onclick=function(){V.lines=[[]];$('v3ft').textContent='0';draw3D()};
 $('sidesIn').onchange=function(){recalc();buildPrompt()};
+$('ridgeIn').onchange=function(){buildPrompt()};
 function brightness(url){return new Promise(function(ok){var i=new Image();i.onload=function(){var c=document.createElement('canvas');c.width=64;c.height=32;var x=c.getContext('2d');x.drawImage(i,0,0,64,32);
   var d=x.getImageData(0,0,64,32).data,t=0;for(var k=0;k<d.length;k+=4)t+=(d[k]+d[k+1]+d[k+2])/3;ok(t/(d.length/4))};i.onerror=function(){ok(0)};i.src=url})}
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
