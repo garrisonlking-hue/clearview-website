@@ -132,7 +132,7 @@ export default async function handler(req, res) {
           headers: { 'Content-Type': 'application/json', 'X-Goog-Api-Key': GKEY },
           body: JSON.stringify({ input: q, includedRegionCodes: ['us'], sessionToken: String(b.session || '').slice(0, 64) || undefined,
             includedPrimaryTypes: ['street_address', 'premise', 'subpremise', 'route'],
-            locationBias: { circle: { center: { latitude: 41.6, longitude: -72.7 }, radius: 50000 } } }) });
+            locationRestriction: { rectangle: { low: { latitude: 40.85, longitude: -73.9 }, high: { latitude: 42.2, longitude: -71.6 } } } }) });
         const j = await r.json().catch(() => ({}));
         if (r.ok) (j.suggestions || []).slice(0, 5).forEach((x) => {
           const t = x.placePrediction && x.placePrediction.text && x.placePrediction.text.text;
