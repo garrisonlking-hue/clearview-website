@@ -141,6 +141,22 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     <div id="lookupMsg" class="note"></div>
   </div>
 
+  <div class="card" id="photoCard">
+    <h2>House photo <span class="note" style="font-weight:400;margin:0">(optional)</span></h2>
+    <div class="note" style="margin:0 0 10px">Have a good picture of the front of the house? Use it and the tool skips the search and makes the mockup from your photo.</div>
+    <div class="row">
+      <label class="alt" for="upload2" style="display:inline-block;border:1px solid #C9C4B6;border-radius:8px;padding:9px 16px;color:var(--green);font-weight:500;font-size:14px;cursor:pointer;background:#fff">Upload a photo</label>
+      <input type="file" id="upload2" accept="image/*" class="hidden">
+      <button class="alt" id="flyraPhotosBtn">Get photos from Flyra</button>
+      <span class="note" id="photoPickMsg" style="margin:0"></span>
+    </div>
+    <div id="pinnedBox" class="hidden" style="margin-top:12px;display:flex;gap:12px;align-items:center">
+      <img id="pinnedImg" alt="" style="width:180px;border-radius:8px">
+      <div><b>This photo will be used for the mockup.</b><div class="row" style="margin-top:6px"><button class="alt" id="pinnedDel">Don't use it</button><button class="alt hidden" id="pinnedMock">Make the mockup from it now</button></div></div>
+    </div>
+    <div id="flyraGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px"></div>
+  </div>
+
   <div class="card hidden" id="runCard">
     <h2>Progress</h2>
     <ol id="runSteps"></ol>
@@ -705,6 +721,10 @@ function runQuote(){
       s2.textContent='Roofline estimate: '+e.total+' ft ';
       if(R.bbox){var dx=(R.bbox.ne.longitude-R.bbox.sw.longitude)*111320*Math.cos(L.lat*Math.PI/180),dy=(R.bbox.ne.latitude-R.bbox.sw.latitude)*110540;$('v3r').value=Math.min(150,Math.max(35,Math.round(Math.hypot(dx,dy)*1.6)))}
     }).catch(function(err){s2.textContent='No automatic footage: '+err.message+'. Type the feet under Pricing, or measure in the 3D view.';s2.className='err'});
+    if(S.pinned){
+      var sp=step('Using your photo for the mockup.');
+      return roofP.then(function(){S.cands=[{img:S.pinned,label:'Your photo'}];drawCands(0);$('pickBox').classList.remove('hidden');return makeMock(0)});
+    }
     var s3=step('Looking all the way around the house in 3D (8 directions), then zooming in and out on the best one...');
     var svP=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
     var base=L.streetView?L.streetView.heading:0;
@@ -936,6 +956,34 @@ $('mock2Btn').onclick=function(){
   .then(function(){b.disabled=false;b.textContent='Make second view'});
 };
 $('mock2Del').onclick=function(){S.mock2=null;S.mock2Note='';$('mock2Wrap').classList.add('hidden');this.classList.add('hidden');$('mock2Msg').textContent='Removed.';buildProposal()};
+/* ---------- house photo: upload or pull from Flyra ---------- */
+function pinPhoto(d,src){
+  S.pinned=d;S.pinnedSrc=src;$('pinnedImg').src=d;$('pinnedBox').classList.remove('hidden');
+  var ran=S.loc&&!$('runCard').classList.contains('hidden');$('pinnedMock').classList.toggle('hidden',!ran);
+  $('photoPickMsg').textContent=ran?'':'Now type the address and click Run quote.';
+}
+$('upload2').onchange=function(){var f=this.files[0];if(!f)return;blobToImg(f).then(function(img){pinPhoto(imgToDataURL(img,1536),'your photo')}).catch(function(){$('photoPickMsg').textContent='Could not read that file. Try a JPG or PNG.'})};
+$('pinnedDel').onclick=function(){S.pinned=null;$('pinnedBox').classList.add('hidden')};
+$('pinnedMock').onclick=function(){if(!S.pinned)return;S.cands=(S.cands||[]).concat([{img:S.pinned,label:'Your photo'}]);$('runCard').scrollIntoView({block:'start'});makeMock(S.cands.length-1)};
+function urlToData(u){
+  return new Promise(function(ok,no){var i=new Image();i.crossOrigin='anonymous';i.onload=function(){try{ok(imgToDataURL(i,1536))}catch(e){no(e)}};i.onerror=no;i.src=u})
+  .catch(function(){return api({action:'imageProxy',url:u},true).then(blobToImg).then(function(img){return imgToDataURL(img,1536)})});
+}
+$('flyraPhotosBtn').onclick=function(){
+  var a=$('address').value.trim();if(!a){$('photoPickMsg').textContent='Type or pick the address first.';$('address').focus();return}
+  var b=this;b.disabled=true;$('photoPickMsg').textContent='Looking for photos from past jobs...';$('flyraGrid').innerHTML='';
+  api({action:'flyraPhotos',street:a.split(',')[0]}).then(function(r){
+    if(!r.photos||!r.photos.length){$('photoPickMsg').textContent=r.note||'No job photos in Flyra for this customer.';return}
+    $('photoPickMsg').textContent=r.photos.length+' photo'+(r.photos.length>1?'s':'')+' from '+(r.name||'this customer')+'\'s jobs. Pick one that shows the front of the house.';
+    if(r.name&&!$('custName').value.trim())$('custName').value=r.name;
+    $('flyraGrid').innerHTML=r.photos.map(function(p,i){return '<div><img src="'+esc(p.url)+'" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block" alt=""><div class="small">'+esc((p.when||'').slice(0,10))+'</div><button class="alt" data-i="'+i+'" style="margin-top:4px;padding:4px 10px;font-size:12px">Use this</button></div>'}).join('');
+    [].forEach.call($('flyraGrid').querySelectorAll('button'),function(btn){btn.onclick=function(){
+      btn.disabled=true;btn.textContent='Loading...';
+      urlToData(r.photos[+btn.dataset.i].url).then(function(d){pinPhoto(d,'Flyra job photo');$('flyraGrid').innerHTML=''})
+      .catch(function(){btn.disabled=false;btn.textContent='Use this';$('photoPickMsg').textContent='Could not load that photo. Try another.'});
+    }});
+  }).catch(function(e){$('photoPickMsg').textContent=e.message}).then(function(){b.disabled=false});
+};
 $('runPrint').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
 $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement('a');a.href=S.mock;a.download=((S.loc&&S.loc.street)||'house').replace(/[^a-z0-9]+/gi,'-')+'-mockup.jpg';document.body.appendChild(a);a.click();a.remove()};
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
