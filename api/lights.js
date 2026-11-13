@@ -147,10 +147,12 @@ export default async function handler(req, res) {
       const imgs = (Array.isArray(b.images) ? b.images : []).filter((u) => /^data:image\/(jpeg|png|webp);base64,/.test(u)).slice(0, 8);
       if (!imgs.length) return res.status(400).json({ error: 'No photos to compare.' });
       const content = [{ type: 'text', text:
-        `These ${imgs.length} images (numbered 0 to ${imgs.length - 1}) all try to show the same house at ${String(b.address || 'the address')}. ` +
-        'Image 0 may be a street-level photo; the rest are views of a 3D map model (those look a bit blurry, which is fine). ' +
-        'Score each 0-10 for how well it works as the reference for a front-of-house Christmas lights mockup: the front of the house and its roofline clearly visible, ' +
-        'house large in frame, not hidden by trees, not the back of the house, not a different building. Score 0 for blank, garbage or the wrong subject. ' +
+        `These ${imgs.length} images (numbered 0 to ${imgs.length - 1}) are candidate views of the house at ${String(b.address || 'the address')} ` +
+        'for a Christmas-lights mockup. ' + String(b.hint || '').slice(0, 600) + ' Views of a 3D map model look a little blurry, which is fine. ' +
+        'Score each 0-10. The best reference shows the FRONT of the house (the side with the front door, usually facing the street and driveway), ' +
+        'with the whole front roofline visible, the house filling much of the frame, seen from a low, natural angle rather than from high above, and not hidden by trees. ' +
+        'A side or rear view scores at most 4 even if it is clear. A view where trees cover most of the front scores at most 4. ' +
+        'Blank, garbled, flat terrain with no recognizable 3D house, or the wrong building scores 0. ' +
         'Reply as JSON: {"scores":[...],"best":index,"usable":true|false,"reason":"one short sentence"}. usable is false if no image scores 5 or more.' }];
       imgs.forEach((u) => content.push({ type: 'image_url', image_url: { url: u, detail: 'low' } }));
       let last = '';
