@@ -138,6 +138,10 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <input id="custName" placeholder="Customer name" style="width:210px">
       <button id="runBtn" class="lg">Run quote</button>
     </div>
+    <div class="row" style="margin-top:10px;gap:18px">
+      <label><input type="radio" name="angleMode" id="angleAuto" checked> Find the best angle for me</label>
+      <label><input type="radio" name="angleMode" id="angleManual"> I'll pick the angle myself</label>
+    </div>
     <div id="lookupMsg" class="note"></div>
   </div>
 
@@ -666,7 +670,18 @@ function capture3D(fast){
     });
   });
 }
-$('v3photo').onclick=function(){capture3D().then(function(d){if(!d)return;setPhoto(d,'Google Earth 3D view');setTimeout(buildPrompt,50);$('v3msg').textContent='This view is now the house photo. Click Redo mockup.'})};
+$('v3photo').onclick=function(){
+  var b=this;b.disabled=true;b.textContent='Capturing...';
+  capture3D().then(function(d){
+    b.disabled=false;b.textContent='Use this view as the house photo';if(!d)return;
+    // During a quote: add this angle and make the mockup from it right away
+    if(S.loc&&!$('runCard').classList.contains('hidden')){
+      S.cands=(S.cands||[]).concat([{img:d,label:'3D view (your angle)'}]);$('v3msg').textContent='Making the mockup from your angle...';
+      $('runCard').scrollIntoView({block:'start'});makeMock(S.cands.length-1);return;
+    }
+    setPhoto(d,'Google Earth 3D view');setTimeout(buildPrompt,50);$('v3msg').textContent='This view is now the house photo. Click Redo mockup.';
+  });
+};
 /* ---------- Run quote: one button ---------- */
 function angDiff(a,b){var d=Math.abs(((a-b)%360+360)%360);return d>180?360-d:d}
 function roofEstimate(R,streetDir){
@@ -724,6 +739,15 @@ function runQuote(){
     if(S.pinned){
       var sp=step('Using your photo for the mockup.');
       return roofP.then(function(){S.cands=[{img:S.pinned,label:'Your photo'}];drawCands(0);$('pickBox').classList.remove('hidden');return makeMock(0)});
+    }
+    if($('angleManual').checked){
+      var sm=step('Your turn: loading the 3D view and Street View...');
+      var svM=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
+      return Promise.all([svM,roofP.then(function(){return init3D()})]).then(function(r){
+        S.manual=true;S.cands=r[0]?[{img:r[0],label:'Street View'}]:[];drawCands(-1);$('pickBox').classList.remove('hidden');
+        sm.textContent='Your turn: turn the 3D view below (drag, or use Turn, Tilt and Distance) until the front of the house looks best, then click "Use this view as the house photo". Or tap "Use this" on Street View, or upload a photo above.';
+        $('v3').scrollIntoView({block:'center'});
+      });
     }
     var s3=step('Looking all the way around the house in 3D (8 directions), then zooming in and out on the best one...');
     var svP=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
