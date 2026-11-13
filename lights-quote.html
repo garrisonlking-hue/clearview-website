@@ -160,7 +160,9 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
         <button class="alt" id="markBtn">Edit mockup</button>
         <span id="markTools" class="hidden" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
           <span id="mkChips" style="display:flex;gap:6px;flex-wrap:wrap"></span>
-          <button class="alt" id="markUndo">Undo</button> <button class="alt" id="markClear">Clear</button> <button id="markApply">Apply changes</button></span>
+          <button class="alt" id="markUndo">Undo</button> <button class="alt" id="markClear">Clear</button>
+          <input id="markText" placeholder="Anything else? e.g. red bow on the mailbox, candy canes along the path" style="flex:1 1 320px">
+          <button id="markApply">Apply changes</button></span>
         <button class="alt" id="redoMock">Redo mockup</button>
         <span class="note" id="markMsg" style="margin:0"></span>
       </div>
@@ -815,7 +817,9 @@ var MKT={
   garland:{label:'Garland',color:'#b000ff',name:'PURPLE',tip:'Draw where garland drapes (around the door, porch railing, columns).',
     rule:'PURPLE lines: add lit green evergreen garland with warm-white mini lights following each purple line.'},
   walk:{label:'Walkway lights',color:'#ffd400',name:'YELLOW',tip:'Draw along both edges of the walkway or driveway.',
-    rule:'YELLOW lines: add ground-stake warm-white C9 pathway lights about 12 to 18 inches apart along each yellow line, on the ground.'},
+    rule:'YELLOW lines: add low pathway stake lights along each yellow line, on the ground at the edge of the path. They must look clearly different from the roofline string: individual short stakes about 10 inches tall, each with one larger warm-white globe bulb, spaced about 3 feet apart, each casting a small soft pool of light on the snow. No wire strung between them.'},
+  pole:{label:'Pole / column lights',color:'#00b3b3',name:'TEAL',tip:'Draw up a porch column, lamp post or railing post to wrap it.',
+    rule:'TEAL lines: wrap that porch column, lamp post or post in a tight spiral of warm-white mini lights from bottom to top, following the teal line.'},
   wrap:{label:'Wrap tree / bush',color:'#ff8a00',name:'ORANGE',tip:'Scribble over the tree trunk or bush to wrap it.',
     rule:'ORANGE scribbles: wrap that tree (trunk and main branches) or bush in warm-white mini lights.'}
 };
@@ -832,7 +836,25 @@ function mkChips(){$('mkChips').innerHTML=Object.keys(MKT).map(function(k){retur
 $('markCanvas').addEventListener('pointerdown',function(e){if(!MK.on)return;this.setPointerCapture(e.pointerId);var L={tool:MK.tool,pts:[mkPt(e)]};MK.lines.push(L);MK.cur=MKT[MK.tool].dot?null:L;mkDraw()});
 $('markCanvas').addEventListener('pointermove',function(e){if(!MK.cur)return;MK.cur.pts.push(mkPt(e));mkDraw()});
 $('markCanvas').addEventListener('pointerup',function(){MK.cur=null});
-function mkOff(){MK.lines=[];MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Edit mockup'}
+// Each decoration drawn on the mockup is added to the price (estimates; editable under Pricing)
+function mkPrice(marks,W,H){
+  function len(L){var t=0;for(var i=1;i<L.pts.length;i++)t+=Math.hypot(L.pts[i][0]-L.pts[i-1][0],L.pts[i][1]-L.pts[i-1][1]);return t}
+  function tall(L){var ys=L.pts.map(function(p){return p[1]});return (Math.max.apply(0,ys)-Math.min.apply(0,ys))/H}
+  function ft(L,scale){return Math.max(5,Math.round(len(L)/W*scale/5)*5)}
+  var add={},out=[];
+  marks.forEach(function(L){
+    if(L.tool==='wreath')add.wreath24=(add.wreath24||0)+1;
+    else if(L.tool==='garland')add.garland=(add.garland||0)+ft(L,45);
+    else if(L.tool==='walk')add.walkway=(add.walkway||0)+ft(L,70);
+    else if(L.tool==='pole')add.columns=(add.columns||0)+1;
+    else if(L.tool==='wrap'){if(tall(L)>0.3)add.tree=(add.tree||0)+Math.min(30,Math.max(10,Math.round(tall(L)*40)));else add.shrubs=(add.shrubs||0)+1}
+  });
+  var names={wreath24:['wreath','wreaths'],garland:['ft of garland','ft of garland'],walkway:['ft of walkway lights','ft of walkway lights'],columns:['column wrap','column wraps'],tree:['ft of tree wrap','ft of tree wrap'],shrubs:['bush wrap','bush wraps']};
+  Object.keys(add).forEach(function(id){var q=$('q_'+id);if(!q)return;q.value=(+q.value||0)+add[id];$('k_'+id).checked=true;
+    out.push(add[id]+' '+names[id][add[id]===1?0:1])});
+  return out;
+}
+function mkOff(){MK.lines=[];if($('markText'))$('markText').value='';MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Edit mockup'}
 $('markBtn').onclick=function(){
   if(MK.on){mkOff();$('markMsg').textContent='';return}
   MK.on=true;$('markCanvas').style.display='block';$('markTools').classList.remove('hidden');this.textContent='Cancel';
@@ -841,18 +863,21 @@ $('markBtn').onclick=function(){
 $('markUndo').onclick=function(){MK.lines.pop();mkDraw()};
 $('markClear').onclick=function(){MK.lines=[];mkDraw()};
 $('markApply').onclick=function(){
-  if(!MK.lines.length){$('markMsg').textContent='Draw something first.';return}
+  if(!MK.lines.length&&!$('markText').value.trim()){$('markMsg').textContent='Draw something or type what to change first.';return}
   var used={};MK.lines.forEach(function(L){used[L.tool]=1});
   var c=document.createElement('canvas'),i=$('mockOutImg');c.width=i.naturalWidth;c.height=i.naturalHeight;var x=c.getContext('2d');
   x.drawImage(i,0,0);x.drawImage($('markCanvas'),0,0,c.width,c.height);
   var marked=c.toDataURL('image/jpeg',0.9),b=$('markApply');b.disabled=true;b.innerHTML='<span class="spin"></span>Applying...';
+  var marks=MK.lines.slice(),imgW=c.width,imgH=c.height,extra=$('markText').value.trim();
   $('markMsg').textContent='About a minute.';
   api({action:'mockup',image:marked,portrait:c.height>c.width,fidelity:'high',prompt:
     'This is a nighttime photo of a house decorated for Christmas. Colored marks have been drawn on it as editing instructions:\n- '+
-    Object.keys(used).map(function(k){return MKT[k].rule}).join('\n- ')+
+    Object.keys(used).map(function(k){return MKT[k].rule}).join('\n- ')+(extra?'\n- Also: '+extra+'.':'')+
     '\n\nPlace everything exactly where it is marked, at a realistic size. Then remove every colored mark completely so none remain. Change nothing else: same house shape, same lights elsewhere, same snow, sky and camera angle. No text, no watermarks.'})
-  .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;mkOff();
-    $('markMsg').textContent='Done. Edit again if anything is off.'+((used.wreath||used.garland||used.walk||used.wrap)?' Remember to price any extras under Pricing.':'');buildProposal()})
+  .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;
+    var added=mkPrice(marks,imgW,imgH);mkOff();
+    $('markMsg').textContent='Done.'+(added.length?' Added to the price: '+added.join(', ')+'. Adjust under Pricing if needed.':'')+' Edit again if anything is off.';
+    recalc();buildProposal();if(!$('doneBox').classList.contains('hidden'))finishQuote()})
   .catch(function(e){$('markMsg').textContent='Could not apply the changes: '+e.message})
   .then(function(){b.disabled=false;b.textContent='Apply changes'});
 };
