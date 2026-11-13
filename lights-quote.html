@@ -376,7 +376,7 @@ $('copyVisit').onclick=function(){var t=$('visitText');t.select();var done=funct
 /* ---------- 5. mockup ---------- */
 function buildPrompt(){
   var sides=$('sidesIn').checked,aerial=/3D/.test(S.photoSrc||'');
-  var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the roofline facing the street: the front gutters, eaves and the sloped edges of every front-facing gable and dormer'+(sides?', and continuing along the side rooflines and side gable edges that are visible from the street':'')];
+  var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the roofline facing the street: the front gutters, eaves and the sloped edges of every front-facing gable (but not dormers unless they are listed below)'+(sides?', and continuing along the side rooflines and side gable edges that are visible from the street':'')];
   c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
   $('prompt').value=(aerial?'This image is a 3D aerial view of a real house, built from satellite data, so trees and lawn look blurry and melted. Turn it into a photorealistic nighttime aerial photograph of the SAME house from the SAME angle, in Connecticut in December, professionally decorated with Christmas lights. Render the trees, bushes and lawn as real, sharp vegetation in the same places.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
    'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
