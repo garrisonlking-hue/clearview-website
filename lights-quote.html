@@ -4,37 +4,57 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="icon-192.png">
 <title>Lights Quote Builder | Clear View</title>
 <style>
-:root{--green:#173F35;--cream:#FBF8F0;--line:#DDD8CB;--muted:#6B6F68;--accent:#B5541F}
+:root{--green:#173F35;--green2:#22564A;--cream:#FBF8F0;--bg:#F3F1EA;--line:#E3DFD4;--muted:#6B6F68;--accent:#B5541F}
 *{box-sizing:border-box}
-body{margin:0;background:#EFEBE0;color:var(--green);font-family:Verdana,"DejaVu Sans",Geneva,sans-serif;font-size:14px;line-height:1.45}
-h1,h2,h3{margin:0}
-button{font:inherit;cursor:pointer;border:1px solid var(--green);background:var(--green);color:#fff;padding:8px 14px;border-radius:6px}
-button.alt{background:#fff;color:var(--green)}
+body{margin:0;background:var(--bg);color:#1E2B27;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,"Helvetica Neue",Arial,sans-serif;font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+h1,h2,h3{margin:0;color:var(--green)}
+.topbar{background:var(--green);color:#fff}
+.topbar .in{max-width:1060px;margin:0 auto;padding:14px 20px;display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.topbar b{font-size:18px;letter-spacing:2px}.topbar span{opacity:.75;font-size:12px;letter-spacing:.5px}
+button{font:inherit;font-weight:600;cursor:pointer;border:1px solid var(--green);background:var(--green);color:#fff;padding:9px 16px;border-radius:8px;transition:background .15s,box-shadow .15s}
+button:hover{background:var(--green2)}
+button.alt{background:#fff;color:var(--green);border-color:#C9C4B6;font-weight:500}
+button.alt:hover{background:#F6F4EE}
 button:disabled{opacity:.5;cursor:default}
-input,select,textarea{font:inherit;color:inherit;border:1px solid #BDB8AA;border-radius:6px;padding:7px 9px;background:#fff;max-width:100%}
+button.lg{padding:12px 22px;font-size:15px}
+input,select,textarea{font:inherit;color:inherit;border:1px solid #CFCABD;border-radius:8px;padding:9px 11px;background:#fff;max-width:100%}
+input:focus,select:focus,textarea:focus{outline:2px solid rgba(23,63,53,.25);border-color:var(--green)}
 input[type=number]{width:84px}
-input[type=range]{padding:0;vertical-align:middle}
-label{font-size:12px;color:var(--muted)}
-#app{max-width:1060px;margin:0 auto;padding:16px}
-.top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:14px}
-.card h2{font-size:16px;margin-bottom:10px}
+input[type=range]{padding:0;vertical-align:middle;accent-color:var(--green)}
+input[type=checkbox]{accent-color:var(--green);width:16px;height:16px;vertical-align:-3px}
+label{font-size:12.5px;color:var(--muted)}
+#app{max-width:1060px;margin:0 auto;padding:20px 16px 60px}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 2px rgba(20,40,30,.04)}
+.card h2{font-size:16px;margin-bottom:12px;letter-spacing:.1px}
+.hero h1{font-size:22px;margin-bottom:4px}
+.hero input{padding:12px 14px;font-size:15px}
+details.card>summary{cursor:pointer;font-weight:600;color:var(--green);font-size:15px;list-style:none}
+details.card>summary::after{content:"Show";float:right;font-weight:500;font-size:12px;color:var(--muted)}
+details.card[open]>summary::after{content:"Hide"}
+details.card[open]>summary{margin-bottom:14px}
+details.sub>summary{cursor:pointer;color:var(--green);font-weight:600}
 .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
 .grow{flex:1 1 260px}
-.note{font-size:12px;color:var(--muted);margin-top:6px}
+.note{font-size:12.5px;color:var(--muted);margin-top:6px}
 .err{color:#A32020;font-size:13px;margin-top:8px;white-space:pre-wrap}
 .ok{color:#1D6B3A}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:820px){.two{grid-template-columns:1fr}}
-.imgbox{background:#1c1c1c;border-radius:8px;overflow:hidden;position:relative;min-height:120px}
+.imgbox{background:#14201c;border-radius:10px;overflow:hidden;position:relative;min-height:120px}
 .imgbox img,.imgbox canvas{display:block;width:100%;height:auto}
 #satCanvas{cursor:crosshair;touch-action:none}
+#runSteps{list-style:none;margin:0 0 14px;padding:0;font-size:13.5px}
+#runSteps li{padding:7px 0 7px 26px;border-bottom:1px solid var(--line);position:relative}
+#runSteps li::before{content:"";position:absolute;left:4px;top:13px;width:10px;height:10px;border-radius:50%;background:#1D6B3A}
+#runSteps li:last-child::before{background:var(--accent)}
+#runSteps li.err{margin:0}#runSteps li.err::before{background:#A32020}
 table{border-collapse:collapse;width:100%}
-td,th{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:middle}
-th{font-size:11px;color:var(--muted);font-weight:normal}
-.big{font-size:22px;font-weight:bold}
+td,th{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;font-size:13px;vertical-align:middle}
+th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+.big{font-size:22px;font-weight:700;color:var(--green)}
 .sum td{border:0;padding:3px 6px}
 .hidden{display:none!important}
 .spin{display:inline-block;width:14px;height:14px;border:2px solid #fff;border-top-color:transparent;border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
@@ -42,7 +62,7 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
 
 /* ---------- proposal ---------- */
 #proposalWrap{overflow:auto;background:#555;padding:14px;border-radius:10px}
-.page{width:11in;height:8.5in;background:var(--cream);color:var(--green);padding:.42in .5in .36in;position:relative;margin:0 auto 14px;overflow:hidden;font-size:12.5px;line-height:1.42}
+.page{width:11in;height:8.5in;background:var(--cream);color:var(--green);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;padding:.42in .5in .36in;position:relative;margin:0 auto 14px;overflow:hidden;font-size:12.5px;line-height:1.42}
 .ph{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
 .brand b{font-size:27px;letter-spacing:.5px;display:block;line-height:1.05}
 .brand span{font-size:11px;letter-spacing:.3px}
@@ -50,8 +70,11 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
 .addr b{font-size:14px;display:block}
 .page h1{font-size:30px;letter-spacing:.3px;line-height:1.1}
 .sub{margin:4px 0 9px;font-size:13.5px}
-.cols{display:grid;grid-template-columns:6.4in 1fr;gap:.32in}
-.mock{width:100%;height:5.6in;object-fit:cover;display:block;background:#222;border-radius:4px}
+.cols{display:grid;grid-template-columns:6.9in 1fr;gap:.3in}
+.mock{width:100%;aspect-ratio:3/2;object-fit:cover;display:block;background:#14201c;border-radius:6px}
+.how{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.2in;margin-top:.16in}
+.how div{border-top:2px solid var(--green);padding-top:6px;font-size:11px;line-height:1.4}
+.how b{display:block;font-size:12px}
 .terms{position:absolute;left:.5in;right:.5in;bottom:.3in;font-size:9.5px;line-height:1.45;color:var(--muted);border-top:1px solid var(--line);padding-top:7px}
 .cap{font-size:9.5px;color:var(--muted);margin-top:6px}
 .est h3{font-size:14px;letter-spacing:.3px;margin-bottom:12px}
@@ -71,6 +94,7 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
 @page{size:11in 8.5in;margin:0}
 @media print{
   body{background:#fff}
+  .topbar{display:none}
   #app{padding:0;max-width:none;margin:0}
   .page{height:8.48in}
   #app>*:not(#proposalCard){display:none!important}
@@ -83,155 +107,144 @@ th{font-size:11px;color:var(--muted);font-weight:normal}
 </style>
 </head>
 <body>
+<div class="topbar"><div class="in"><b>CLEAR VIEW</b><span id="modeNote">HOLIDAY LIGHTING &middot; QUOTE BUILDER</span></div></div>
 <div id="app">
-  <div class="top">
-    <div><h1 style="font-size:20px">Lights Quote Builder</h1><div class="note" id="modeNote">Clear View Holiday Lighting. Private tool.</div></div>
+  <details class="card" id="setBox">
+    <summary>Settings</summary>
     <div class="row">
-      <button class="alt" id="checkBtn">Check setup</button>
-      <input type="password" id="passIn" placeholder="Passcode" style="width:150px" autocomplete="off">
+      <input type="password" id="passIn" placeholder="Passcode" style="width:170px" autocomplete="off">
       <button class="alt" id="passBtn">Save passcode</button>
+      <button class="alt" id="checkBtn">Check setup</button>
       <span class="note" id="passMsg" style="margin:0"></span>
     </div>
-  </div>
-  <div id="checkOut" class="card hidden"></div>
+    <div id="checkOut" class="hidden" style="margin-top:12px"></div>
+  </details>
 
-  <div class="card">
-    <h2>1. Address</h2>
+  <div class="card hero">
+    <h1>New holiday lighting quote</h1>
+    <div class="note" style="margin:0 0 14px">Type the address. The tool measures the roofline, looks all the way around the house for the best view, makes the night mockup and builds the quote. About three minutes.</div>
     <div class="row">
-      <input class="grow" id="address" placeholder="174 Route 87, Columbia, CT" autocomplete="off">
-      <input id="custName" placeholder="Customer name (optional)" style="width:220px">
-      <button id="runBtn">Run quote</button>
-      <button class="alt" id="lookupBtn">Look up only</button>
+      <input class="grow" id="address" placeholder="Street address, town" autocomplete="off">
+      <input id="custName" placeholder="Customer name" style="width:210px">
+      <button id="runBtn" class="lg">Run quote</button>
     </div>
     <div id="lookupMsg" class="note"></div>
   </div>
 
   <div class="card hidden" id="runCard">
-    <h2>Quick quote</h2>
-    <ol id="runSteps" style="margin:0 0 10px;padding-left:20px;font-size:13px"></ol>
-    <div id="roofBox" class="hidden" style="margin-bottom:12px">
-      <b>Roofline estimate from Google roof data</b>
-      <table id="roofTable" style="margin-top:4px"></table>
-      <div class="note">Change the footage in step 3 if this looks off. Check it against the 3D view.</div>
-    </div>
+    <h2>Progress</h2>
+    <ol id="runSteps"></ol>
+    <details id="roofBox" class="sub hidden" style="margin-bottom:14px">
+      <summary id="roofSum">Roofline breakdown</summary>
+      <table id="roofTable" style="margin-top:6px"></table>
+      <div class="note">If this looks off, change "Roofline feet" under Pricing below.</div>
+    </details>
     <div id="pickBox" class="hidden">
-      <b>Photos found</b> <span class="note" id="pickNote"></span>
-      <div id="pickGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:8px"></div>
-      <div class="row" style="margin-top:6px"><button class="alt" id="retake3D">Add the current 3D view</button></div>
+      <b>Views of the house</b> <span class="note" id="pickNote"></span>
+      <div id="pickGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px;margin-top:8px"></div>
+      <div class="row" style="margin-top:8px"><button class="alt" id="retake3D">Add the current 3D view</button>
+        <span class="note" style="margin:0">Found a better angle yourself? Turn the 3D view below, then add it here.</span></div>
       <img id="pickSV" class="hidden" alt=""><img id="pick3D" class="hidden" alt=""><button id="useSV" class="hidden"></button><button id="use3D" class="hidden"></button>
-      <div class="note">Neither is good (trees, wrong house)? Upload the customer's photo in step 2, then click Generate mockup in step 5.</div>
     </div>
-    <div id="mockOut" class="hidden" style="margin-top:12px"><b>Mockup</b> <span class="note">Not right? Tap a different photo above to redo it.</span>
+    <div id="mockOut" class="hidden" style="margin-top:16px"><b>Mockup</b>
       <div class="imgbox" style="margin-top:8px;max-width:760px;position:relative"><img id="mockOutImg" alt=""><canvas id="markCanvas" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none;display:none"></canvas></div>
-      <div class="row" style="margin-top:8px">
+      <div class="row" style="margin-top:10px">
         <button class="alt" id="markBtn">Mark missed lights</button>
         <span id="markTools" class="hidden"><button class="alt" id="markUndo">Undo line</button> <button class="alt" id="markClear">Clear</button> <button id="markApply">Add lights where I drew</button></span>
-        <span class="note" id="markMsg"></span>
+        <button class="alt" id="redoMock">Redo mockup</button>
+        <span class="note" id="markMsg" style="margin:0"></span>
       </div></div>
-    <div id="confirmBox" class="hidden" style="margin-top:12px">
-      <b>Is this the same house?</b>
-      <div class="imgbox" style="margin-top:8px;max-width:760px"><img id="confirmImg" alt=""></div>
-      <div class="row" style="margin-top:8px"><button id="sameYes">Yes, build the proposal</button><button class="alt" id="sameNo">No, try the other photo</button></div>
-    </div>
-    <div id="doneBox" class="hidden" style="margin-top:12px">
-      <b>Quote ready.</b> <span class="note">Save the PDF, then put the numbers below into a Flyra estimate and attach the mockup.</span>
-      <div class="row" style="margin-top:8px"><button id="runPrint">Print / Save as PDF</button><button class="alt" id="saveMock">Download mockup image</button><button class="alt" id="copySum">Copy summary</button><span class="note" id="copySumMsg"></span></div>
-      <textarea id="sumText" rows="9" style="width:100%;margin-top:8px"></textarea>
-    </div>
-  </div>
-
-  <div class="two">
-    <div class="card">
-      <h2>2. House photo</h2>
-      <div class="imgbox"><img id="photo" alt=""></div>
-      <div id="svControls" class="hidden" style="margin-top:8px">
-        <div class="row"><label>Turn</label><input type="range" id="heading" min="0" max="359" step="1" style="flex:1"><span id="headingV"></span></div>
-        <div class="row"><label>Zoom</label><input type="range" id="fov" min="30" max="110" step="5" value="75" style="flex:1">
-          <label>Tilt</label><input type="range" id="pitch" min="-10" max="35" step="5" value="8" style="width:110px">
-          <button class="alt" id="svRefresh">Update view</button></div>
-      </div>
-      <div class="row" style="margin-top:10px">
-        <label for="upload">Or use your own photo (customer photo or Google Earth 3D screenshot):</label>
-        <input type="file" id="upload" accept="image/*">
-      </div>
-      <div id="photoMsg" class="note">No photo yet.</div>
-    </div>
-
-    <div class="card">
-      <h2>3. Roofline footage</h2>
-      <div class="note" style="margin:0 0 8px">Filled in automatically from Google's roof data. To check or measure by hand, use Measure mode in the 3D view below.</div>
-      <div class="hidden"><div class="imgbox"><canvas id="satCanvas" width="640" height="640"></canvas></div>
-      <div class="row" style="margin-top:8px">
-        <button class="alt" id="undoBtn">Undo point</button>
-        <button class="alt" id="breakBtn">Start new line</button>
-        <button class="alt" id="clearBtn">Clear</button>
-        <label>Zoom</label>
-        <select id="zoom"><option>19</option><option selected>20</option><option>21</option></select>
-        <span class="big"><span id="measFt">0</span> ft</span>
-      </div>
-      <div class="row" style="margin-top:8px"><label><input type="checkbox" id="slant"> This line is a slanted edge (gable or peak)</label>
-        <label>Slant factor</label><input type="number" id="slantF" value="1.15" min="1" max="2" step="0.05" style="width:70px"></div>
-      <div class="note">Click along each roof edge that gets lights. Trace each section as its own line: front gutter, each side you can see from the road, each gable. "Start new line" lifts the pen. Tick "slanted edge" for gable and peak lines (drawn in orange) so the tool adds the slope. Use the house photo to see which sections exist and where roofs overlap.</div></div>
-      <div class="row" style="margin-top:8px"><label>Roofline feet used in the quote</label><input type="number" id="roofFt" min="0" step="1" value="0"><label>at $</label><input type="number" id="roofRate" min="0" step="0.5" value="7"><label>per ft</label></div>
+    <div id="confirmBox" class="hidden"><img id="confirmImg" alt=""><button id="sameYes"></button><button id="sameNo"></button></div>
+    <div id="doneBox" class="hidden" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
+      <div class="row"><button id="runPrint">Save quote as PDF</button><button class="alt" id="saveMock">Download mockup image</button><button class="alt" id="copySum">Copy summary</button><span class="note" id="copySumMsg" style="margin:0"></span></div>
+      <textarea id="sumText" rows="9" style="width:100%;margin-top:10px"></textarea>
     </div>
   </div>
 
   <div class="card">
-    <h2>3D view (Google Earth data)</h2>
-    <div class="note" style="margin:0 0 8px">Same 3D model Google Earth shows. Drag to orbit. Use it to see every roof section and to measure true lengths, slopes included. If trees block the street photo, spin around, stop at the best front angle and click "Use this view as the house photo".</div>
-    <div id="v3" style="height:480px;border-radius:8px;overflow:hidden;background:#111;position:relative"></div>
-    <div class="row" style="margin-top:8px">
+    <h2>3D view of the house</h2>
+    <div id="v3" style="height:460px;border-radius:10px;overflow:hidden;background:#14201c;position:relative"></div>
+    <div class="row" style="margin-top:10px">
       <button class="alt" id="v3load">Load 3D view</button>
       <button class="alt" id="v3spin">Spin around house</button>
       <label>Turn</label><input type="range" id="v3h" min="0" max="359" step="1" value="0" style="width:150px">
       <label>Tilt</label><input type="range" id="v3p" min="-85" max="-5" step="1" value="-25" style="width:100px">
       <label>Distance</label><input type="range" id="v3r" min="20" max="160" step="1" value="55" style="width:100px">
+      <button class="alt" id="v3photo">Use this view as the house photo</button>
     </div>
-    <div class="row" style="margin-top:8px">
-      <label><input type="checkbox" id="v3measure"> Measure mode (click roof edges)</label>
-      <button class="alt" id="v3undo">Undo point</button>
-      <button class="alt" id="v3break">Start new section</button>
-      <button class="alt" id="v3clear">Clear</button>
-      <span class="big"><span id="v3ft">0</span> ft</span>
-      <button id="v3photo">Use this view as the house photo</button>
-    </div>
-    <div class="row" style="margin-top:8px"><label><input type="checkbox" id="sidesIn" checked> Sides visible from the road are lit (front + sides package)</label></div>
+    <details class="sub" style="margin-top:10px"><summary>Measure by hand</summary>
+      <div class="row" style="margin-top:8px">
+        <label><input type="checkbox" id="v3measure"> Measure mode (click along roof edges)</label>
+        <button class="alt" id="v3undo">Undo point</button>
+        <button class="alt" id="v3break">Start new section</button>
+        <button class="alt" id="v3clear">Clear</button>
+        <span class="big"><span id="v3ft">0</span> ft</span>
+      </div></details>
     <div id="v3msg" class="note"></div>
   </div>
 
   <div class="card">
-    <h2>4. Package and add-ons</h2>
-    <table id="items"><thead><tr><th>Item</th><th>Qty</th><th>Unit price</th><th>In house package</th><th>Line total</th></tr></thead><tbody></tbody></table>
-    <div class="note">Qty above zero with the box unticked shows as a priced optional add-on on page 2. Wreath and garland prices are placeholders until you confirm supplier cost.</div>
-    <div class="row" style="margin-top:12px">
-      <label><input type="checkbox" id="early"> Early bird: $200 off if booked before Thanksgiving</label>
+    <h2>Pricing</h2>
+    <div class="row" style="margin-bottom:10px">
+      <label>Roofline feet</label><input type="number" id="roofFt" min="0" step="1" value="0">
+      <label>at $</label><input type="number" id="roofRate" min="0" step="0.5" value="7"><label>per ft</label>
+      <label><input type="checkbox" id="sidesIn" checked> Sides visible from the road are lit</label>
+    </div>
+    <table id="items"><thead><tr><th>Add-on</th><th>Qty</th><th>Unit price</th><th>In package</th><th>Line total</th></tr></thead><tbody></tbody></table>
+    <div class="note">Tick "In package" to include an item in the price and the mockup. Left unticked, it shows on the quote as an optional extra.</div>
+    <div class="row" style="margin-top:14px">
+      <label><input type="checkbox" id="early"> Early bird: $200 off before Thanksgiving</label>
       <label>Minimum job $</label><input type="number" id="minJob" value="399" min="0" step="1">
       <label>Deposit %</label><input type="number" id="depPct" value="50" min="0" max="100" step="5">
       <label>Next-year discount %</label><input type="number" id="nextPct" value="15" min="0" max="100" step="1">
+      <label>Close in person at $</label><input type="number" id="visitMin" value="2000" min="0" step="100">
     </div>
-    <div class="row" style="margin-top:8px"><label>Close in person when the job is at or over $</label><input type="number" id="visitMin" value="2000" min="0" step="100"></div>
-    <table class="sum" style="margin-top:10px;max-width:420px" id="sumTable"></table>
-    <div id="visitNote" class="hidden" style="margin-top:12px;border:2px solid var(--accent);border-radius:8px;padding:12px">
+    <table class="sum" style="margin-top:12px;max-width:420px" id="sumTable"></table>
+    <div id="visitNote" class="hidden" style="margin-top:12px;border:2px solid var(--accent);border-radius:10px;padding:14px">
       <b style="color:var(--accent)">Big job: close this one in person.</b>
-      <div class="note" style="margin:4px 0 8px">Job value is <span id="visitVal"></span>. Don't send the price. Text them to set up a visit, then bring the mockup and proposal with you.</div>
+      <div class="note" style="margin:4px 0 8px">Job value is <span id="visitVal"></span>. Don't send the price. Text them to set up a visit, then bring the mockup and quote with you.</div>
       <textarea id="visitText" rows="4" style="width:100%"></textarea>
-      <div class="row" style="margin-top:6px"><button class="alt" id="copyVisit">Copy text</button><span class="note" id="copyMsg"></span></div>
+      <div class="row" style="margin-top:6px"><button class="alt" id="copyVisit">Copy text</button><span class="note" id="copyMsg" style="margin:0"></span></div>
     </div>
   </div>
 
-  <div class="card">
-    <h2>5. Mockup</h2>
-    <div class="row"><label><input type="checkbox" id="showOptional"> Also draw the optional add-ons in the mockup</label><button class="alt" id="promptBtn">Rebuild prompt</button></div>
-    <textarea id="prompt" rows="7" style="width:100%;margin-top:8px"></textarea>
-    <div class="row" style="margin-top:8px"><button id="mockBtn">Generate mockup</button><span class="note">Takes up to a minute or two. Each one costs a few cents of OpenAI credit.</span></div>
+  <details class="card">
+    <summary>Use a different photo</summary>
+    <div class="two">
+      <div>
+        <div class="imgbox"><img id="photo" alt=""></div>
+        <div id="photoMsg" class="note">No photo yet.</div>
+      </div>
+      <div>
+        <div class="row"><label for="upload">Upload a photo (from the customer, or your own):</label><input type="file" id="upload" accept="image/*"></div>
+        <div id="svControls" class="hidden" style="margin-top:14px">
+          <b>Street View</b>
+          <div class="row" style="margin-top:6px"><label>Turn</label><input type="range" id="heading" min="0" max="359" step="1" style="flex:1"><span id="headingV"></span></div>
+          <div class="row"><label>Zoom</label><input type="range" id="fov" min="30" max="110" step="5" value="75" style="flex:1">
+            <label>Tilt</label><input type="range" id="pitch" min="-10" max="35" step="5" value="8" style="width:110px">
+            <button class="alt" id="svRefresh">Update view</button></div>
+        </div>
+        <div class="note">After changing the photo, click "Generate mockup" under Mockup instructions.</div>
+      </div>
+    </div>
+  </details>
+
+  <details class="card">
+    <summary>Mockup instructions</summary>
+    <div class="row"><label><input type="checkbox" id="showOptional"> Also draw the optional extras in the mockup</label><button class="alt" id="promptBtn">Reset instructions</button><button class="alt" id="lookupBtn">Look up address only</button></div>
+    <textarea id="prompt" rows="8" style="width:100%;margin-top:8px"></textarea>
+    <div class="row" style="margin-top:8px"><button id="mockBtn">Generate mockup</button><span class="note" style="margin:0">About a minute, a few cents each.</span></div>
     <div id="mockMsg" class="err"></div>
     <div class="imgbox hidden" id="mockBox" style="margin-top:10px;max-width:760px"><img id="mockImg" alt=""></div>
-  </div>
+  </details>
+
+  <div class="hidden"><canvas id="satCanvas" width="640" height="640"></canvas><button id="undoBtn"></button><button id="breakBtn"></button><button id="clearBtn"></button>
+    <select id="zoom"><option>19</option><option selected>20</option><option>21</option></select><span id="measFt">0</span><input type="checkbox" id="slant"><input type="number" id="slantF" value="1.15"></div>
 
   <div class="card" id="proposalCard">
-    <h2>6. Proposal</h2>
-    <div class="row" style="margin-bottom:10px"><button id="buildBtn">Build proposal</button><button id="printBtn" class="alt">Print / Save as PDF</button>
-      <span class="note">In the print window choose "Save as PDF", landscape, margins none, background graphics on.</span></div>
+    <h2>Quote</h2>
+    <div class="row" style="margin-bottom:12px"><button id="buildBtn">Rebuild quote</button><button id="printBtn" class="alt">Save as PDF</button>
+      <span class="note" style="margin:0">In the print window choose "Save as PDF", landscape, margins none, background graphics on.</span></div>
     <div id="proposalWrap" class="hidden"></div>
   </div>
 </div>
@@ -291,8 +304,8 @@ function stub(w,h,top,bot,text){
 }
 function setPhoto(dataUrl,src){
   S.photoDark=false;if(typeof brightness==='function')brightness(dataUrl).then(function(b){S.photoDark=b<15;if(S.photoDark)$('photoMsg').textContent='This photo is blank or almost black. Use another.'});
-  var i=new Image();i.onload=function(){S.portrait=i.naturalHeight>i.naturalWidth;S.photo=dataUrl;S.photoSrc=src;$('photo').src=dataUrl;
-    $('photoMsg').textContent='Using: '+src+'. If the house is hidden or far away, upload a better photo.';};i.src=dataUrl;
+  return new Promise(function(ok){var i=new Image();i.onload=function(){S.portrait=i.naturalHeight>i.naturalWidth;S.photo=dataUrl;S.photoSrc=src;$('photo').src=dataUrl;
+    $('photoMsg').textContent='Using: '+src+'.';ok()};i.onerror=function(){ok()};i.src=dataUrl});
 }
 
 /* ---------- 1. lookup ---------- */
@@ -418,17 +431,18 @@ function buildPrompt(){
   var sides=$('sidesIn').checked,aerial=/3D/.test(S.photoSrc||'');
   var c=calc(),parts=['warm-white C9 Christmas bulbs, evenly spaced about 12 inches apart, running along the roofline facing the street: the front gutters, eaves and the sloped edges of every front-facing gable (but not dormers unless they are listed below)'+(sides?', and continuing along the side rooflines and side gable edges that are visible from the street':'')+'. Light the COMPLETE outline of every one of those roof edges from end to end, including both sloped sides of each gable and the far corners at the edges of the picture, even where they are partly hidden or hard to see'];
   c.pkg.concat($('showOptional').checked?c.opt:[]).forEach(function(i){if(i.mock)parts.push(i.mock)});
-  $('prompt').value=(aerial?'This image is a blurry 3D aerial model of a real house, used only as a reference for its design. Create a NEW photorealistic nighttime photograph of this same house as seen from the street in front of it, at eye level (camera about 5 feet off the ground, standing at the end of the driveway or the front lawn), not from the air. Keep the house the same: same shape and layout, number of stories, roof lines and gables, dormers, garage position and doors, window layout, siding color and front entry. Clean up the 3D model look: real, sharp trees, bushes and lawn. Connecticut in December, professionally decorated with Christmas lights.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
+  $('prompt').value=(aerial?'This image is a blurry 3D aerial model of a real house, used only as a reference for its design. Turn it into a photorealistic nighttime photograph of this same house from a lower viewpoint in front of it, as if taken from the front lawn, keeping the same side of the house facing the camera. Keep the house identical: same shape and layout, number of stories, roof lines and gables, dormers, garage position and number of garage doors, window layout, siding color and front entry. Do not invent or rearrange anything. Clean up the 3D model look: real, sharp trees, bushes and lawn. Connecticut in December, professionally decorated with Christmas lights.\n\n':'Turn this daytime photo into a photorealistic nighttime photograph of the SAME house in Connecticut in December, professionally decorated with Christmas lights.\n\n')+
    'Lights to add, and nothing else:\n- '+parts.join('\n- ')+'\n\n'+
-   'Keep the house exactly as it is: same architecture, roof shape, siding, windows, doors, garage, chimney, trees, bushes, driveway and camera angle. Do not add, remove or move any part of the building or landscaping. Do not put lights on anything not listed above.\n\n'+
+   'This is the customer\'s real home, so change as little as possible. Keep the house exactly as it is: same architecture, roof shape, siding, windows, doors, chimney, trees, bushes and driveway. The number, size and position of garage doors, windows, doors, dormers and chimneys must stay exactly the same. Do not add, remove, move or resize any part of the building or landscaping, and do not add decorations. '+
+   'Only put lights where listed above. In particular: NO lights along the roof ridge (the peak line across the very top of the roof), none on chimneys, none around windows, doors or garage doors, and none on trees or bushes unless they are listed above.\n\n'+
    'Scene: dark night sky, a light dusting of fresh snow on the roof, lawn and plantings, a few gentle snowflakes falling, a soft warm glow from the windows, and a subtle warm glow from the lights on nearby surfaces. Real camera look, natural exposure, no text, no watermarks, no people, no cars added.';
 }
 function mockup(){
-  if(!S.photo){$('mockMsg').textContent='Add a house photo first (step 2).';return}
+  if(!S.photo){$('mockMsg').textContent='Add a house photo first.';return}
   if(S.photoDark){$('mockMsg').textContent='The house photo is blank or almost black. Capture or upload a real photo first.';return}
   if(!$('prompt').value.trim())buildPrompt();
   var b=$('mockBtn');b.disabled=true;b.innerHTML='<span class="spin"></span>Generating...';$('mockMsg').textContent='';
-  var p=DEMO?new Promise(function(ok){setTimeout(function(){ok({image:stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup')})},400)}):api({action:'mockup',image:S.photo,prompt:$('prompt').value,portrait:S.portrait,fidelity:/3D/.test(S.photoSrc||'')?'low':'high'});
+  var p=DEMO?new Promise(function(ok){setTimeout(function(){ok({image:stub(1536,1024,'#0b1026','#3a2f3a','DEMO mockup')})},400)}):api({action:'mockup',image:S.photo,prompt:$('prompt').value,portrait:S.portrait,fidelity:'high'});
   return p.then(function(r){S.mock=r.image;$('mockImg').src=r.image;$('mockBox').classList.remove('hidden');buildProposal();return r.image})
    .catch(function(e){$('mockMsg').textContent=e.message;return null})
    .then(function(x){b.disabled=false;b.textContent='Generate mockup';return x});
@@ -447,8 +461,9 @@ function buildProposal(){
     '<div class="ph"><div class="brand"><b>CLEAR VIEW</b><span>HOLIDAY LIGHTING | EVERGREEN</span></div>'+
     '<div class="addr"><b>'+(name?esc(name)+'<br>':'')+esc(L.street||'')+'</b>'+esc(L.cityLine||'')+'</div></div>'+
     '<div class="cols">'+
-      '<div>'+(mock?'<img class="mock" src="'+mock+'" alt="">':'<div class="mock"></div>')+
-        '<div class="cap">Illustration of your home lit up. Not a photo of a finished install; final placement is confirmed before installation.</div></div>'+
+      '<div>'+(mock?'<img class="mock" src="'+mock+'"'+(S.portrait?' style="object-fit:contain"':'')+' alt="">':'<div class="mock"></div>')+
+        '<div class="cap">Illustration of your home lit up. Not a photo of a finished install; final placement is confirmed before installation.</div>'+
+        '<div class="how"><div><b>1. Book</b>Approve the quote and pay the deposit to hold your install date.</div><div><b>2. We install</b>Our crew hangs and tests everything, and fixes any outage all season.</div><div><b>3. We take down and store</b>We remove the lights in late January or early February and store them for next year.</div></div></div>'+
       '<div class="est">'+
         '<h3>YOUR HOLIDAY LIGHTING QUOTE</h3>'+lines+
         '<div class="rule"></div><div class="price">'+money(c.final)+'</div><div class="small">for the season, plus applicable tax</div>'+
@@ -472,9 +487,10 @@ $('heading').oninput=function(){$('headingV').textContent=this.value+'°'};
 $('upload').onchange=function(){var f=this.files[0];if(!f)return;blobToImg(f).then(function(img){setPhoto(imgToDataURL(img,1536),'your uploaded photo')}).catch(function(){$('photoMsg').textContent='Could not read that file. Try a JPG or PNG.'})};
 $('promptBtn').onclick=buildPrompt;
 $('mockBtn').onclick=mockup;
-$('buildBtn').onclick=buildProposal;
+$('buildBtn').onclick=function(){if(S.loc&&S.mock&&!$('runCard').classList.contains('hidden'))finishQuote();else buildProposal()};
+$('redoMock').onclick=function(){if(S.cands&&S.lastPick!=null)makeMock(S.lastPick);else mockup().then(function(img){if(img){$('mockOutImg').src=img}})};
 $('printBtn').onclick=function(){buildProposal();setTimeout(function(){window.print()},300)};
-function passState(){$('passMsg').textContent=pass()?'Passcode saved on this device.':'No passcode saved yet.'}
+function passState(){$('passMsg').textContent=pass()?'Passcode saved on this device.':'No passcode saved yet. Type it and click Save passcode.';if(!pass())$('setBox').open=true}
 $('passBtn').onclick=function(){var v=$('passIn').value.trim();if(!v){$('passMsg').textContent='Type the passcode first.';return}
   S.pass=v;try{localStorage.setItem('lightsPass',v)}catch(e){}$('passIn').value='';passState()};
 $('passIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('passBtn').click()});
@@ -482,11 +498,11 @@ $('checkBtn').onclick=function(){
   var o=$('checkOut');o.classList.remove('hidden');o.textContent='Checking...';
   api({action:'check'}).then(function(r){
     var row=function(k,v){var good=v===true||v==='ok';return '<tr><td>'+k+'</td><td class="'+(good?'ok':'err')+'" style="margin:0">'+(good?'OK':esc(v===false?'missing in Vercel':v))+'</td></tr>'};
-    o.innerHTML='<h2>Setup check</h2><table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap)+row('Map Tiles API (3D view)',r.tiles3d)+row('Solar API (roof data)',r.solar):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
+    o.innerHTML='<table>'+row('Passcode',r.passcode)+row('Google Maps key',r.googleKey)+(r.googleKey?row('Geocoding API',r.geocoding)+row('Street View Static API',r.streetView)+row('Maps Static API',r.staticMap)+row('Map Tiles API (3D view)',r.tiles3d)+row('Solar API (roof data)',r.solar):'')+row('OpenAI key',r.openaiKey)+(r.openaiKey?row('OpenAI image model ('+esc(r.model)+')',r.openai):'')+'</table>';
   }).catch(function(e){o.innerHTML='<div class="err">'+esc(e.message)+'</div>'});
 };
 $('early').checked=new Date()<=EARLY_END;
-if(DEMO)$('modeNote').textContent='DEMO MODE: placeholder images, no Google or OpenAI calls.';
+if(DEMO)$('modeNote').textContent='DEMO MODE';
 recalc();draw();buildPrompt();passState();
 if(DEMO&&/[?&]auto=1/.test(location.search)){ // layout self-test: fills a sample quote
   $('address').value='174 Route 87, Columbia, CT';$('roofFt').value=70;$('q_columns').value=2;$('q_tree').value=20;$('q_shrubs').value=4;
@@ -579,12 +595,12 @@ $('sidesIn').onchange=function(){recalc();buildPrompt()};
 function brightness(url){return new Promise(function(ok){var i=new Image();i.onload=function(){var c=document.createElement('canvas');c.width=64;c.height=32;var x=c.getContext('2d');x.drawImage(i,0,0,64,32);
   var d=x.getImageData(0,0,64,32).data,t=0;for(var k=0;k<d.length;k+=4)t+=(d[k]+d[k+1]+d[k+2])/3;ok(t/(d.length/4))};i.onerror=function(){ok(0)};i.src=url})}
 function sleep(ms){return new Promise(function(r){setTimeout(r,ms)})}
-function capture3D(){
+function capture3D(fast){
   if(!V.viewer){$('v3msg').textContent='Load the 3D view first.';return Promise.resolve(null)}
   $('v3msg').textContent='Capturing the 3D view...';
   $('v3').scrollIntoView({block:'center'});
   // wait for Google to stream the detailed model: loaded and steady for 2 seconds (max ~25 s)
-  return sleep(800).then(function(){v3view();return sleep(3000)}).then(function(){var tries=0,steady=0;
+  return sleep(fast?300:800).then(function(){v3view();return sleep(fast?1500:3000)}).then(function(){var tries=0,steady=0;
     return (function wait(){V.viewer.scene.requestRender();tries++;
       steady=(V.tiles&&V.tiles.tilesLoaded)?steady+1:0;
       return (steady>=4||tries>44)?sleep(300):sleep(500).then(wait)})();
@@ -598,7 +614,7 @@ function capture3D(){
     });
   });
 }
-$('v3photo').onclick=function(){capture3D().then(function(d){if(!d)return;setPhoto(d,'Google Earth 3D view');setTimeout(buildPrompt,50);$('v3msg').textContent='This view is now the house photo. Generate the mockup in step 5.'})};
+$('v3photo').onclick=function(){capture3D().then(function(d){if(!d)return;setPhoto(d,'Google Earth 3D view');setTimeout(buildPrompt,50);$('v3msg').textContent='This view is now the house photo. Click Redo mockup.'})};
 /* ---------- Run quote: one button ---------- */
 function angDiff(a,b){var d=Math.abs(((a-b)%360+360)%360);return d>180?360-d:d}
 function roofEstimate(R,streetDir){
@@ -647,21 +663,17 @@ function runQuote(){
       $('roofTable').innerHTML='<tr><th>Facing</th><th>Pitch</th><th>Eave</th><th>Slope</th><th>Counted</th><th></th></tr>'+e.rows.map(function(r){
         return '<tr><td>'+r.face+'</td><td>'+Math.round(r.pitch)+'°</td><td>'+Math.round(r.eave)+' ft</td><td>'+Math.round(r.rake)+' ft</td><td><b>'+Math.round(r.ft)+' ft</b></td><td class="small">'+esc(r.what)+'</td></tr>'}).join('')+
         '<tr><td colspan="4"><b>Total</b></td><td><b>'+e.total+' ft</b></td><td class="small">Google imagery quality: '+esc(R.quality||'?')+'</td></tr>';
-      $('roofBox').classList.remove('hidden');
+      $('roofBox').classList.remove('hidden');$('roofSum').textContent='Roofline: '+e.total+' ft (show breakdown)';
       if(e.total>0){$('roofFt').value=e.total;recalc()}
-      s2.textContent='Roofline estimate: '+e.total+' ft (check the table; edit in step 3 if needed)';
+      s2.textContent='Roofline estimate: '+e.total+' ft ';
       if(R.bbox){var dx=(R.bbox.ne.longitude-R.bbox.sw.longitude)*111320*Math.cos(L.lat*Math.PI/180),dy=(R.bbox.ne.latitude-R.bbox.sw.latitude)*110540;$('v3r').value=Math.min(150,Math.max(35,Math.round(Math.hypot(dx,dy)*1.6)))}
-    }).catch(function(err){s2.textContent='No automatic footage: '+err.message+'. Measure in the 3D view (step 3).';s2.className='err'});
-    var s3=step('Looking around the house: Street View plus 5 angles of the 3D model...');
+    }).catch(function(err){s2.textContent='No automatic footage: '+err.message+'. Type the feet under Pricing, or measure in the 3D view.';s2.className='err'});
+    var s3=step('Looking all the way around the house in 3D (8 directions), then zooming in and out on the best one...');
     var svP=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
     var base=L.streetView?L.streetView.heading:0;
     var v3P=roofP.then(function(){return init3D()}).then(function(ok){
       if(!ok)return [];
-      var out=[],offs=[0,-35,35,-70,70];
-      return offs.reduce(function(pr,o){return pr.then(function(){
-        $('v3h').value=((base+o)%360+360)%360;$('v3p').value=-22;
-        return capture3D().then(function(d){if(d)out.push({img:d,label:'3D view, turned '+(o>0?'+':'')+o+'°'})});
-      })},sleep(2500)).then(function(){return out});
+      return sleep(2500).then(function(){return searchViews(base,s3,L.formatted)});
     });
     return Promise.all([svP,v3P]).then(function(r){
       var cands=[];if(r[0])cands.push({img:r[0],label:'Street View'});cands=cands.concat(r[1]);
@@ -669,7 +681,7 @@ function runQuote(){
       if(!cands.length){s3.textContent='No photos of this house. Text the customer for a photo of the front.';s3.className='err';showPhotoAsk();return}
       s3.textContent='Comparing '+cands.length+' photos to find the clearest view of the front...';
       return Promise.all(cands.map(function(c){return shrink(c.img,512)})).then(function(small){
-        return api({action:'pick',images:small,address:L.formatted});
+        return api({action:'pick',images:small,address:L.formatted,hint:'The images are, in order: '+cands.map(function(c,i){return i+' = '+c.label}).join('; ')+'.'});
       }).then(function(pk){
         (pk.scores||[]).forEach(function(sc,i){if(cands[i])cands[i].score=sc});
         drawCands(pk.best);$('pickBox').classList.remove('hidden');
@@ -679,6 +691,29 @@ function runQuote(){
       }).catch(function(e){s3.textContent='Could not compare photos automatically ('+e.message+'). Tap the best one.';drawCands(-1);$('pickBox').classList.remove('hidden')});
     });
   }).catch(function(e){step('Stopped: '+e.message,'err')}).then(function(){$('runBtn').disabled=false});
+}
+function seq(fns){var out=[];return fns.reduce(function(p,f){return p.then(f).then(function(x){out.push(x)})},Promise.resolve()).then(function(){return out})}
+function capAt(h,p,r,label){
+  h=((Math.round(h)%360)+360)%360;$('v3h').value=h;$('v3p').value=p;$('v3r').value=Math.round(r);
+  return capture3D(true).then(function(d){return d?{img:d,label:label,h:h,p:p,r:r}:null});
+}
+// Stage 1: 8 directions all the way around. Stage 2: around the best direction, turn a little, zoom in/out, go lower/higher.
+function searchViews(base,stepEl,address){
+  var r0=+$('v3r').value||55,dirs=[0,45,90,135,180,225,270,315];
+  return seq(dirs.map(function(o,i){return function(){stepEl.textContent='Looking around the house in 3D: direction '+(i+1)+' of 8...';return capAt(base+o,-20,r0,'3D, turned '+o+'°')}}))
+  .then(function(list){
+    list=list.filter(Boolean);if(!list.length)return [];
+    stepEl.textContent='Picking the best direction...';
+    return Promise.all(list.map(function(c){return shrink(c.img,512)})).then(function(sm){return api({action:'pick',images:sm,address:address,
+      hint:'All are views of a 3D map model, taken from 8 directions around the house. Image 0 is taken from the street side, which is usually the front.'})})
+    .then(function(pk){
+      if(pk.usable===false)return [];
+      var b=list[pk.best]||list[0];
+      var tries=[[b.h-15,b.p,r0,'turned a bit left'],[b.h+15,b.p,r0,'turned a bit right'],[b.h,-12,r0*0.7,'closer and lower'],[b.h,-28,r0*0.7,'closer, from above'],[b.h,-12,r0*1.35,'farther and lower'],[b.h,-28,r0*1.35,'farther, from above']];
+      return seq(tries.map(function(t,i){return function(){stepEl.textContent='Zooming and adjusting around the best direction: '+(i+1)+' of 6...';return capAt(t[0],t[1],t[2],'3D, '+b.label.replace('3D, ','')+', '+t[3])}}))
+        .then(function(l2){return [b].concat(l2.filter(Boolean))});
+    }).catch(function(){return list.slice(0,7)});
+  });
 }
 function shrink(d,max){return new Promise(function(ok){var i=new Image();i.onload=function(){ok(imgToDataURL(i,max))};i.onerror=function(){ok(d)};i.src=d})}
 function drawCands(best){
@@ -697,10 +732,10 @@ function showPhotoAsk(){
 }
 function makeMock(i){
   var c=(S.cands||[])[i];if(!c)return;S.lastPick=i;drawCands(i);
-  setPhoto(c.img,c.label==='Street View'?'Street View':'Google Earth 3D view');
+  var ready=setPhoto(c.img,c.label==='Street View'?'Street View':'Google Earth 3D view');
   $('mockOut').classList.add('hidden');$('doneBox').classList.add('hidden');
   var s4=step('Making the night mockup from "'+c.label+'" (about a minute)...');
-  return sleep(300).then(function(){buildPrompt();return mockup()}).then(function(img){
+  return ready.then(function(){buildPrompt();return mockup()}).then(function(img){
     if(!img){s4.textContent='Mockup failed: '+$('mockMsg').textContent;s4.className='err';return}
     s4.textContent='Mockup ready.';$('mockOutImg').src=img;$('mockOut').classList.remove('hidden');
     finishQuote();
@@ -717,7 +752,7 @@ $('retake3D').onclick=function(){
 };
 $('sameNo').onclick=function(){$('confirmBox').classList.add('hidden');S.mock=null;step('Mockup rejected. Pick the other photo or upload one.');$('pickBox').classList.remove('hidden');$('pickBox').scrollIntoView({block:'start'})};
 function finishQuote(){
-  if(!(+$('roofFt').value>0)){step('No roofline footage yet: Google roof data is missing for this house. Type the feet in step 3 (or measure in the 3D view), then click "Build proposal".','err');
+  if(!(+$('roofFt').value>0)){step('No roofline footage yet: Google roof data is missing for this house. Type the feet under Pricing (or measure in the 3D view), then click "Rebuild quote".','err');
     $('roofFt').scrollIntoView({block:'center'});$('roofFt').focus();return}
   $('confirmBox').classList.add('hidden');buildProposal();
   var c=calc(),L=S.loc,name=$('custName').value.trim(),first=(name.split(' ')[0])||'there';
