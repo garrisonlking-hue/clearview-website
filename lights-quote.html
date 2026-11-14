@@ -61,6 +61,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
 .sugg div{padding:9px 12px;cursor:pointer;font-size:14px;border-bottom:1px solid #F1EEE6}
 .sugg div:last-child{border-bottom:0}.sugg div:hover,.sugg div.on{background:#F3F6F4}
 .sugg small{display:block;color:var(--muted);font-size:12px}
+#photoCard.drop{outline:3px dashed var(--green);outline-offset:-6px;background:#F3F6F4}
 .chip{border:1px solid #CFCABD;background:#fff;color:#1E2B27;font-weight:500;padding:6px 10px;border-radius:20px;font-size:13px}
 .chip i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px;vertical-align:0}
 .chip.on{border-color:var(--green);box-shadow:0 0 0 2px rgba(23,63,53,.2);background:#F3F6F4}
@@ -150,10 +151,11 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     <div class="note" style="margin:0 0 10px">Have a good picture of the front of the house? Use it and the tool skips the search and makes the mockup from your photo.</div>
     <div class="row">
       <label class="alt" for="upload2" style="display:inline-block;border:1px solid #C9C4B6;border-radius:8px;padding:9px 16px;color:var(--green);font-weight:500;font-size:14px;cursor:pointer;background:#fff">Upload a photo</label>
-      <input type="file" id="upload2" accept="image/*" class="hidden">
+      <input type="file" id="upload2" accept="image/*" multiple class="hidden">
       <button class="alt" id="flyraPhotosBtn">Get photos from Flyra</button>
-      <span class="note" id="photoPickMsg" style="margin:0"></span>
+      <span class="note" id="photoPickMsg" style="margin:0">Or drag photos onto this box.</span>
     </div>
+    <div id="myGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px"></div>
     <div id="pinnedBox" class="hidden" style="margin-top:12px;display:flex;gap:12px;align-items:center">
       <img id="pinnedImg" alt="" style="width:180px;border-radius:8px">
       <div><b>This photo will be used for the mockup.</b><div class="row" style="margin-top:6px"><button class="alt" id="pinnedDel">Don't use it</button><button class="alt hidden" id="pinnedMock">Make the mockup from it now</button></div></div>
@@ -1003,8 +1005,34 @@ function pinPhoto(d,src){
   var ran=S.loc&&!$('runCard').classList.contains('hidden');$('pinnedMock').classList.toggle('hidden',!ran);
   $('photoPickMsg').textContent=ran?'':'Now type the address and click Run quote.';
 }
-$('upload2').onchange=function(){var f=this.files[0];if(!f)return;blobToImg(f).then(function(img){pinPhoto(imgToDataURL(img,1536),'your photo')}).catch(function(){$('photoPickMsg').textContent='Could not read that file. Try a JPG or PNG.'})};
-$('pinnedDel').onclick=function(){S.pinned=null;$('pinnedBox').classList.add('hidden')};
+// Several photos at once, from the file picker or dragged onto the House photo box
+S.myPhotos=[];
+function drawMine(){
+  $('myGrid').innerHTML=S.myPhotos.map(function(p,i){return '<div style="border:3px solid '+(S.pinned===p.img?'#1D6B3A':'transparent')+';border-radius:10px;padding:2px"><img src="'+p.img+'" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block" alt=""><div class="row" style="margin-top:4px;gap:4px"><button class="alt" data-u="'+i+'" style="padding:4px 10px;font-size:12px">'+(S.pinned===p.img?'Using this':'Use this')+'</button><button class="alt" data-x="'+i+'" style="padding:4px 8px;font-size:12px">Remove</button></div></div>'}).join('');
+  [].forEach.call($('myGrid').querySelectorAll('button[data-u]'),function(b){b.onclick=function(){var p=S.myPhotos[+b.dataset.u];pinPhoto(p.img,p.label);drawMine()}});
+  [].forEach.call($('myGrid').querySelectorAll('button[data-x]'),function(b){b.onclick=function(){var p=S.myPhotos.splice(+b.dataset.x,1)[0];if(S.pinned===p.img){S.pinned=null;$('pinnedBox').classList.add('hidden')}drawMine()}});
+}
+function addPhotos(files){
+  files=[].filter.call(files||[],function(f){return /^image\//.test(f.type)||/\.(heic|jpe?g|png|webp)$/i.test(f.name)});
+  if(!files.length){$('photoPickMsg').textContent='Those weren\'t photos. Use JPG, PNG or WebP.';return}
+  $('photoPickMsg').textContent='Adding '+files.length+' photo'+(files.length>1?'s':'')+'...';
+  Promise.all(files.map(function(f){return blobToImg(f).then(function(img){return imgToDataURL(img,1536)}).catch(function(){return null})})).then(function(list){
+    var ok=list.filter(Boolean),ran=S.loc&&!$('runCard').classList.contains('hidden');
+    ok.forEach(function(d){var p={img:d,label:'Your photo '+(S.myPhotos.length+1)};S.myPhotos.push(p);if(ran){S.cands=(S.cands||[]).concat([{img:d,label:p.label}])}});
+    if(ok.length&&!S.pinned)pinPhoto(ok[0],'Your photo 1');
+    if(ran)drawCands(-1);
+    drawMine();
+    $('photoPickMsg').textContent=ok.length+' photo'+(ok.length>1?'s':'')+' added'+(ok.length<list.length?' ('+(list.length-ok.length)+' could not be read: iPhone HEIC files may need to be exported as JPG)':'')+'. The green one is used for the mockup; tap "Use this" to switch.';
+  });
+}
+$('upload2').onchange=function(){addPhotos(this.files);this.value=''};
+['dragenter','dragover'].forEach(function(ev){$('photoCard').addEventListener(ev,function(e){e.preventDefault();this.classList.add('drop')})});
+['dragleave','drop'].forEach(function(ev){$('photoCard').addEventListener(ev,function(e){e.preventDefault();this.classList.remove('drop')})});
+$('photoCard').addEventListener('drop',function(e){addPhotos(e.dataTransfer.files)});
+// a photo dropped anywhere else on the page goes to the House photo box instead of opening in the browser
+window.addEventListener('dragover',function(e){e.preventDefault()});
+window.addEventListener('drop',function(e){if(!$('photoCard').contains(e.target)){e.preventDefault();if(e.dataTransfer&&e.dataTransfer.files.length){addPhotos(e.dataTransfer.files);$('photoCard').scrollIntoView({block:'start'})}}});
+$('pinnedDel').onclick=function(){S.pinned=null;$('pinnedBox').classList.add('hidden');if(S.myPhotos)drawMine()};
 $('pinnedMock').onclick=function(){if(!S.pinned)return;S.cands=(S.cands||[]).concat([{img:S.pinned,label:'Your photo'}]);$('runCard').scrollIntoView({block:'start'});makeMock(S.cands.length-1)};
 function urlToData(u){
   return new Promise(function(ok,no){var i=new Image();i.crossOrigin='anonymous';i.onload=function(){try{ok(imgToDataURL(i,1536))}catch(e){no(e)}};i.onerror=no;i.src=u})
