@@ -211,6 +211,18 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     </div>
   </div>
 
+  <div class="card" id="svwCard">
+    <h2>Walk around in Street View</h2>
+    <div class="note" id="svwMsg">Run a quote (or click Next spot after looking up an address) to load every Street View spot around the house.</div>
+    <div id="svwPano" class="hidden" style="height:440px;border-radius:10px;overflow:hidden;margin-top:8px;background:#14201c"></div>
+    <div id="svwStatic" class="hidden" style="margin-top:8px"><div class="imgbox" style="max-width:760px"><img id="svwImg" alt=""></div></div>
+    <div class="row" style="margin-top:10px">
+      <button class="alt" id="svwPrev">&#9664; Previous spot</button><span id="svwSpot" class="small"></span><button class="alt" id="svwNext">Next spot &#9654;</button>
+      <span id="svwSl" style="display:contents"><label>Turn</label><input type="range" id="svwH" min="-70" max="70" step="2" value="0" style="width:120px"><label>Zoom</label><input type="range" id="svwZ" min="25" max="110" step="5" value="70" style="width:100px"><label>Tilt</label><input type="range" id="svwP" min="-5" max="35" step="1" value="8" style="width:80px"></span>
+      <button id="svwUse">Use this view</button>
+    </div>
+  </div>
+
   <div class="card">
     <h2>3D view of the house</h2>
     <div id="v3" style="height:460px;border-radius:10px;overflow:hidden;background:#14201c;position:relative"></div>
@@ -864,50 +876,137 @@ function runQuote(){
       return roofP.then(function(){S.cands=[{img:S.pinned,label:'Your photo'}];drawCands(0);$('pickBox').classList.remove('hidden');return makeMock(0)});
     }
     if($('angleManual').checked){
-      var sm=step('Your turn: loading the 3D view and Street View...');
-      var svM=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
-      return Promise.all([svM,roofP.then(function(){return init3D()})]).then(function(r){
-        S.manual=true;S.cands=r[0]?[{img:r[0],label:'Street View'}]:[];drawCands(-1);$('pickBox').classList.remove('hidden');
-        sm.textContent='Your turn: turn the 3D view below (drag, or use Turn, Tilt and Distance) until the front of the house looks best, then click "Use this view as the house photo". Or tap "Use this" on Street View, or upload a photo above.';
-        $('v3').scrollIntoView({block:'center'});
+      var sm=step('Your turn: loading Street View around the house and the 3D view...');
+      return getSpots().catch(function(){return []}).then(function(){
+        S.manual=true;S.cands=[];drawCands(-1);$('pickBox').classList.remove('hidden');svwOpen();
+        sm.textContent='Your turn: in "Walk around in Street View" below, find the view that shows the house best and click "Use this view". If trees block every street view, use the 3D view further down.';
+        $('svwCard').scrollIntoView({block:'start'});roofP.then(function(){init3D()});
       });
     }
-    var s3=step('Looking all the way around the house in 3D (8 directions), then zooming in and out on the best one...');
-    var svP=L.streetView?sleep(1500).then(function(){return S.svPhoto||loadSV()}):Promise.resolve(null);
-    var base=L.streetView?L.streetView.heading:0;
-    var v3P=roofP.then(function(){return init3D()}).then(function(ok){
-      if(!ok)return [];
-      return sleep(2500).then(function(){return searchViews(base,s3,L.formatted)});
-    });
-    return Promise.all([svP,v3P]).then(function(r){
-      // No usable 3D model here: look harder with Street View instead (turn left/right, zoom in/out)
-      S.no3D=!r[1].length;
-      if(!S.no3D||!r[0]||!L.streetView)return r;
-      s3.textContent='No usable 3D model here. Trying more Street View angles...';
-      var sv=L.streetView,vars=[[-20,75,'turned left'],[20,75,'turned right'],[0,50,'zoomed in'],[0,95,'zoomed out']];
-      return seq(vars.map(function(v){return function(){
-        return api({action:'streetview',pano:sv.pano,heading:(sv.heading+v[0]+360)%360,fov:v[1],pitch:8},true).then(blobToImg)
-          .then(function(img){return {img:imgToDataURL(img,1536),label:'Street View, '+v[2]}}).catch(function(){return null})}}))
-        .then(function(extra){return [r[0],extra.filter(Boolean)]});
-    }).then(function(r){
-      var cands=[];if(r[0])cands.push({img:r[0],label:'Street View'});cands=cands.concat(r[1]);
-      S.cands=cands;
-      if(!cands.length){s3.textContent='No photos of this house. Text the customer for a photo of the front.';s3.className='err';showPhotoAsk();return}
-      s3.textContent='Comparing '+cands.length+' photos to find the clearest view of the front...';
-      return Promise.all(cands.map(function(c){return shrink(c.img,512)})).then(function(small){
-        return api({action:'pick',images:small,address:L.formatted,hint:'The images are, in order: '+cands.map(function(c,i){return i+' = '+c.label}).join('; ')+'.'});
-      }).then(function(pk){
-        (pk.scores||[]).forEach(function(sc,i){if(cands[i])cands[i].score=sc});
-        drawCands(pk.best);$('pickBox').classList.remove('hidden');
-        var bestScore=(pk.scores||[])[pk.best]||0;
-        if(!pk.usable&&S.no3D&&bestScore>=3){pk.usable=true;pk.reason='no 3D model here, so using the best Street View'}
-        if(!pk.usable){s3.textContent='No clear view of the front ('+(pk.reason||'blocked')+'). Text the customer for a photo.';s3.className='err';showPhotoAsk();return}
-        s3.textContent='Best view: '+cands[pk.best].label+' ('+(pk.reason||'')+')';
-        return makeMock(pk.best);
-      }).catch(function(e){s3.textContent='Could not compare photos automatically ('+e.message+'). Tap the best one.';drawCands(-1);$('pickBox').classList.remove('hidden')});
+    var s3=step('Finding the best Street View picture of the house...');
+    return searchStreet(L,s3).catch(function(e){s3.textContent='Street View search failed ('+e.message+').';return null}).then(function(R){
+      svwOpen();
+      if(R&&R.pk&&R.pk.usable!==false&&R.first){
+        var bi=R.pk.best||0,cands=R.list.concat(R.first.filter(function(c){return c!==R.list[0]}));
+        S.cands=cands;drawCands(bi);$('pickBox').classList.remove('hidden');
+        s3.textContent='Best view: '+cands[bi].label+(R.pk.reason?' ('+R.pk.reason+')':'')+'. Not right? Tap another below, or walk around in Street View and pick your own.';
+        return roofP.then(function(){return makeMock(bi)});
+      }
+      var st=(R&&R.list)||[];
+      s3.textContent=(st.length?'No Street View spot shows the front clearly'+(R.pk&&R.pk.reason?' ('+R.pk.reason+')':''):'No Street View here')+'. Trying the 3D model...';
+      return roofP.then(function(){return init3D()}).then(function(ok){
+        if(!ok)return [];return sleep(2500).then(function(){return searchViews(L.streetView?L.streetView.heading:0,s3,L.formatted)});
+      }).then(function(v3){
+        v3=v3||[];var bestSt=st.slice().sort(function(x,y){return (y.score||0)-(x.score||0)})[0];
+        var fin=(bestSt?[bestSt]:[]).concat(v3.slice(0,7));
+        if(!fin.length){s3.textContent='No photos of this house. Text the customer for a photo of the front.';s3.className='err';showPhotoAsk();return}
+        s3.textContent='Comparing the best Street View with '+v3.length+' 3D views...';
+        return pickFrom(fin,L.formatted,bestSt?'Image 0 is a Street View photo from the road; the rest are views of a 3D map model.':'All are views of a 3D map model.').then(function(pk){
+          S.cands=fin.concat(st.filter(function(c){return c!==bestSt}));drawCands(pk.best);$('pickBox').classList.remove('hidden');
+          var bs=(pk.scores||[])[pk.best]||0;
+          if(!pk.usable&&!v3.length&&bs>=3){pk.usable=true;pk.reason='no 3D model here, so using the best Street View'}
+          if(!pk.usable){s3.textContent='No clear view of the front ('+(pk.reason||'blocked')+'). Walk around in Street View below, or text the customer for a photo.';s3.className='err';showPhotoAsk();return}
+          s3.textContent='Best view: '+S.cands[pk.best].label+' ('+(pk.reason||'')+')';
+          return makeMock(pk.best);
+        }).catch(function(e){s3.textContent='Could not compare photos automatically ('+e.message+'). Tap the best one.';drawCands(-1);$('pickBox').classList.remove('hidden')});
+      });
     });
   }).catch(function(e){step('Stopped: '+e.message,'err')}).then(function(){$('runBtn').disabled=false});
 }
+/* ---------- Street View: every spot around the house ---------- */
+function svFov(dist){return Math.max(40,Math.min(100,Math.round(2*Math.atan(15/Math.max(dist,8))*180/Math.PI)))}
+function getSpots(){
+  if(S.spots&&S.spotsFor===S.loc)return Promise.resolve(S.spots);
+  if(DEMO){S.spots=[{pano:'demo',dist:20,heading:230,date:'2023-08'},{pano:'demo2',dist:38,heading:200,date:'2023-08'}];S.spotsFor=S.loc;return Promise.resolve(S.spots)}
+  return api({action:'svSpots',lat:S.loc.lat,lng:S.loc.lng}).then(function(r){S.spots=r.spots||[];S.spotsFor=S.loc;return S.spots});
+}
+function svShot(o,label){
+  if(DEMO)return Promise.resolve({img:stub(640,427,'#9fc3e8','#6f8f5a','DEMO '+label),label:label,sv:o});
+  return api({action:'streetview',pano:o.pano,heading:Math.round((o.heading%360+360)%360),fov:Math.round(o.fov),pitch:Math.round(o.pitch)},true).then(blobToImg)
+   .then(function(img){return {img:imgToDataURL(img,1536),label:label,sv:o}}).catch(function(){return null});
+}
+// up to n spots that see the house from different directions or distances, nearest first
+function spreadSpots(sp,n){var out=[];
+  sp.forEach(function(x){if(out.length<n&&out.every(function(o){return angDiff(o.heading,x.heading)>=12||Math.abs(o.dist-x.dist)>15}))out.push(x)});
+  sp.forEach(function(x){if(out.length<n&&out.indexOf(x)<0)out.push(x)});return out}
+function pickFrom(list,addr,hint){
+  return Promise.all(list.map(function(c){return shrink(c.img,512)})).then(function(sm){return api({action:'pick',images:sm,address:addr,hint:hint})})
+   .then(function(pk){(pk.scores||[]).forEach(function(sc,i){if(list[i])list[i].score=sc});return pk})}
+var SV_HINT='All are Google Street View photos of the same house from different spots on the road. Score highest the one that shows the house best overall: the whole front and full roofline in frame, ideally from a slight angle that also shows one side, not blocked by trees, cars or poles, and not cut off.';
+// Round 1: one photo from up to 8 spots along the road. Round 2: turn, zoom and tilt around the winner.
+function searchStreet(L,stepEl){
+  return getSpots().then(function(sp){
+    if(!sp.length)return [];
+    var pk=spreadSpots(sp,8);stepEl.textContent='Looking at the house from '+pk.length+' Street View spots along the road...';
+    return Promise.all(pk.map(function(x,i){return svShot({pano:x.pano,heading:x.heading,fov:svFov(x.dist),pitch:x.dist<20?12:7},'Street View, spot '+(i+1)+' ('+x.dist+' m away'+(x.date?', '+x.date:'')+')')}));
+  }).then(function(list){
+    list=list.filter(Boolean);if(!list.length)return null;
+    stepEl.textContent='Picking the best of '+list.length+' Street View spots...';
+    return pickFrom(list,L.formatted,SV_HINT).then(function(pk){
+      if(!pk.usable)return {list:list,pk:pk};
+      var b=list[pk.best]||list[0],o=b.sv,tries=[[-10,1,0,'turned left'],[10,1,0,'turned right'],[0,0.72,2,'zoomed in'],[0,1.3,0,'zoomed out'],[0,1,6,'tilted up']];
+      stepEl.textContent='Fine-tuning the best spot (turn, zoom, tilt)...';
+      return Promise.all(tries.map(function(t){return svShot({pano:o.pano,heading:o.heading+t[0],fov:Math.max(25,Math.min(110,o.fov*t[1])),pitch:o.pitch+t[2]},b.label+', '+t[3])}))
+       .then(function(l2){var l=[b].concat(l2.filter(Boolean));
+         return pickFrom(l,L.formatted,SV_HINT).then(function(pk2){if(pk2.usable===false)pk2={best:0,usable:true,reason:pk.reason};return {list:l,pk:pk2,first:list}})});
+    });
+  });
+}
+// The walker: Google's draggable Street View when the key allows the Maps JavaScript API, otherwise spot-to-spot photos
+var SVW={i:0,pano:null,js:null,live:false,blocked:false};
+function svwJs(){
+  if(DEMO)return Promise.resolve(false);
+  if(SVW.js)return SVW.js;
+  SVW.js=api({action:'tilesKey'}).then(function(r){return new Promise(function(ok){
+    var done=false,fin=function(v){if(!done){done=true;ok(v)}};
+    window.gm_authFailure=function(){SVW.blocked=true;fin(false);if(SVW.live){SVW.live=false;svwOpen()}};
+    window.__svwReady=function(){var d=document.createElement('div');d.style.cssText='position:absolute;left:-9999px;width:200px;height:120px';document.body.appendChild(d);
+      try{new google.maps.StreetViewPanorama(d,{pano:S.spots[0].pano})}catch(e){fin(false)}
+      setTimeout(function(){d.remove();fin(!SVW.blocked)},4000)};
+    var sc=document.createElement('script');sc.src='https://maps.googleapis.com/maps/api/js?key='+encodeURIComponent(r.key)+'&v=weekly&callback=__svwReady';sc.onerror=function(){fin(false)};document.head.appendChild(sc);
+    setTimeout(function(){fin(false)},15000);
+  })}).catch(function(){return false});
+  return SVW.js;
+}
+function svwOpen(){
+  if(!S.loc){$('svwMsg').textContent='Type an address and run the quote first.';return}
+  $('svwMsg').textContent='Loading Street View spots...';
+  getSpots().then(function(sp){
+    if(!sp.length){$('svwMsg').textContent='No Street View near this house. Use the 3D view below or a photo from the customer.';return}
+    return svwJs().then(function(ok){
+      SVW.live=!!ok&&!SVW.blocked;
+      $('svwPano').classList.toggle('hidden',!SVW.live);$('svwStatic').classList.toggle('hidden',SVW.live);$('svwSl').style.display=SVW.live?'none':'contents';
+      svwGo(0);
+      if(SVW.live)$('svwMsg').textContent='Drag to look around, click the arrows on the road to walk, scroll to zoom. Previous/Next jump between the '+sp.length+' spots near the house. Then click "Use this view".';
+      else $('svwMsg').innerHTML='Step between the '+sp.length+' Street View spots around the house, then turn, zoom and tilt. <b>To walk around freely like Google Maps:</b> in Google Cloud &gt; Credentials, open your Maps key and add "Maps JavaScript API" to its allowed APIs (enable the API too if asked).';
+    });
+  }).catch(function(e){$('svwMsg').textContent=e.message});
+}
+function svwCur(){
+  if(SVW.live&&SVW.pano){var pv=SVW.pano.getPov(),z=SVW.pano.getZoom();z=z==null?1:z;return {pano:SVW.pano.getPano(),heading:pv.heading,pitch:pv.pitch,fov:Math.max(20,Math.min(120,180/Math.pow(2,z)))}}
+  var x=S.spots[SVW.i];return {pano:x.pano,heading:x.heading+(+$('svwH').value),fov:+$('svwZ').value,pitch:+$('svwP').value};
+}
+function svwGo(i){
+  var sp=S.spots;SVW.i=(i+sp.length)%sp.length;var x=sp[SVW.i];
+  $('svwSpot').textContent='Spot '+(SVW.i+1)+' of '+sp.length+' · '+x.dist+' m away'+(x.date?' · '+x.date:'');
+  if(SVW.live){
+    if(!SVW.pano)SVW.pano=new google.maps.StreetViewPanorama($('svwPano'),{pano:x.pano,pov:{heading:x.heading,pitch:8},zoom:1,addressControl:false,fullscreenControl:false,motionTracking:false});
+    else{SVW.pano.setPano(x.pano);SVW.pano.setPov({heading:x.heading,pitch:8});SVW.pano.setZoom(1)}
+    return;
+  }
+  $('svwH').value=0;$('svwZ').value=svFov(x.dist);$('svwP').value=x.dist<20?12:7;svwShow();
+}
+var svwT;function svwShow(){clearTimeout(svwT);svwT=setTimeout(function(){svShot(svwCur(),'view').then(function(r){if(r)$('svwImg').src=r.img})},300)}
+['svwH','svwZ','svwP'].forEach(function(id){$(id).addEventListener('input',svwShow)});
+$('svwPrev').onclick=function(){if(S.spots&&S.spotsFor===S.loc&&S.spots.length)svwGo(SVW.i-1);else svwOpen()};
+$('svwNext').onclick=function(){if(S.spots&&S.spotsFor===S.loc&&S.spots.length)svwGo(SVW.i+1);else svwOpen()};
+$('svwUse').onclick=function(){
+  if(!S.spots||!S.spots.length){svwOpen();return}
+  var b=this;b.disabled=true;b.textContent='Getting the picture...';
+  svShot(svwCur(),'Street View, your pick').then(function(c){b.disabled=false;b.textContent='Use this view';if(!c){$('svwMsg').textContent='Could not get that picture. Try again.';return}
+    if(S.loc&&!$('runCard').classList.contains('hidden')){S.cands=(S.cands||[]).concat([c]);$('runCard').scrollIntoView({block:'start'});makeMock(S.cands.length-1);return}
+    setPhoto(c.img,'Street View');setTimeout(buildPrompt,50);$('svwMsg').textContent='This view is now the house photo. Click "Generate mockup" under Mockup instructions.'});
+};
 function seq(fns){var out=[];return fns.reduce(function(p,f){return p.then(f).then(function(x){out.push(x)})},Promise.resolve()).then(function(){return out})}
 function capAt(h,p,r,label){
   h=((Math.round(h)%360)+360)%360;$('v3h').value=h;$('v3p').value=p;$('v3r').value=Math.round(r);
@@ -948,7 +1047,7 @@ function showPhotoAsk(){
 }
 function makeMock(i){
   var c=(S.cands||[])[i];if(!c)return;S.lastPick=i;drawCands(i);
-  var ready=setPhoto(c.img,c.label==='Street View'?'Street View':'Google Earth 3D view');
+  var ready=setPhoto(c.img,/^Street View/.test(c.label)?'Street View':'Google Earth 3D view');
   $('mockOut').classList.add('hidden');$('doneBox').classList.add('hidden');
   var s4=step('Making the night mockup from "'+c.label+'" (about a minute)...');
   return ready.then(function(){buildPrompt();return mockup()}).then(function(img){
@@ -957,7 +1056,7 @@ function makeMock(i){
     finishQuote();
   });
 }
-function usePhoto(which){var i=(S.cands||[]).findIndex(function(c){return which==='sv'?c.label==='Street View':c.label!=='Street View'});if(i>=0)makeMock(i)}
+function usePhoto(which){var i=(S.cands||[]).findIndex(function(c){return which==='sv'?/^Street View/.test(c.label):!/^Street View/.test(c.label)});if(i>=0)makeMock(i)}
 $('useSV').onclick=function(){usePhoto('sv')};
 $('use3D').onclick=function(){usePhoto('3d')};
 $('retake3D').onclick=function(){
@@ -1164,7 +1263,7 @@ $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement(
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
 $('runBtn').onclick=runQuote;
 $('address').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runQuote()}},true);
-window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
+window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,svwOpen:svwOpen,getSpots:getSpots,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
 })();
 </script>
 </body>
