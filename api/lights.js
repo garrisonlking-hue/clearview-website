@@ -44,6 +44,51 @@ function sameStreet(a, b) {
   return x.length > 1 && y.length > 1 && x[0] === y[0] && /^\d/.test(x[0]) && x[1] === y[1];
 }
 
+// Building outline from OpenStreetMap (fallback when Google has no roof data). Picks the outline that contains
+// the address point (or the nearest one within 18 m), skips sheds, and finds the direction of the nearest road.
+function pickBuilding(j, lat, lng) {
+  const N = new Map(); j.elements.forEach((e) => { if (e.type === 'node') N.set(e.id, e); });
+  const mx = 111320 * Math.cos(lat * Math.PI / 180), my = 110540;
+  const P = (n) => [(n.lon - lng) * mx, (n.lat - lat) * my];
+  const segd = (p, a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], L = dx * dx + dy * dy || 1e-9;
+    const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * dx + (p[1] - a[1]) * dy) / L)); const q = [a[0] + t * dx, a[1] + t * dy];
+    return [Math.hypot(p[0] - q[0], p[1] - q[1]), q]; };
+  const inside = (p, s) => { let c = false; for (let i = 0; i < s.length - 1; i++) { const a = s[i], b = s[i + 1];
+    if ((a[1] > p[1]) !== (b[1] > p[1]) && p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]) c = !c; } return c; };
+  const area = (s) => { let t = 0; for (let i = 0; i < s.length - 1; i++) t += s[i][0] * s[i + 1][1] - s[i + 1][0] * s[i][1]; return Math.abs(t) / 2; };
+  const roadT = /^(residential|primary|secondary|tertiary|unclassified|living_street|trunk|service)$/;
+  let best = null; const roads = [];
+  j.elements.forEach((w) => {
+    if (w.type !== 'way' || !w.nodes.every((id) => N.has(id))) return;
+    const t = w.tags || {}, s = w.nodes.map((id) => P(N.get(id)));
+    if (t.building && s.length > 3) {
+      const A = area(s); if (A < 55) return; // sheds
+      const d = inside([0, 0], s) ? 0 : Math.min(...s.slice(1).map((q, i) => segd([0, 0], s[i], q)[0]));
+      if (!best || d < best.d || (d === best.d && A > best.A)) best = { d, s, A, tags: t };
+    } else if (t.highway && roadT.test(t.highway) && t.service !== 'driveway') roads.push(s);
+  });
+  if (!best || best.d > 18) return null;
+  const s = best.s, cx = s.slice(1).reduce((a, p) => a + p[0], 0) / (s.length - 1), cy = s.slice(1).reduce((a, p) => a + p[1], 0) / (s.length - 1);
+  let road = null;
+  roads.forEach((r) => r.slice(1).forEach((q, i) => { const [d, pt] = segd([cx, cy], r[i], q); if (!road || d < road.d) road = { d, pt }; }));
+  return { poly: s.map((p) => [+(p[0]).toFixed(2), +(p[1]).toFixed(2)]), dist: +best.d.toFixed(1), area: Math.round(best.A),
+    road: road ? { dir: Math.round((Math.atan2(road.pt[0] - cx, road.pt[1] - cy) * 180 / Math.PI + 360) % 360), dist: Math.round(road.d) } : null,
+    levels: best.tags['building:levels'] || null, kind: best.tags.building };
+}
+async function osmMap(lat, lng) {
+  const UA = { 'User-Agent': 'lights-quote-tool/1.0' };
+  const dy = 0.00045, dx = dy / Math.cos(lat * Math.PI / 180);
+  try { // main OpenStreetMap API: everything in a ~100 m box
+    const r = await fetch(`https://api.openstreetmap.org/api/0.6/map.json?bbox=${lng - dx},${lat - dy},${lng + dx},${lat + dy}`, { headers: UA, signal: AbortSignal.timeout(8000) });
+    if (r.ok) return { j: await r.json(), src: 'OpenStreetMap' };
+  } catch (e) { /* try Overpass */ }
+  const q = `[out:json][timeout:8];(way["building"](around:60,${lat},${lng});way["highway"](around:90,${lat},${lng}););out body;>;out skel qt;`;
+  const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { ...UA, 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: 'data=' + encodeURIComponent(q), signal: AbortSignal.timeout(9000) });
+  if (!r.ok) throw new Error('map outline service busy (' + r.status + ')');
+  return { j: await r.json(), src: 'OpenStreetMap (Overpass)' };
+}
+
 function bearing(lat1, lng1, lat2, lng2) {
   const r = Math.PI / 180;
   const y = Math.sin((lng2 - lng1) * r) * Math.cos(lat2 * r);
@@ -206,6 +251,16 @@ export default async function handler(req, res) {
         if (r.status === 403) break;
       }
       return res.status(502).json({ error: 'No roof data: ' + last });
+    }
+
+    // ---- building outline from OpenStreetMap: fallback footage when Google has no roof data
+    if (b.action === 'footprint') {
+      const lat = Number(b.lat), lng = Number(b.lng);
+      if (!isFinite(lat) || !isFinite(lng)) return res.status(400).json({ error: 'No location.' });
+      const { j, src } = await osmMap(lat, lng);
+      const F = pickBuilding(j, lat, lng);
+      if (!F) return res.status(404).json({ error: 'No building outline on the map at this address.' });
+      return res.status(200).json({ ...F, source: src });
     }
 
     // ---- address -> coordinates + nearest Street View
