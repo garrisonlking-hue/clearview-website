@@ -526,8 +526,12 @@ function buildProposal(){
       '<div>'+(more.length
         // several views: wide main picture on top, the others in a row underneath (fits one page)
         ?'<img class="mock" src="'+mock+'" style="aspect-ratio:'+(more.length===1?'16/8.2':'16/8.6')+'" alt="">'+
-         '<div style="display:grid;grid-template-columns:repeat('+more.length+',1fr);gap:.12in;margin-top:.12in">'+
-           more.map(function(m){return '<div><img src="'+m.img+'" style="width:100%;aspect-ratio:'+(more.length===1?'16/9':'3/2')+';object-fit:cover;display:block;border-radius:6px" alt="">'+(m.note?'<div class="cap" style="margin-top:3px">'+esc(m.note)+'</div>':'')+'</div>'}).join('')+'</div>'+
+         (more.length===1
+          // one extra view: half width, with the three service steps beside it
+          ?'<div style="display:grid;grid-template-columns:1fr 1fr;gap:.16in;margin-top:.12in;align-items:start"><div><img src="'+more[0].img+'" style="width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border-radius:6px" alt="">'+(more[0].note?'<div class="cap" style="margin-top:3px">'+esc(more[0].note)+'</div>':'')+'</div>'+
+            '<div class="how" style="grid-template-columns:1fr;gap:.08in;margin-top:0"><div><b>1. Book</b>Approve the quote and pay the deposit to hold your install date.</div><div><b>2. We install</b>Our crew hangs and tests everything, and fixes any outage all season.</div><div><b>3. We take down and store</b>We remove the lights in late January or early February and store them for next year.</div></div></div>'
+          :'<div style="display:grid;grid-template-columns:repeat('+more.length+',1fr);gap:.12in;margin-top:.12in">'+
+            more.map(function(m){return '<div><img src="'+m.img+'" style="width:100%;aspect-ratio:3/2;object-fit:cover;display:block;border-radius:6px" alt="">'+(m.note?'<div class="cap" style="margin-top:3px">'+esc(m.note)+'</div>':'')+'</div>'}).join('')+'</div>')+
          '<div class="cap">Illustrations of your home lit up. Not photos of a finished install; final placement is confirmed before installation.</div>'
         :(mock?'<img class="mock" src="'+mock+'"'+(S.portrait?' style="object-fit:contain"':'')+' alt="">':'<div class="mock"></div>')+
          '<div class="cap">Illustration of your home lit up. Not a photo of a finished install; final placement is confirmed before installation.</div>'+
