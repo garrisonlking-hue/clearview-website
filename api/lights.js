@@ -288,6 +288,27 @@ export default async function handler(req, res) {
       return res.status(200).json(out);
     }
 
+    // ---- every Street View spot around the house (metadata lookups are free): rings of points, snapped to the nearest panorama
+    if (b.action === 'svSpots') {
+      if (!GKEY) return res.status(503).json({ error: 'GOOGLE_MAPS_API_KEY is not set.' });
+      const lat = Number(b.lat), lng = Number(b.lng), mx = 111320 * Math.cos(lat * Math.PI / 180), my = 110540;
+      const pts = [[lat, lng]];
+      [22, 45, 70].forEach((rad) => { for (let a = 0; a < 360; a += 30) pts.push([lat + rad * Math.cos(a * Math.PI / 180) / my, lng + rad * Math.sin(a * Math.PI / 180) / mx]); });
+      const found = new Map();
+      await Promise.all(pts.map(async ([la, ln]) => {
+        try {
+          const m = await (await fetch(`${G}/streetview/metadata?location=${la},${ln}&source=outdoor&radius=35&key=${GKEY}`)).json();
+          if (m.status !== 'OK' || found.has(m.pano_id)) return;
+          const dist = Math.hypot((m.location.lng - lng) * mx, (m.location.lat - lat) * my);
+          if (dist > 90 || dist < 4) return;
+          found.set(m.pano_id, { pano: m.pano_id, lat: m.location.lat, lng: m.location.lng, date: m.date || null, dist: Math.round(dist),
+            heading: Math.round(bearing(m.location.lat, m.location.lng, lat, lng)) });
+        } catch (e) { /* skip this point */ }
+      }));
+      const spots = [...found.values()].sort((x, y) => x.dist - y.dist).slice(0, 24);
+      return res.status(200).json({ spots });
+    }
+
     // ---- Street View photo
     if (b.action === 'streetview') {
       if (!GKEY) return res.status(503).json({ error: 'GOOGLE_MAPS_API_KEY is not set.' });
