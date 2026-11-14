@@ -218,7 +218,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     <div id="svwStatic" class="hidden" style="margin-top:8px"><div class="imgbox" style="max-width:760px"><img id="svwImg" alt=""></div></div>
     <div class="row" style="margin-top:10px">
       <button class="alt" id="svwPrev">&#9664; Previous spot</button><span id="svwSpot" class="small"></span><button class="alt" id="svwNext">Next spot &#9654;</button>
-      <span id="svwSl" style="display:contents"><label>Turn</label><input type="range" id="svwH" min="-70" max="70" step="2" value="0" style="width:120px"><label>Zoom</label><input type="range" id="svwZ" min="25" max="110" step="5" value="70" style="width:100px"><label>Tilt</label><input type="range" id="svwP" min="-5" max="35" step="1" value="8" style="width:80px"></span>
+      <span id="svwSl" style="display:contents"><span style="white-space:nowrap"><label>Turn</label> <input type="range" id="svwH" min="-70" max="70" step="2" value="0" style="width:120px"></span><span style="white-space:nowrap"><label>Zoom in</label> <input type="range" id="svwZ" min="25" max="110" step="5" value="70" style="width:100px;direction:rtl"></span><span style="white-space:nowrap"><label>Tilt</label> <input type="range" id="svwP" min="-5" max="35" step="1" value="8" style="width:80px"></span></span>
       <button id="svwUse">Use this view</button>
     </div>
   </div>
@@ -932,7 +932,7 @@ function spreadSpots(sp,n){var out=[];
 function pickFrom(list,addr,hint){
   return Promise.all(list.map(function(c){return shrink(c.img,512)})).then(function(sm){return api({action:'pick',images:sm,address:addr,hint:hint})})
    .then(function(pk){(pk.scores||[]).forEach(function(sc,i){if(list[i])list[i].score=sc});return pk})}
-var SV_HINT='All are Google Street View photos of the same house from different spots on the road. Score highest the one that shows the house best overall: the whole front and full roofline in frame, ideally from a slight angle that also shows one side, not blocked by trees, cars or poles, and not cut off.';
+var SV_HINT='All are Google Street View photos aimed at the same house from different spots on the road; the house to judge is the one in the CENTER of each photo (a house only at the edge is a neighbor and does not count). Score highest the one that shows the house best overall: the whole front and full roofline in frame, ideally from a slight angle that also shows one side, not blocked by trees, cars or poles, and not cut off.';
 // Round 1: one photo from up to 8 spots along the road. Round 2: turn, zoom and tilt around the winner.
 function searchStreet(L,stepEl){
   return getSpots().then(function(sp){
