@@ -220,6 +220,62 @@ export default async function handler(req, res) {
       return res.status(200).json({ name: c.name, photos: photos.filter((p) => !/video/i.test(p.type)).slice(0, 24) });
     }
 
+    // ---- who a Flyra estimate would go to: customer at this street, else leads matching the name or phone
+    if (b.action === 'flyraWho' || b.action === 'flyraEstimate') {
+      if (!FKEY) return res.status(503).json({ error: 'FLYRA_API_KEY is not set in Vercel.' });
+      const H = { Authorization: 'Bearer ' + FKEY, 'Content-Type': 'application/json' };
+      const act = async (name, args) => {
+        const r = await fetch(`${FLYRA}/actions/${name}`, { method: 'POST', headers: H, body: JSON.stringify(args) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok || j.error) throw new Error((j.error && (j.error.message || j.error)) || `Flyra ${name} failed (${r.status})`);
+        return j.data !== undefined ? j.data : j;
+      };
+      let who = null;
+      if (b.customer_id) who = { type: 'customer', id: b.customer_id, name: b.who_name || '' };
+      else if (b.lead_id) who = { type: 'lead', id: b.lead_id, name: b.who_name || '' };
+      else {
+        const c = (await flyraCustomers(FKEY)).find((x) => x.address && sameStreet(x.address, b.street));
+        if (c) who = { type: 'customer', id: c.id, name: c.name };
+      }
+      if (b.action === 'flyraWho') {
+        if (who) return res.status(200).json({ who });
+        const leads = [];
+        for (const q of [String(b.phone || '').trim(), String(b.name || '').trim()].filter((x) => x.length >= 3)) {
+          try { const d = await act('flyra_list_leads', { search: q, limit: 6 }); (d.items || []).forEach((l) => { if (!leads.some((x) => x.id === l.id)) leads.push({ id: l.id, name: l.name, phone: l.phone, stage: l.stage, converted: l.converted }); }); } catch (e) { /* none */ }
+        }
+        return res.status(200).json({ who: null, leads });
+      }
+      // create: needs someone to attach to; with a phone and no match, make the customer
+      if (!who) {
+        const phone = String(b.phone || '').replace(/[^\d+]/g, '');
+        if (phone.replace(/\D/g, '').length < 10) return res.status(400).json({ error: 'No Flyra customer or lead found. Type their mobile number so the tool can add them as a customer.' });
+        const [first, ...rest] = String(b.name || '').trim().split(/\s+/);
+        const a = b.addr || {};
+        const c = await act('flyra_create_customer', { first_name: first || 'Customer', last_name: rest.join(' ') || undefined, mobile_phone: phone.startsWith('+') ? phone : '+1' + phone.replace(/\D/g, '').slice(-10),
+          address: a.street, city: a.city, state: a.state, zip: a.zip, if_exists: 'return' });
+        const cust = c.customer || c;
+        who = { type: 'customer', id: cust.id || cust.customer_id, name: [first, ...rest].join(' ') };
+      }
+      const est = b.estimate || {};
+      const args = { ...est, [who.type === 'lead' ? 'lead_id' : 'customer_id']: who.id };
+      const e = await act('flyra_create_estimate', args);
+      const findId = (o, d = 0) => { if (!o || typeof o !== 'object' || d > 3) return null;
+        for (const k of ['estimate_id', 'id']) if (typeof o[k] === 'string' && /^(est_)?[0-9a-f-]{36}$/i.test(o[k])) return o[k];
+        for (const v of Object.values(o)) { const x = findId(v, d + 1); if (x) return x; } return null; };
+      const eid = findId(e.estimate) || findId(e);
+      if (!eid) return res.status(502).json({ error: 'Flyra made no estimate id.', raw: JSON.stringify(e).slice(0, 300) });
+      const attached = [];
+      for (const ph of (Array.isArray(b.photos) ? b.photos : []).slice(0, 3)) {
+        const m = /^data:image\/(jpeg|png|webp);base64,(.+)$/.exec(String(ph.data || ''));
+        if (!m) continue;
+        try { await act('flyra_attach_estimate_photo', { estimate_id: eid, image_base64: m[2], file_name: String(ph.name || 'Holiday lighting mockup').slice(0, 120) }); attached.push(ph.name); }
+        catch (err) { attached.push('FAILED: ' + ph.name + ' (' + err.message + ')'); }
+      }
+      let link = null;
+      try { const l = await act('flyra_get_estimate_link', { estimate_id: eid }); link = l.public_link || l.url || l.link || null; } catch (err) { /* link optional */ }
+      return res.status(200).json({ ok: true, estimate_id: eid, link, who, attached });
+    }
+
     // ---- fetch one image for the page (when the photo host blocks direct browser use)
     if (b.action === 'imageProxy') {
       const u = String(b.url || '');
