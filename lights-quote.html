@@ -606,6 +606,10 @@ function buildProposal(){
   // keep it on one page: if a long list of extras pushes the price column into the terms, shrink that column's text a little
   var est=w.querySelector('.est'),tm=w.querySelector('.terms');
   for(var fs=12;fs>=9.5&&est.getBoundingClientRect().bottom>tm.getBoundingClientRect().top-4;fs-=0.5)est.style.fontSize=fs+'px';
+  // no empty band at the bottom: make the main picture taller until the left column reaches the terms (up to a 1.2 shape)
+  var mi=w.querySelector('.cols img.mock'),lc=w.querySelector('.cols>div');
+  if(mi&&lc&&mi.offsetHeight){var r=mi.getBoundingClientRect().height/mi.offsetHeight,gap=(tm.getBoundingClientRect().top-lc.getBoundingClientRect().bottom)/r-16;
+    if(gap>4){var h=Math.min(mi.offsetHeight+gap,mi.offsetWidth/1.2);mi.style.aspectRatio='auto';mi.style.height=Math.round(h)+'px'}}
 }
 
 /* ---------- wiring ---------- */
@@ -620,11 +624,28 @@ $('buildBtn').onclick=function(){if(S.loc&&S.mock&&!$('runCard').classList.conta
 $('redoMock').onclick=function(){if(S.cands&&S.lastPick!=null)makeMock(S.lastPick);else mockup().then(function(img){if(img){$('mockOutImg').src=img}})};
 // Save the quote as a one-page, edge-to-edge PDF directly (no print dialog settings needed)
 function loadJs(u){return new Promise(function(ok,no){if(document.querySelector('script[src="'+u+'"]'))return ok();var t=document.createElement('script');t.src=u;t.onload=ok;t.onerror=function(){no(new Error('Could not load '+u))};document.head.appendChild(t)})}
+// html2canvas draws pictures stretched to their box, ignoring object-fit. Crop (cover) or letterbox (contain) each one
+// to its box's exact shape first, so the PDF looks exactly like the screen.
+function bakeImages(root){
+  return Promise.all([].slice.call(root.querySelectorAll('img')).map(function(im){return new Promise(function(ok){
+    var go=function(){
+      var bw=im.offsetWidth,bh=im.offsetHeight,nw=im.naturalWidth,nh=im.naturalHeight;
+      if(!bw||!bh||!nw||!nh||Math.abs(bw/bh-nw/nh)<0.01)return ok();
+      var fit=getComputedStyle(im).objectFit,cw=Math.round(bw*2.5),ch=Math.round(bh*2.5),c=document.createElement('canvas');c.width=cw;c.height=ch;
+      var x=c.getContext('2d'),sc=fit==='contain'?Math.min(cw/nw,ch/nh):Math.max(cw/nw,ch/nh);
+      x.fillStyle='#14201c';x.fillRect(0,0,cw,ch);x.drawImage(im,(cw-nw*sc)/2,(ch-nh*sc)/2,nw*sc,nh*sc);
+      im.onload=function(){ok()};im.onerror=function(){ok()};im.style.objectFit='fill';
+      try{im.src=c.toDataURL('image/jpeg',0.92)}catch(e){ok()}
+    };
+    if(im.complete&&im.naturalWidth)go();else{im.onload=go;im.onerror=function(){ok()}}
+  })}));
+}
 function savePDF(btn){
   buildProposal();var pg=document.querySelector('#proposalWrap .page');if(!pg)return;
   var label=btn?btn.textContent:'';if(btn){btn.disabled=true;btn.innerHTML='<span class="spin"></span>Making PDF...'}
   var done=function(){if(btn){btn.disabled=false;btn.textContent=label}};
   Promise.all([loadJs('https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js'),loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js')])
+  .then(function(){return bakeImages(pg)})
   .then(function(){
     var wrap=$('proposalWrap'),z=wrap.style.zoom;wrap.style.zoom='';
     return html2canvas(pg,{scale:2,backgroundColor:'#FBF8F0',useCORS:true,logging:false}).then(function(cv){wrap.style.zoom=z;return cv});
