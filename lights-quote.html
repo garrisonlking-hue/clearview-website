@@ -129,6 +129,8 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <span class="note" id="passMsg" style="margin:0"></span>
     </div>
     <div id="checkOut" class="hidden" style="margin-top:12px"></div>
+    <div class="row" style="margin-top:10px"><label>Roofline footage</label>
+      <select id="ftForce"><option value="">Normal: Google roof data, then map outline, then trace by hand</option><option value="outline">Test: skip Google roof data (use the map outline)</option><option value="trace">Test: skip both (trace by hand)</option></select></div>
   </details>
 
   <div class="card hero">
@@ -220,13 +222,22 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <label>Distance</label><input type="range" id="v3r" min="20" max="160" step="1" value="55" style="width:100px">
       <button class="alt" id="v3photo">Use this view as the house photo</button>
     </div>
-    <details class="sub" style="margin-top:10px"><summary>Measure by hand</summary>
+    <details class="sub" id="handBox" style="margin-top:10px"><summary>Measure by hand</summary>
       <div class="row" style="margin-top:8px">
         <label><input type="checkbox" id="v3measure"> Measure mode (click along roof edges)</label>
         <button class="alt" id="v3undo">Undo point</button>
         <button class="alt" id="v3break">Start new section</button>
         <button class="alt" id="v3clear">Clear</button>
         <span class="big"><span id="v3ft">0</span> ft</span>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px"><b>Or trace it on the satellite map</b>
+        <div class="note" id="satNote">Click along each roof edge you sell: front eaves, gable slopes, visible side eaves. Click "New edge" before each separate edge. Tick "Sloped edge" while tracing a gable slope, because from above a slope looks shorter than it is.</div>
+        <div class="row" style="margin-top:6px"><button class="alt" id="satLoad">Load satellite map</button>
+          <label>Zoom</label><select id="zoom"><option>19</option><option selected>20</option><option>21</option></select>
+          <button class="alt" id="undoBtn">Undo point</button><button class="alt" id="breakBtn">New edge</button><button class="alt" id="clearBtn">Clear</button>
+          <label><input type="checkbox" id="slant"> Sloped edge (gable)</label><label>x</label><input type="number" id="slantF" value="1.2" step="0.05" min="1" max="1.6" style="width:64px">
+          <span class="big"><span id="measFt">0</span> ft</span></div>
+        <canvas id="satCanvas" class="hidden" width="640" height="640" style="width:100%;max-width:640px;margin-top:8px;border-radius:8px;display:block"></canvas>
       </div></details>
     <div id="v3msg" class="note"></div>
   </div>
@@ -288,8 +299,6 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     <div class="imgbox hidden" id="mockBox" style="margin-top:10px;max-width:760px"><img id="mockImg" alt=""></div>
   </details>
 
-  <div class="hidden"><canvas id="satCanvas" width="640" height="640"></canvas><button id="undoBtn"></button><button id="breakBtn"></button><button id="clearBtn"></button>
-    <select id="zoom"><option>19</option><option selected>20</option><option>21</option></select><span id="measFt">0</span><input type="checkbox" id="slant"><input type="number" id="slantF" value="1.15"></div>
 
   <div class="card" id="proposalCard">
     <h2>Quote</h2>
@@ -387,7 +396,7 @@ function ftPerPx(){ // feet per canvas pixel (canvas is 640 wide, matching a 640
   if(!S.loc)return 0;return 156543.03392*Math.cos(S.loc.lat*Math.PI/180)/Math.pow(2,S.zoom)*3.28084;
 }
 function loadSat(){
-  S.zoom=+$('zoom').value;
+  S.zoom=+$('zoom').value;$('satCanvas').classList.remove('hidden');
   if(DEMO){var i=new Image();i.onload=function(){S.satImg=i;draw()};i.src=stub(1280,1280,'#3f5a3a','#2f4a2f','DEMO satellite');return}
   api({action:'satellite',lat:S.loc.lat,lng:S.loc.lng,zoom:S.zoom},true).then(blobToImg).then(function(img){S.satImg=img;draw()})
    .catch(function(e){$('lookupMsg').textContent=e.message;$('lookupMsg').className='err'});
@@ -408,7 +417,7 @@ function draw(){
     L.forEach(function(p){x.beginPath();x.arc(p[0],p[1],4,0,7);x.fill()});
   });
   var t=Math.round(totalFt());$('measFt').textContent=t;
-  if(t>0){$('roofFt').value=t;recalc()}
+  if(t>0){$('roofFt').value=t;setSource('trace');recalc()}
 }
 $('satCanvas').addEventListener('pointerdown',function(e){
   if(!S.loc)return;var r=this.getBoundingClientRect();
@@ -419,6 +428,8 @@ $('breakBtn').onclick=function(){if(S.lines[S.lines.length-1].length){S.lines.pu
 $('clearBtn').onclick=function(){S.lines=[[]];S.slope=[false];$('slant').checked=false;draw()};
 $('slant').onchange=function(){S.slope[S.lines.length-1]=this.checked;draw()};
 $('slantF').oninput=draw;
+$('satLoad').onclick=function(){if(!S.loc){$('satNote').textContent='Run the quote (or look up the address) first.';return}loadSat()};
+function openTrace(){$('handBox').open=true;if(S.loc)loadSat()}
 $('zoom').onchange=function(){S.lines=[[]];S.slope=[false];$('slant').checked=false;if(S.loc)loadSat()};
 
 /* ---------- 4. pricing ---------- */
@@ -431,8 +442,8 @@ ITEMS.forEach(function(it){
    '<td><input type="checkbox" id="k_'+it.id+'"'+(it.pkg?' checked':'')+'></td><td id="t_'+it.id+'"></td>';
   tb.appendChild(tr);
 });
-function calc(){
-  var ft=Math.max(0,+$('roofFt').value||0),rate=+$('roofRate').value||0;
+function calc(ov){
+  ov=ov||{};var ft=ov.ft!=null?ov.ft:Math.max(0,+$('roofFt').value||0),rate=+$('roofRate').value||0;
   var pkg=[],opt=[];
   var sides=$('sidesIn')&&$('sidesIn').checked;
   if(ft>0)pkg.push({name:(sides?'Roofline, front and visible sides, ':'Front roofline, ')+ft+' ft of warm-white C9 lights',total:ft*rate,mock:null});
@@ -442,7 +453,7 @@ function calc(){
     if(q<=0)return;
     var label=it.unit==='each'?(q>1?' x '+q:''):' ('+q+' '+(it.unit==='column'&&q!==1?'columns':it.unit)+')';
     var o={id:it.id,name:it.name+label,total:line,mock:it.id==='columns'?('exactly '+q+' porch column'+(q>1?'s':'')+' wrapped in warm-white mini lights'):it.mock,desc:it.desc};
-    ($('k_'+it.id).checked?pkg:opt).push(o);
+    ($('k_'+it.id).checked||ov.allOpt?pkg:opt).push(o);
   });
   var subtotal=pkg.reduce(function(a,b){return a+b.total},0);
   var min=+$('minJob').value||0,base=Math.max(subtotal,min),minAdj=base-subtotal;
@@ -478,7 +489,7 @@ function recalc(){
     $('visitText').dataset.auto=msg;
   }
 }
-document.querySelector('#app').addEventListener('input',function(e){if(e.target.closest('#items')||['roofFt','roofRate','early','minJob','depPct','nextPct','visitMin','custName','roundPx'].indexOf(e.target.id)>-1)recalc()});
+document.querySelector('#app').addEventListener('input',function(e){if(e.target.id==='roofFt')setSource('typed');if(e.target.closest('#items')||['roofFt','roofRate','early','minJob','depPct','nextPct','visitMin','custName','roundPx'].indexOf(e.target.id)>-1)recalc()});
 $('copyVisit').onclick=function(){var t=$('visitText');t.select();var done=function(){$('copyMsg').textContent='Copied. Paste it into the Flyra conversation.'};
   if(navigator.clipboard)navigator.clipboard.writeText(t.value).then(done,function(){document.execCommand('copy');done()});else{document.execCommand('copy');done()}};
 
@@ -517,8 +528,18 @@ function buildProposal(){
   more=more.slice(0,3);
   var lines=c.pkg.map(function(p){return '<div class="li"><span>'+esc(p.name)+'</span><span>'+money(p.total)+'</span></div>'}).join('')+
     (c.minAdj>0?'<div class="li"><span>Minimum seasonal service</span><span>+'+money(c.minAdj)+'</span></div>':'')+
-    (c.disc>0?'<div class="li"><span>Early bird (book before Thanksgiving)</span><span>-'+money(c.disc)+'</span></div>':'');
+    (c.disc>0?'<div class="li"><span><b>Early bird: book by '+EARLY_END.toLocaleDateString('en-US',{month:'short',day:'numeric'})+'</b></span><span>-'+money(c.disc)+'</span></div>':'');
   var extras=c.opt.length?'<div class="sec"><b>Optional extras for your home</b>'+c.opt.map(function(o){return esc(o.name)+' +'+money(o.total)}).join(' &middot; ')+'</div>':'';
+  // Options, like roofing quotes: a lower entry price and a full display, priced with the same minimum/early-bird/rounding rules
+  var ftNow=+$('roofFt').value||0,opts=[];
+  if(S.frontFt&&$('sidesIn').checked&&(S.ftSource==='solar'||S.ftSource==='outline')&&ftNow-S.frontFt>=15){
+    var cf=calc({ft:S.frontFt});if(cf.final<c.final)opts.push(['Front of the house only',cf.final])}
+  if(opts.length||c.opt.length)opts.push(['This design (pictured)',c.final,1]);
+  if(c.opt.length){var ca=calc({allOpt:true});if(ca.final>c.final)opts.push(['Full display, with every extra listed',ca.final])}
+  var optBox=opts.length>1?'<div class="sec"><b>Your options</b>'+opts.map(function(o){return '<div class="li" style="margin:2px 0'+(o[2]?';font-weight:bold':'')+'"><span>'+esc(o[0])+'</span><span>'+money(o[1])+'</span></div>'}).join('')+'</div>':'';
+  var bookBox='<div style="border:2px solid var(--green);border-radius:8px;padding:8px 10px;margin-top:12px;font-size:12px;line-height:1.4"><b style="font-size:13px">Ready to book?</b> Reply <b>YES</b> to our text or call <b>(860) 966-3149</b>. We send your deposit link and lock in your install date. Install dates go in booking order.</div>'+
+    '<div style="font-size:11px;margin-top:6px;color:var(--muted)">&#9733;&#9733;&#9733;&#9733;&#9733; Rated 5.0 on Google by 25+ Connecticut homeowners</div>';
+  var ftHow={solar:'measured from aerial 3D roof data',outline:'estimated from the outline of your home on the map',trace:'measured from satellite imagery','3d':'measured from aerial 3D imagery'}[S.ftSource]||'measured from aerial imagery';
   var page='<div class="page">'+
     '<div class="ph"><div class="brand"><b>CLEAR VIEW</b><span>HOLIDAY LIGHTING | EVERGREEN</span></div>'+
     '<div class="addr"><b>'+(name?esc(name)+'<br>':'')+esc(L.street||'')+'</b>'+esc(L.cityLine||'')+'</div></div>'+
@@ -539,16 +560,19 @@ function buildProposal(){
       '<div class="est">'+
         '<h3>YOUR HOLIDAY LIGHTING QUOTE</h3>'+lines+
         '<div class="rule"></div><div class="price">'+money(c.final)+'</div><div class="small">for the season, plus applicable tax</div>'+
-        '<p style="margin:10px 0 0"><b>'+money(c.dep)+'</b> to book, <b>'+money(c.bal)+'</b> when installed.<br>Next year, same display: <b>'+money(c.next)+'</b> ('+c.nextPct+'% off).</p>'+
-        '<div class="sec" style="margin-top:12px"><b>Included</b>Custom design, warm-white commercial lights, installation, repairs all season, takedown in late January or early February, and storage until next year.</div>'+
-        extras+
-        '<div class="sec"><b>We also offer</b>Tree and bush wraps, wreaths, garland, walkway lights and garage outlines. Just ask.</div>'+
+        '<p style="margin:8px 0 0"><b>'+money(c.dep)+'</b> to book, <b>'+money(c.bal)+'</b> when installed.<br>Next year, same display: <b>'+money(c.next)+'</b> ('+c.nextPct+'% off).</p>'+
+        '<div class="sec" style="margin-top:12px"><b>Included</b>Custom design, commercial warm-white lights, installation, repairs all season, takedown in late Jan or early Feb, and storage.</div>'+
+        (optBox||extras||'<div class="sec"><b>We also offer</b>Tree and bush wraps, wreaths, garland, walkway lights and garage outlines. Just ask.</div>')+(optBox?extras:'')+
+        bookBox+
       '</div>'+
     '</div>'+
-    '<div class="terms"><b>Terms.</b> Clear View Window Co. is a local Connecticut company. The lights are leased and remain ours; we install, maintain, remove and store them each season. Roofline length was measured from aerial 3D imagery and is confirmed on site; any change is approved by you first. You provide a working outdoor outlet; new electrical work is not included. 50% deposit to book, balance due when installation is finished. Quote valid through '+fmtDate(exp)+'.'+
+    '<div class="terms"><b>Terms.</b> Clear View Window Co. is a local Connecticut company. The lights are leased and remain ours; we install, maintain, remove and store them each season. Roofline length was '+ftHow+' and is confirmed on site; any change is approved by you first. You provide a working outdoor outlet; new electrical work is not included. 50% deposit to book, balance due when installation is finished. Quote valid through '+fmtDate(exp)+'.'+
     ' (860) 966-3149 &middot; clearviewwindowsct.com</div>'+
   '</div>';
   var w=$('proposalWrap');w.innerHTML=page;w.classList.remove('hidden');
+  // keep it on one page: if a long list of extras pushes the price column into the terms, shrink that column's text a little
+  var est=w.querySelector('.est'),tm=w.querySelector('.terms');
+  for(var fs=12;fs>=9.5&&est.getBoundingClientRect().bottom>tm.getBoundingClientRect().top-4;fs-=0.5)est.style.fontSize=fs+'px';
 }
 
 /* ---------- wiring ---------- */
@@ -627,7 +651,7 @@ function draw3D(){
     }
   });
   t=Math.round(t);$('v3ft').textContent=t;
-  if(t>0){$('roofFt').value=t;recalc()}
+  if(t>0){$('roofFt').value=t;setSource('3d');recalc()}
   V.viewer.scene.requestRender();
 }
 function init3D(){
@@ -744,32 +768,95 @@ function roofEstimate(R,streetDir){
     if(r.rake>g.rake){g.rake=r.rake;g.owner=r}
   });
   groups.forEach(function(g){g.owner.ft+=2*g.rake;g.owner.what='eave + gable end (both slopes)'});
-  rows.forEach(function(r){total+=r.ft});
-  return {rows:rows,total:Math.round(total)};
+  var front=0;rows.forEach(function(r){total+=r.ft;if(r.face==='front')front+=r.ft});
+  return {rows:rows,total:Math.round(total),front:Math.round(front)};
+}
+// Fallback when Google has no roof data: estimate from the building outline on OpenStreetMap.
+// Long side of the outline = main ridge. Each front eave run of 12+ ft is its own roof section and gets one
+// gable end (both slopes, depth x 1.2 for an 8/12 pitch), the same counting rule as the Google roof data.
+// Checked on 57 Jasmine Ln: 150 ft from the outline vs 146 ft measured by hand.
+function outlineEstimate(F,streetDir){
+  var s=F.poly,n=s.length-1,M2F=3.28084,SEC=1.202,sides=$('sidesIn').checked,sg=0,i,k;
+  for(i=0;i<n;i++)sg+=s[i][0]*s[i+1][1]-s[i+1][0]*s[i][1];sg=sg>0?1:-1;
+  var mar=null;
+  for(i=0;i<n;i++){var a=Math.atan2(s[i+1][1]-s[i][1],s[i+1][0]-s[i][0]),c=Math.cos(a),si=Math.sin(a);
+    var u=s.map(function(p){return p[0]*c+p[1]*si}),v=s.map(function(p){return -p[0]*si+p[1]*c});
+    var W=Math.max.apply(null,u)-Math.min.apply(null,u),H=Math.max.apply(null,v)-Math.min.apply(null,v);
+    if(!mar||W*H<mar.A)mar={A:W*H,W:W,H:H,a:a}}
+  var axis=mar.W>=mar.H?mar.a:mar.a+Math.PI/2,axDeg=((90-axis*180/Math.PI)%180+180)%180;
+  function depth(px,py,nx,ny){var best=0;
+    for(k=0;k<n;k++){var A=s[k],B=s[k+1],ex=B[0]-A[0],ey=B[1]-A[1],den=(-nx)*ey-(-ny)*ex;if(Math.abs(den)<1e-9)continue;
+      var t=((A[0]-px)*ey-(A[1]-py)*ex)/den,w=((A[0]-px)*(-ny)-(A[1]-py)*(-nx))/den;
+      if(t>0.3&&w>=0&&w<=1&&(!best||t<best))best=t}return best}
+  var rows=[],total=0,front=0;
+  for(i=0;i<n;i++){
+    var p=s[i],q=s[i+1],L=Math.hypot(q[0]-p[0],q[1]-p[1]);if(L<1.2)continue;
+    var nx=(q[1]-p[1])*sg/L,ny=-(q[0]-p[0])*sg/L,nb=(Math.atan2(nx,ny)*180/Math.PI+360)%360;
+    var eb=(Math.atan2(q[0]-p[0],q[1]-p[1])*180/Math.PI+180)%180,par=Math.min(angDiff(eb,axDeg),angDiff(eb,axDeg+180))<30;
+    var df=angDiff(nb,streetDir),face=df<=55?'front':df<=125?'side':'back',ft=0,what='',rake=0;
+    if(face==='front'&&par){var d=depth((p[0]+q[0])/2,(p[1]+q[1])/2,nx,ny);
+      if(L>=3.6&&d>3){rake=d*SEC/2;ft=L+2*rake;what='eave + gable end (both slopes)'}else{ft=L;what='small front eave'}}
+    else if(face==='front'){rake=L*SEC/2;ft=L*SEC;what='gable end facing the street'}
+    else if(face==='side'&&par&&sides){ft=L;what='side eave'}
+    else what=face==='side'?'side (gable end, counted with the front)':'back (not lit)';
+    if(face==='front')front+=ft;
+    rows.push({face:face,eave:L*M2F,rake:rake*M2F,pitch:33.7,ft:ft*M2F,what:what});total+=ft;
+  }
+  return {rows:rows,total:Math.round(total*M2F),front:Math.round(front*M2F),fill:F.area/mar.A,
+    dims:[Math.round(Math.max(mar.W,mar.H)*M2F),Math.round(Math.min(mar.W,mar.H)*M2F)]};
+}
+// Where the footage came from, shown in the progress list, the breakdown and on the quote's terms
+var FTSRC={solar:'Google 3D roof data',outline:'map outline estimate',trace:'traced on the satellite map','3d':'measured in the 3D view',typed:'typed by hand'};
+function setSource(k,conf){S.ftSource=k;S.ftConf=conf||(k==='outline'?'medium':'');if(k!=='solar'&&k!=='outline')S.frontFt=null;
+  if(S.ftAuto&&k!==S.ftAuto.k){$('roofSum').textContent='Roofline: '+$('roofFt').value+' ft, '+FTSRC[k]+' (automatic estimate was '+S.ftAuto.ft+' ft from '+FTSRC[S.ftAuto.k]+')'}}
+function showRoof(e,k,conf,foot){
+  $('roofTable').innerHTML='<tr><th>Facing</th><th>Pitch</th><th>Eave</th><th>Slope</th><th>Counted</th><th></th></tr>'+e.rows.map(function(r){
+    return '<tr><td>'+r.face+'</td><td>'+Math.round(r.pitch)+'°</td><td>'+Math.round(r.eave)+' ft</td><td>'+Math.round(r.rake)+' ft</td><td><b>'+Math.round(r.ft)+' ft</b></td><td class="small">'+esc(r.what)+'</td></tr>'}).join('')+
+    '<tr><td colspan="4"><b>Total</b></td><td><b>'+e.total+' ft</b></td><td class="small">'+esc(foot)+'</td></tr>';
+  $('roofBox').classList.remove('hidden');
+  $('roofFt').value=e.total;setSource(k,conf);S.frontFt=e.front;S.ftAuto={k:k,ft:e.total};recalc();
+  $('roofSum').textContent='Roofline: '+e.total+' ft, '+FTSRC[k]+' ('+conf+' confidence). Show breakdown';
 }
 function step(t,cls){var li=document.createElement('li');li.textContent=t;if(cls)li.className=cls;$('runSteps').appendChild(li);return li}
 function runQuote(){
   if(!$('address').value.trim()){$('lookupMsg').textContent='Type an address first.';return}
   ['roofBox','pickBox','confirmBox','doneBox'].forEach(function(id){$(id).classList.add('hidden')});
   $('runSteps').innerHTML='';$('runCard').classList.remove('hidden');$('runBtn').disabled=true;
-  S.mock=null;S.svPhoto=null;S.v3Photo=null;
+  S.mock=null;S.svPhoto=null;S.v3Photo=null;S.ftSource=null;S.ftConf='';S.frontFt=null;S.ftAuto=null;
+  S.lines=[[]];S.slope=[false];S.satImg=null;$('slant').checked=false;$('satCanvas').classList.add('hidden');$('measFt').textContent='0';$('roofBox').classList.add('hidden');
   var s1=step('Looking up the house...');
   lookup().then(function(L){
     s1.textContent='Found '+L.formatted+(L.streetView?' (Street View from '+(L.streetView.date||'unknown date')+')':' (no Street View)');
     autofillName(L);S.mock2=null;$('mock2Wrap').classList.add('hidden');$('mock2Del').classList.add('hidden');
     var streetDir=L.streetView?(L.streetView.heading+180)%360:null;
-    var s2=step('Measuring the roofline from Google roof data...');
-    var roofP=api({action:'roof',lat:L.lat,lng:L.lng}).then(function(R){
+    var s2=step('Measuring the roofline from Google roof data...'),force=$('ftForce').value;
+    var skip=function(){return Promise.reject(new Error('skipped by the test switch'))};
+    var roofP=(force?skip():api({action:'roof',lat:L.lat,lng:L.lng})).then(function(R){
       if(streetDir===null){var big=(R.segments||[]).slice().sort(function(a,b){return b.ground-a.ground})[0];streetDir=big?big.azimuth:0}
       var e=roofEstimate(R,streetDir);
-      $('roofTable').innerHTML='<tr><th>Facing</th><th>Pitch</th><th>Eave</th><th>Slope</th><th>Counted</th><th></th></tr>'+e.rows.map(function(r){
-        return '<tr><td>'+r.face+'</td><td>'+Math.round(r.pitch)+'°</td><td>'+Math.round(r.eave)+' ft</td><td>'+Math.round(r.rake)+' ft</td><td><b>'+Math.round(r.ft)+' ft</b></td><td class="small">'+esc(r.what)+'</td></tr>'}).join('')+
-        '<tr><td colspan="4"><b>Total</b></td><td><b>'+e.total+' ft</b></td><td class="small">Google imagery quality: '+esc(R.quality||'?')+'</td></tr>';
-      $('roofBox').classList.remove('hidden');$('roofSum').textContent='Roofline: '+e.total+' ft (show breakdown)';
-      if(e.total>0){$('roofFt').value=e.total;recalc()}
-      s2.textContent='Roofline estimate: '+e.total+' ft ';
+      if(!(e.total>0))throw new Error('Google roof data had no front roof edges');
+      var conf={HIGH:'high',MEDIUM:'good',LOW:'fair'}[R.quality]||'fair';
+      showRoof(e,'solar',conf,'Google imagery quality: '+(R.quality||'?'));
+      s2.textContent='Roofline: '+e.total+' ft from Google 3D roof data ('+conf+' confidence).';
       if(R.bbox){var dx=(R.bbox.ne.longitude-R.bbox.sw.longitude)*111320*Math.cos(L.lat*Math.PI/180),dy=(R.bbox.ne.latitude-R.bbox.sw.latitude)*110540;$('v3r').value=Math.min(150,Math.max(35,Math.round(Math.hypot(dx,dy)*1.6)))}
-    }).catch(function(err){s2.textContent='No automatic footage: '+err.message+'. Type the feet under Pricing, or measure in the 3D view.';s2.className='err'});
+    }).catch(function(err){
+      // 2nd try: the building outline on the map
+      s2.textContent='Google roof data: none ('+err.message+'). Trying the map outline...';
+      return (force==='trace'?skip():api({action:'footprint',lat:L.lat,lng:L.lng})).then(function(F){
+        var dir=streetDir!==null?streetDir:(F.road?F.road.dir:null);
+        if(dir===null)throw new Error('could not tell which side faces the street');
+        var e=outlineEstimate(F,dir);
+        if(!(e.total>0))throw new Error('no front edges found on the outline');
+        var conf=(F.dist===0&&L.precise&&e.fill>=0.85)?'medium':'low';
+        showRoof(e,'outline',conf,'Outline '+e.dims[0]+' x '+e.dims[1]+' ft from '+F.source+'. Assumes gable roofs at 8/12 pitch: check it in the 3D view, especially hip roofs.');
+        s2.textContent='Roofline: '+e.total+' ft, estimated from the map outline of the house ('+conf+' confidence). No Google roof data here, so check it in the 3D view or trace it below.';
+        if(conf==='low')s2.className='err';
+      });
+    }).catch(function(err){
+      // last resort: Garrison traces it on the satellite map
+      s2.textContent='No automatic footage ('+err.message+'). Trace the roof on the satellite map under "Measure by hand" (opened below), or type the feet under Pricing.';s2.className='err';
+      S.ftSource=null;S.frontFt=null;openTrace();
+    });
     if(S.pinned){
       var sp=step('Using your photo for the mockup.');
       if($('pinnedFinal').checked)return roofP.then(function(){
@@ -881,12 +968,13 @@ $('retake3D').onclick=function(){
 };
 $('sameNo').onclick=function(){$('confirmBox').classList.add('hidden');S.mock=null;step('Mockup rejected. Pick the other photo or upload one.');$('pickBox').classList.remove('hidden');$('pickBox').scrollIntoView({block:'start'})};
 function finishQuote(){
-  if(!(+$('roofFt').value>0)){step('No roofline footage yet: Google roof data is missing for this house. Type the feet under Pricing (or measure in the 3D view), then click "Rebuild quote".','err');
+  if(!(+$('roofFt').value>0)){step('No roofline footage yet. Trace the roof on the satellite map under "Measure by hand" (in the 3D card), or type the feet under Pricing, then click "Rebuild quote".','err');openTrace();
     $('roofFt').scrollIntoView({block:'center'});$('roofFt').focus();return}
   $('confirmBox').classList.add('hidden');buildProposal();
   var c=calc(),L=S.loc,name=$('custName').value.trim(),first=(name.split(' ')[0])||'there';
   var value=c.base+c.opt.reduce(function(a,b){return a+b.total},0),big=value>=(+$('visitMin').value||1e9);
-  var lines=['Customer: '+(name||'(add name)'),'Address: '+L.formatted,'',
+  var lines=['Customer: '+(name||'(add name)'),'Address: '+L.formatted,
+    'Footage: '+(+$('roofFt').value)+' ft, '+(FTSRC[S.ftSource]||'source unknown')+(S.ftConf?' ('+S.ftConf+' confidence)':'')+(S.ftSource==='outline'?'. CHECK IT in the 3D view before sending.':''),'',
     'House package:'].concat(c.pkg.map(function(p){return '  '+p.name+': '+money(p.total)}),
     c.minAdj>0?['  Minimum job adjustment: +'+money(c.minAdj)]:[],
     c.disc>0?['  Early bird (book before Thanksgiving): -'+money(c.disc)]:[],
@@ -1076,7 +1164,7 @@ $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement(
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
 $('runBtn').onclick=runQuote;
 $('address').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runQuote()}},true);
-window.__lights={S:S,V:V,roofEstimate:roofEstimate,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
+window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
 })();
 </script>
 </body>
