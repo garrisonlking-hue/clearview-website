@@ -158,7 +158,9 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
     <div id="myGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px"></div>
     <div id="pinnedBox" class="hidden" style="margin-top:12px;display:flex;gap:12px;align-items:center">
       <img id="pinnedImg" alt="" style="width:180px;border-radius:8px">
-      <div><b>This photo will be used for the mockup.</b><div class="row" style="margin-top:6px"><button class="alt" id="pinnedDel">Don't use it</button><button class="alt hidden" id="pinnedMock">Make the mockup from it now</button></div></div>
+      <div><b>This photo will be used for the mockup.</b>
+      <label style="display:block;margin-top:6px"><input type="checkbox" id="pinnedFinal"> It's already a finished mockup with lights (use it as-is)</label>
+      <div class="row" style="margin-top:6px"><button class="alt" id="pinnedDel">Don't use it</button><button class="alt hidden" id="pinnedMock">Make the mockup from it now</button></div></div>
     </div>
     <div id="flyraGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:12px"></div>
   </div>
@@ -508,7 +510,11 @@ function mockup(){
 function buildProposal(){
   var c=calc(),L=S.loc||{street:$('address').value.split(',')[0]||'Your home',cityLine:$('address').value.split(',').slice(1).join(',').trim()};
   var now=new Date(),exp=new Date(now.getTime()+7*864e5),nextYr=now.getFullYear()+1,name=$('custName').value.trim();
-  var mock=S.mock||S.photo||'';
+  var onQ=(S.myPhotos||[]).filter(function(p){return p.onQuote});
+  var mock=S.mock||(onQ[0]&&onQ[0].img)||S.photo||'';
+  var more=[];if(S.mock2)more.push({img:S.mock2,note:S.mock2Note||''});
+  onQ.forEach(function(p){if(p.img!==mock)more.push({img:p.img,note:''})});
+  more=more.slice(0,3);
   var lines=c.pkg.map(function(p){return '<div class="li"><span>'+esc(p.name)+'</span><span>'+money(p.total)+'</span></div>'}).join('')+
     (c.minAdj>0?'<div class="li"><span>Minimum seasonal service</span><span>+'+money(c.minAdj)+'</span></div>':'')+
     (c.disc>0?'<div class="li"><span>Early bird (book before Thanksgiving)</span><span>-'+money(c.disc)+'</span></div>':'');
@@ -517,10 +523,15 @@ function buildProposal(){
     '<div class="ph"><div class="brand"><b>CLEAR VIEW</b><span>HOLIDAY LIGHTING | EVERGREEN</span></div>'+
     '<div class="addr"><b>'+(name?esc(name)+'<br>':'')+esc(L.street||'')+'</b>'+esc(L.cityLine||'')+'</div></div>'+
     '<div class="cols">'+
-      '<div>'+(mock?'<img class="mock" src="'+mock+'"'+(S.portrait?' style="object-fit:contain"':'')+' alt="">':'<div class="mock"></div>')+
-        '<div class="cap">Illustration of your home lit up. Not a photo of a finished install; final placement is confirmed before installation.</div>'+
-        (S.mock2?'<div style="display:grid;grid-template-columns:3.2in 1fr;gap:.2in;margin-top:.14in;align-items:start"><img src="'+S.mock2+'" style="width:100%;aspect-ratio:3/2;object-fit:cover;border-radius:6px" alt=""><div style="font-size:11.5px"><b style="display:block;font-size:12.5px;margin-bottom:2px">Also shown</b>'+esc(S.mock2Note||'')+'</div></div>':'')+
-        (S.mock2?'':'<div class="how"><div><b>1. Book</b>Approve the quote and pay the deposit to hold your install date.</div><div><b>2. We install</b>Our crew hangs and tests everything, and fixes any outage all season.</div><div><b>3. We take down and store</b>We remove the lights in late January or early February and store them for next year.</div></div>')+'</div>'+
+      '<div>'+(more.length
+        // several views: wide main picture on top, the others in a row underneath (fits one page)
+        ?'<img class="mock" src="'+mock+'" style="aspect-ratio:'+(more.length===1?'16/8.2':'16/8.6')+'" alt="">'+
+         '<div style="display:grid;grid-template-columns:repeat('+more.length+',1fr);gap:.12in;margin-top:.12in">'+
+           more.map(function(m){return '<div><img src="'+m.img+'" style="width:100%;aspect-ratio:'+(more.length===1?'16/9':'3/2')+';object-fit:cover;display:block;border-radius:6px" alt="">'+(m.note?'<div class="cap" style="margin-top:3px">'+esc(m.note)+'</div>':'')+'</div>'}).join('')+'</div>'+
+         '<div class="cap">Illustrations of your home lit up. Not photos of a finished install; final placement is confirmed before installation.</div>'
+        :(mock?'<img class="mock" src="'+mock+'"'+(S.portrait?' style="object-fit:contain"':'')+' alt="">':'<div class="mock"></div>')+
+         '<div class="cap">Illustration of your home lit up. Not a photo of a finished install; final placement is confirmed before installation.</div>'+
+         '<div class="how"><div><b>1. Book</b>Approve the quote and pay the deposit to hold your install date.</div><div><b>2. We install</b>Our crew hangs and tests everything, and fixes any outage all season.</div><div><b>3. We take down and store</b>We remove the lights in late January or early February and store them for next year.</div></div>')+'</div>'+
       '<div class="est">'+
         '<h3>YOUR HOLIDAY LIGHTING QUOTE</h3>'+lines+
         '<div class="rule"></div><div class="price">'+money(c.final)+'</div><div class="small">for the season, plus applicable tax</div>'+
@@ -757,6 +768,8 @@ function runQuote(){
     }).catch(function(err){s2.textContent='No automatic footage: '+err.message+'. Type the feet under Pricing, or measure in the 3D view.';s2.className='err'});
     if(S.pinned){
       var sp=step('Using your photo for the mockup.');
+      if($('pinnedFinal').checked)return roofP.then(function(){
+        S.mock=S.pinned;$('mockOutImg').src=S.pinned;$('mockOut').classList.remove('hidden');sp.textContent='Using your finished mockup as-is.';finishQuote()});
       return roofP.then(function(){S.cands=[{img:S.pinned,label:'Your photo'}];drawCands(0);$('pickBox').classList.remove('hidden');return makeMock(0)});
     }
     if($('angleManual').checked){
@@ -1008,7 +1021,8 @@ function pinPhoto(d,src){
 // Several photos at once, from the file picker or dragged onto the House photo box
 S.myPhotos=[];
 function drawMine(){
-  $('myGrid').innerHTML=S.myPhotos.map(function(p,i){return '<div style="border:3px solid '+(S.pinned===p.img?'#1D6B3A':'transparent')+';border-radius:10px;padding:2px"><img src="'+p.img+'" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block" alt=""><div class="row" style="margin-top:4px;gap:4px"><button class="alt" data-u="'+i+'" style="padding:4px 10px;font-size:12px">'+(S.pinned===p.img?'Using this':'Use this')+'</button><button class="alt" data-x="'+i+'" style="padding:4px 8px;font-size:12px">Remove</button></div></div>'}).join('');
+  $('myGrid').innerHTML=S.myPhotos.map(function(p,i){return '<div style="border:3px solid '+(S.pinned===p.img?'#1D6B3A':'transparent')+';border-radius:10px;padding:2px"><img src="'+p.img+'" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block" alt=""><div class="row" style="margin-top:4px;gap:4px"><button class="alt" data-u="'+i+'" style="padding:4px 10px;font-size:12px">'+(S.pinned===p.img?'Using this':'Use this')+'</button><button class="alt" data-x="'+i+'" style="padding:4px 8px;font-size:12px">Remove</button></div><label style="display:block;margin-top:4px"><input type="checkbox" data-q="'+i+'"'+(p.onQuote?' checked':'')+'> Show on quote</label></div>'}).join('');
+  [].forEach.call($('myGrid').querySelectorAll('input[data-q]'),function(cb){cb.onchange=function(){S.myPhotos[+cb.dataset.q].onQuote=cb.checked;if($('proposalWrap').innerHTML)buildProposal()}});
   [].forEach.call($('myGrid').querySelectorAll('button[data-u]'),function(b){b.onclick=function(){var p=S.myPhotos[+b.dataset.u];pinPhoto(p.img,p.label);drawMine()}});
   [].forEach.call($('myGrid').querySelectorAll('button[data-x]'),function(b){b.onclick=function(){var p=S.myPhotos.splice(+b.dataset.x,1)[0];if(S.pinned===p.img){S.pinned=null;$('pinnedBox').classList.add('hidden')}drawMine()}});
 }
