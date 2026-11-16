@@ -286,7 +286,7 @@ export default async function handler(req, res) {
     // ---- fetch one image for the page (when the photo host blocks direct browser use)
     if (b.action === 'imageProxy') {
       const u = String(b.url || '');
-      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\//i.test(u) && !/^https:\/\/app\.flyra\.io\//i.test(u) && !/^https:\/\/photos\.zillowstatic\.com\//i.test(u)) return res.status(400).json({ error: 'Not a Flyra or Zillow photo link.' });
+      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\//i.test(u) && !/^https:\/\/app\.flyra\.io\//i.test(u) && !/^https:\/\/(photos\.zillowstatic\.com|ssl\.cdn-redfin\.com|[a-z0-9-]+\.rdcpix\.com)\//i.test(u)) return res.status(400).json({ error: 'Not a Flyra or listing photo link.' });
       return googleImage(res, u);
     }
 
@@ -401,7 +401,7 @@ export default async function handler(req, res) {
       if (imgs.length < 2) return res.status(400).json({ error: 'Need the Zillow photo and at least one Google picture.' });
       const labels = (Array.isArray(b.labels) ? b.labels : []).map((x) => String(x).slice(0, 60));
       const content = [{ type: 'text', text:
-        `Image 0 is a real-estate listing photo (from Zillow) that is supposed to show the house at ${String(b.address || 'the address').slice(0, 120)}. ` +
+        `Image 0 is a real-estate listing photo (Zillow, Redfin or Realtor.com) that is supposed to show the house at ${String(b.address || 'the address').slice(0, 120)}. ` +
         imgs.slice(1).map((_, i) => `Image ${i + 1} is ${labels[i] || 'a Google picture'} of that address.`).join(' ') +
         ' Decide whether image 0 shows the SAME house as the Google pictures. Compare specific features: roof shape and which way the gables face, number of stories, ' +
         'garage position (left or right) and number of garage doors, front door, porch and window layout, chimney, siding color. ' +
