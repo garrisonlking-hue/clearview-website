@@ -1555,10 +1555,10 @@ function zwFromUrl(u){if(!LP_HOSTS.test(u))return false;
 var CROP={};
 // Find the main photo on a listing-page screenshot: the biggest block of non-white pixels (page backgrounds are white/light gray), then grow
 // each edge while the strip is still mostly photo (so buttons drawn over the photo don't cut it short). Free, no AI call.
-function autoBox(c){
+function autoBox(c,T){
   var W=240,H=Math.max(40,Math.round(c.height*W/c.width)),t=document.createElement('canvas');t.width=W;t.height=H;var x=t.getContext('2d');x.drawImage(c,0,0,W,H);
   var d=x.getImageData(0,0,W,H).data,m=new Uint8Array(W*H);
-  for(var i=0;i<W*H;i++){var r=d[i*4],g=d[i*4+1],b=d[i*4+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);m[i]=(mn>226&&mx-mn<16)?0:1}
+  for(var i=0;i<W*H;i++){var r=d[i*4],g=d[i*4+1],b=d[i*4+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);m[i]=(mn>(T||200)&&mx-mn<18)?0:1}
   var h=new Int32Array(W),best={a:0};
   for(var y=0;y<H;y++){for(var k=0;k<W;k++)h[k]=m[y*W+k]?h[k]+1:0;
     var st=[];for(var k2=0;k2<=W;k2++){var hh=k2<W?h[k2]:0;while(st.length&&h[st[st.length-1]]>=hh){var top=st.pop(),ht=h[top],l=st.length?st[st.length-1]+1:0,a=ht*(k2-l);if(a>best.a)best={a:a,x0:l,x1:k2,y0:y-ht+1,y1:y+1}}st.push(k2)}}
