@@ -286,7 +286,7 @@ export default async function handler(req, res) {
     // ---- fetch one image for the page (when the photo host blocks direct browser use)
     if (b.action === 'imageProxy') {
       const u = String(b.url || '');
-      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\//i.test(u) && !/^https:\/\/app\.flyra\.io\//i.test(u)) return res.status(400).json({ error: 'Not a Flyra photo link.' });
+      if (!/^https:\/\/[a-z0-9-]+\.supabase\.co\//i.test(u) && !/^https:\/\/app\.flyra\.io\//i.test(u) && !/^https:\/\/photos\.zillowstatic\.com\//i.test(u)) return res.status(400).json({ error: 'Not a Flyra or Zillow photo link.' });
       return googleImage(res, u);
     }
 
@@ -392,6 +392,37 @@ export default async function handler(req, res) {
       const q = new URLSearchParams({ center: `${Number(b.lat)},${Number(b.lng)}`, zoom: String(zoom),
         size: '640x640', scale: '2', maptype: 'satellite', key: GKEY });
       return googleImage(res, `${G}/staticmap?${q}`);
+    }
+
+    // ---- is the pasted Zillow listing photo the same house as the Google pictures? (small, cheap vision call)
+    if (b.action === 'match') {
+      if (!OKEY) return res.status(503).json({ error: 'OPENAI_API_KEY is not set in Vercel yet.' });
+      const imgs = (Array.isArray(b.images) ? b.images : []).filter((u) => /^data:image\/(jpeg|png|webp);base64,/.test(u)).slice(0, 4);
+      if (imgs.length < 2) return res.status(400).json({ error: 'Need the Zillow photo and at least one Google picture.' });
+      const labels = (Array.isArray(b.labels) ? b.labels : []).map((x) => String(x).slice(0, 60));
+      const content = [{ type: 'text', text:
+        `Image 0 is a real-estate listing photo (from Zillow) that is supposed to show the house at ${String(b.address || 'the address').slice(0, 120)}. ` +
+        imgs.slice(1).map((_, i) => `Image ${i + 1} is ${labels[i] || 'a Google picture'} of that address.`).join(' ') +
+        ' Decide whether image 0 shows the SAME house as the Google pictures. Compare specific features: roof shape and which way the gables face, number of stories, ' +
+        'garage position (left or right) and number of garage doors, front door, porch and window layout, chimney, siding color. ' +
+        'Listing photos can be years older or from another season, so ignore trees, cars, paint touch-ups and lighting. A view from above shows only the roof: use it for roof shape and garage side. ' +
+        'Answer "yes" only if several specific features match and none clearly conflict; "no" if features clearly conflict (a different house, e.g. a neighbor); "unsure" if the Google pictures do not show enough to tell. ' +
+        'Also say whether image 0 is an exterior photo of the FRONT of the house that shows its front roofline (false for interiors, backyards, drone or aerial shots, maps, floor plans or close-ups). ' +
+        'Reply as JSON: {"same":"yes"|"no"|"unsure","front":true|false,"reason":"one short sentence naming the features compared"}.' }];
+      imgs.forEach((u) => content.push({ type: 'image_url', image_url: { url: u, detail: 'high' } }));
+      let last = '';
+      for (const model of [process.env.OPENAI_VISION_MODEL, 'gpt-4.1-mini', 'gpt-4o-mini'].filter(Boolean)) {
+        const r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST',
+          headers: { Authorization: 'Bearer ' + OKEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model, response_format: { type: 'json_object' }, max_tokens: 200, messages: [{ role: 'user', content }] }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.choices && j.choices[0]) {
+          try { const out = JSON.parse(j.choices[0].message.content); out.model = model; return res.status(200).json(out); }
+          catch (e) { last = 'Could not read the answer.'; continue; }
+        }
+        last = (j.error && j.error.message) || `OpenAI error ${r.status}`;
+      }
+      return res.status(502).json({ error: 'Photo check failed: ' + last });
     }
 
     // ---- pick the photo that shows the front of the house best (small, cheap vision call)
