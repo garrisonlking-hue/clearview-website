@@ -1553,6 +1553,24 @@ function zwFromUrl(u){if(!LP_HOSTS.test(u))return false;
   api({action:'imageProxy',url:u},true).then(blobToImg).then(function(img){zwSet(imgToDataURL(img,1536))}).catch(function(e){$('lookupMsg').textContent='Could not get that photo: '+e.message});return true}
 /* Screenshot another tab (Zillow/Redfin listing) with the browser's screen-share picker, auto-find the house photo, let him fix the box */
 var CROP={};
+// Find the main photo on a listing-page screenshot: the biggest block of non-white pixels (page backgrounds are white/light gray), then grow
+// each edge while the strip is still mostly photo (so buttons drawn over the photo don't cut it short). Free, no AI call.
+function autoBox(c){
+  var W=240,H=Math.max(40,Math.round(c.height*W/c.width)),t=document.createElement('canvas');t.width=W;t.height=H;var x=t.getContext('2d');x.drawImage(c,0,0,W,H);
+  var d=x.getImageData(0,0,W,H).data,m=new Uint8Array(W*H);
+  for(var i=0;i<W*H;i++){var r=d[i*4],g=d[i*4+1],b=d[i*4+2],mx=Math.max(r,g,b),mn=Math.min(r,g,b);m[i]=(mn>226&&mx-mn<16)?0:1}
+  var h=new Int32Array(W),best={a:0};
+  for(var y=0;y<H;y++){for(var k=0;k<W;k++)h[k]=m[y*W+k]?h[k]+1:0;
+    var st=[];for(var k2=0;k2<=W;k2++){var hh=k2<W?h[k2]:0;while(st.length&&h[st[st.length-1]]>=hh){var top=st.pop(),ht=h[top],l=st.length?st[st.length-1]+1:0,a=ht*(k2-l);if(a>best.a)best={a:a,x0:l,x1:k2,y0:y-ht+1,y1:y+1}}st.push(k2)}}
+  if(!best.a||best.a<0.08*W*H)return null;
+  var frac=function(x0,x1,y0,y1){var n=0,t2=0;for(var yy=y0;yy<y1;yy++)for(var xx=x0;xx<x1;xx++){t2++;n+=m[yy*W+xx]}return t2?n/t2:0},B=best,go=true;
+  while(go){go=false;
+    if(B.y1<H&&frac(B.x0,B.x1,B.y1,B.y1+1)>=0.6){B.y1++;go=true}
+    if(B.y0>0&&frac(B.x0,B.x1,B.y0-1,B.y0)>=0.6){B.y0--;go=true}
+    if(B.x1<W&&frac(B.x1,B.x1+1,B.y0,B.y1)>=0.6){B.x1++;go=true}
+    if(B.x0>0&&frac(B.x0-1,B.x0,B.y0,B.y1)>=0.6){B.x0--;go=true}}
+  var sx=c.width/W,sy=c.height/H;return [B.x0*sx,B.y0*sy,B.x1*sx,B.y1*sy];
+}
 function grabTab(){
   if(!navigator.mediaDevices||!navigator.mediaDevices.getDisplayMedia){$('lookupMsg').textContent='This browser cannot screenshot tabs. Use Chrome, or right-click the photo, Copy Image, then press \u2318V here.';return}
   if(ZW.wait)ZW.hold=true;
@@ -1560,7 +1578,7 @@ function grabTab(){
     var v=document.createElement('video');v.srcObject=st;v.muted=true;v.playsInline=true;
     return v.play().then(function(){return sleep(500)}).then(function(){var c=document.createElement('canvas');c.width=v.videoWidth;c.height=v.videoHeight;c.getContext('2d').drawImage(v,0,0);st.getTracks().forEach(function(t){t.stop()});return c});
   }).then(function(c){
-    CROP.c=c;CROP.box=null;cropShow('Finding the house photo...');
+    CROP.c=c;CROP.box=autoBox(c);if(CROP.box){cropShow();return}cropShow('Finding the house photo...');
     var sm=document.createElement('canvas'),k=Math.min(1,1280/c.width);sm.width=Math.round(c.width*k);sm.height=Math.round(c.height*k);sm.getContext('2d').drawImage(c,0,0,sm.width,sm.height);
     return api({action:'crop',image:sm.toDataURL('image/jpeg',0.8)}).then(function(b){
       if(b&&b.found!==false&&b.x1>b.x0&&b.y1>b.y0)CROP.box=[b.x0*c.width,b.y0*c.height,b.x1*c.width,b.y1*c.height];cropShow(CROP.box?null:'Could not find the photo automatically: drag a box around it.')
@@ -1644,7 +1662,7 @@ $('runBtn').onclick=runQuote;
 $('address').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runQuote()}},true);
 var QDEF={};qfieldIds().concat(['mock2Note']).forEach(function(id){var e=$(id);if(e)QDEF[id]=e.type==='checkbox'?e.checked:(id==='sumText'||id==='visitText'?'':e.value)});
 listQuotes();
-window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,newQuote:newQuote,saveNow:saveNow,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view,zwSet:zwSet,zwCheckOne:zwCheckOne,zwGate:zwGate,pickFrom:pickFrom,makeMock:makeMock};
+window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,newQuote:newQuote,saveNow:saveNow,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view,zwSet:zwSet,zwCheckOne:zwCheckOne,autoBox:autoBox,zwGate:zwGate,pickFrom:pickFrom,makeMock:makeMock};
 })();
 </script>
 </body>
