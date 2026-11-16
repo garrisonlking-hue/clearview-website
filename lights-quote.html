@@ -220,7 +220,8 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
           <button class="alt hidden" id="mock2Del">Remove it</button>
         </div>
         <div class="note" id="mock2Msg">It goes on the quote under the main picture. Price any extras under Pricing.</div>
-        <div class="imgbox hidden" id="mock2Wrap" style="margin-top:8px;max-width:520px"><img id="mock2Img" alt=""></div>
+        <div class="imgbox hidden" id="mock2Wrap" style="margin-top:8px;max-width:760px;position:relative"><img id="mock2Img" alt=""><canvas id="markCanvas2" style="position:absolute;inset:0;width:100%;height:100%;cursor:crosshair;touch-action:none;display:none"></canvas></div>
+        <div class="row hidden" id="mock2Tools" style="margin-top:10px"><button class="alt" id="mark2Btn">Edit second view</button><span id="mark2Slot" style="display:contents"></span><button class="alt hidden" id="mock2Fix">Fix lights to match the main mockup</button><span class="note" id="mark2Msg" style="margin:0"></span></div>
       </details></div>
     <div id="confirmBox" class="hidden"><img id="confirmImg" alt=""><button id="sameYes"></button><button id="sameNo"></button></div>
     <div id="doneBox" class="hidden" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
@@ -909,7 +910,7 @@ function runQuote(){
   var s1=step('Looking up the house...');
   lookup().then(function(L){
     s1.textContent='Found '+L.formatted+(L.streetView?' (Street View from '+(L.streetView.date||'unknown date')+')':' (no Street View)');
-    autofillName(L);S.mock2=null;$('mock2Wrap').classList.add('hidden');$('mock2Del').classList.add('hidden');
+    autofillName(L);S.mock2=null;$('mock2Wrap').classList.add('hidden');$('mock2Del').classList.add('hidden');$('mock2Tools').classList.add('hidden');
     var streetDir=L.streetView?(L.streetView.heading+180)%360:null;
     var s2=step('Measuring the roofline from Google roof data...'),force=$('ftForce').value;
     var skip=function(){return Promise.reject(new Error('skipped by the test switch'))};
@@ -1133,7 +1134,7 @@ function newQuote(){
     Object.keys(QDEF).forEach(function(id){var e=$(id);if(!e)return;if(e.type==='checkbox')e.checked=QDEF[id];else e.value=QDEF[id]});
     ['loc','qid','mock','mock2','mock2Note','photo','pinned','pinnedSrc','svPhoto','v3Photo','ftSource','frontFt','ftAuto','footprint','streetDir','estLink','flyWho','satImg','spots','spotsFor','cands','lastPick','manual'].forEach(function(k){S[k]=null});
     S.ftConf='';S.photoSrc='';S.lines=[[]];S.slope=[false];S.myPhotos=[];if(typeof drawMine==='function')drawMine();
-    ['runCard','doneBox','roofBox','pickBox','mockOut','mockBox','pinnedBox','proposalWrap','mock2Wrap','satCanvas','svwPano','svwStatic'].forEach(function(id){var e=$(id);if(e)e.classList.add('hidden')});
+    ['runCard','doneBox','roofBox','pickBox','mockOut','mockBox','pinnedBox','proposalWrap','mock2Wrap','mock2Tools','satCanvas','svwPano','svwStatic'].forEach(function(id){var e=$(id);if(e)e.classList.add('hidden')});
     $('proposalWrap').innerHTML='';$('runSteps').innerHTML='';$('photo').removeAttribute('src');$('photoMsg').textContent='No photo yet.';
     ['lookupMsg','flyMsg','flyWho','mockMsg','svwSpot','markMsg','copySumMsg'].forEach(function(id){var e=$(id);if(e)e.textContent=''});
     var fg=$('flyraGrid');if(fg)fg.innerHTML='';$('measFt').textContent='0';$('handBox').open=false;
@@ -1152,7 +1153,7 @@ function openQuote(rec){
   $('runCard').classList.remove('hidden');$('runSteps').innerHTML='';['roofBox','pickBox','confirmBox'].forEach(function(id){$(id).classList.add('hidden')});
   step('Opened the saved quote from '+new Date(rec.saved).toLocaleString('en-US',{month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})+'. Change anything, then Save as PDF.');
   if(S.mock){$('mockOutImg').src=S.mock;$('mockOut').classList.remove('hidden')}else $('mockOut').classList.add('hidden');
-  if(S.mock2){$('mock2Img').src=S.mock2;$('mock2Wrap').classList.remove('hidden');$('mock2Del').classList.remove('hidden')}else{$('mock2Wrap').classList.add('hidden');$('mock2Del').classList.add('hidden')}
+  if(S.mock2){$('mock2Img').src=S.mock2;$('mock2Wrap').classList.remove('hidden');$('mock2Del').classList.remove('hidden');$('mock2Tools').classList.remove('hidden')}else{$('mock2Wrap').classList.add('hidden');$('mock2Del').classList.add('hidden');$('mock2Tools').classList.add('hidden')}
   if(S.photo)$('photo').src=S.photo;
   $('doneBox').classList.remove('hidden');
   $('flyBtn').disabled=false;$('flyBtn').textContent=S.estLink?'Created':'Create draft estimate in Flyra';$('flyMsg').innerHTML=S.estLink?'<a href="'+esc(S.estLink)+'" target="_blank">Open the Flyra estimate</a>':'';
@@ -1359,19 +1360,21 @@ var MKT={
   wrap:{label:'Wrap tree / bush',color:'#ff8a00',name:'ORANGE',tip:'Scribble over the tree trunk or bush to wrap it.',
     rule:'ORANGE scribbles: wrap that tree (trunk and main branches) or bush in warm-white mini lights.'}
 };
-var MK={on:false,lines:[],cur:null,tool:'lights'};
-function mkSize(){var c=$('markCanvas'),i=$('mockOutImg');c.width=i.naturalWidth||1536;c.height=i.naturalHeight||1024}
-function mkDraw(){var c=$('markCanvas'),x=c.getContext('2d'),w=Math.max(6,c.width/160);x.clearRect(0,0,c.width,c.height);x.lineCap='round';x.lineJoin='round';
+var MK={on:false,lines:[],cur:null,tool:'lights',t:'main'};
+function mkC(){return $(MK.t==='2'?'markCanvas2':'markCanvas')}function mkI(){return $(MK.t==='2'?'mock2Img':'mockOutImg')}function mkM(){return $(MK.t==='2'?'mark2Msg':'markMsg')}
+function mkSize(){var c=mkC(),i=mkI();c.width=i.naturalWidth||1536;c.height=i.naturalHeight||1024}
+function mkDraw(){var c=mkC(),x=c.getContext('2d'),w=Math.max(6,c.width/160);x.clearRect(0,0,c.width,c.height);x.lineCap='round';x.lineJoin='round';
   MK.lines.forEach(function(L){var t=MKT[L.tool];x.strokeStyle=x.fillStyle=t.color;x.lineWidth=t.tool==='erase'?w*2.2:w;
     if(t.dot){var p=L.pts[0];x.beginPath();x.arc(p[0],p[1],w*2.4,0,7);x.fill();return}
     if(L.pts.length<2)return;x.lineWidth=L.tool==='erase'?w*2.2:L.tool==='wrap'?w*1.6:w;
     x.beginPath();x.moveTo(L.pts[0][0],L.pts[0][1]);L.pts.forEach(function(p){x.lineTo(p[0],p[1])});x.stroke()})}
-function mkPt(e){var c=$('markCanvas'),r=c.getBoundingClientRect();return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]}
+function mkPt(e){var c=mkC(),r=c.getBoundingClientRect();return [(e.clientX-r.left)*c.width/r.width,(e.clientY-r.top)*c.height/r.height]}
 function mkChips(){$('mkChips').innerHTML=Object.keys(MKT).map(function(k){return '<button class="chip'+(k===MK.tool?' on':'')+'" data-k="'+k+'"><i style="background:'+MKT[k].color+'"></i>'+MKT[k].label+'</button>'}).join('');
-  [].forEach.call($('mkChips').children,function(b){b.onclick=function(){MK.tool=b.dataset.k;mkChips();$('markMsg').textContent=MKT[MK.tool].tip}})}
-$('markCanvas').addEventListener('pointerdown',function(e){if(!MK.on)return;this.setPointerCapture(e.pointerId);var L={tool:MK.tool,pts:[mkPt(e)]};MK.lines.push(L);MK.cur=MKT[MK.tool].dot?null:L;mkDraw()});
-$('markCanvas').addEventListener('pointermove',function(e){if(!MK.cur)return;MK.cur.pts.push(mkPt(e));mkDraw()});
-$('markCanvas').addEventListener('pointerup',function(){MK.cur=null});
+  [].forEach.call($('mkChips').children,function(b){b.onclick=function(){MK.tool=b.dataset.k;mkChips();mkM().textContent=MKT[MK.tool].tip}})}
+['markCanvas','markCanvas2'].forEach(function(id){
+$(id).addEventListener('pointerdown',function(e){if(!MK.on||this!==mkC())return;this.setPointerCapture(e.pointerId);var L={tool:MK.tool,pts:[mkPt(e)]};MK.lines.push(L);MK.cur=MKT[MK.tool].dot?null:L;mkDraw()});
+$(id).addEventListener('pointermove',function(e){if(!MK.cur)return;MK.cur.pts.push(mkPt(e));mkDraw()});
+$(id).addEventListener('pointerup',function(){MK.cur=null})});
 // Each decoration drawn on the mockup is added to the price (estimates; editable under Pricing)
 function mkPrice(marks,W,H){
   function len(L){var t=0;for(var i=1;i<L.pts.length;i++)t+=Math.hypot(L.pts[i][0]-L.pts[i-1][0],L.pts[i][1]-L.pts[i-1][1]);return t}
@@ -1390,31 +1393,35 @@ function mkPrice(marks,W,H){
     out.push(add[id]+' '+names[id][add[id]===1?0:1])});
   return out;
 }
-function mkOff(){MK.lines=[];if($('markText'))$('markText').value='';MK.on=false;$('markCanvas').style.display='none';$('markTools').classList.add('hidden');$('markBtn').textContent='Edit mockup'}
-$('markBtn').onclick=function(){
-  if(MK.on){mkOff();$('markMsg').textContent='';return}
-  MK.on=true;$('markCanvas').style.display='block';$('markTools').classList.remove('hidden');this.textContent='Cancel';
-  mkSize();MK.lines=[];mkDraw();mkChips();$('markMsg').textContent='Pick a tool, draw on the picture, then Apply changes. '+MKT[MK.tool].tip;
-};
+function mkOff(){MK.lines=[];if($('markText'))$('markText').value='';MK.on=false;$('markCanvas').style.display='none';$('markCanvas2').style.display='none';$('markTools').classList.add('hidden');
+  $('markBtn').parentNode.insertBefore($('markTools'),$('markBtn').nextSibling);$('markBtn').textContent='Edit mockup';$('mark2Btn').textContent='Edit second view'}
+function mkStart(t){var was=MK.on&&MK.t===t;if(MK.on)mkOff();$('markMsg').textContent='';$('mark2Msg').textContent='';if(was)return;
+  MK.t=t;MK.on=true;mkC().style.display='block';if(t==='2')$('mark2Slot').appendChild($('markTools'));$('markTools').classList.remove('hidden');$(t==='2'?'mark2Btn':'markBtn').textContent='Cancel';
+  mkSize();MK.lines=[];mkDraw();mkChips();mkM().textContent='Pick a tool, draw on the picture, then Apply changes. '+MKT[MK.tool].tip}
+$('markBtn').onclick=function(){mkStart('main')};
+$('mark2Btn').onclick=function(){mkStart('2')};
 $('markUndo').onclick=function(){MK.lines.pop();mkDraw()};
 $('markClear').onclick=function(){MK.lines=[];mkDraw()};
 $('markApply').onclick=function(){
-  if(!MK.lines.length&&!$('markText').value.trim()){$('markMsg').textContent='Draw something or type what to change first.';return}
+  if(!MK.lines.length&&!$('markText').value.trim()){mkM().textContent='Draw something or type what to change first.';return}
   var used={};MK.lines.forEach(function(L){used[L.tool]=1});
-  var c=document.createElement('canvas'),i=$('mockOutImg');c.width=i.naturalWidth;c.height=i.naturalHeight;var x=c.getContext('2d');
-  x.drawImage(i,0,0);x.drawImage($('markCanvas'),0,0,c.width,c.height);
+  var tgt=MK.t,mm=mkM();
+  var c=document.createElement('canvas'),i=mkI();c.width=i.naturalWidth;c.height=i.naturalHeight;var x=c.getContext('2d');
+  x.drawImage(i,0,0);x.drawImage(mkC(),0,0,c.width,c.height);
   var marked=c.toDataURL('image/jpeg',0.9),b=$('markApply');b.disabled=true;b.innerHTML='<span class="spin"></span>Applying...';
   var marks=MK.lines.slice(),imgW=c.width,imgH=c.height,extra=$('markText').value.trim();
-  $('markMsg').textContent='About a minute.';
+  mm.textContent='About a minute.';
   api({action:'mockup',image:marked,portrait:c.height>c.width,fidelity:'high',prompt:
     'This is a nighttime photo of a house decorated for Christmas. Colored marks have been drawn on it as editing instructions:\n- '+
     Object.keys(used).map(function(k){return MKT[k].rule}).join('\n- ')+(extra?'\n- Also: '+extra+'.':'')+
     '\n\nPlace everything exactly where it is marked, at a realistic size. Then remove every colored mark completely so none remain. Change nothing else: same house shape, same lights elsewhere, same snow, sky and camera angle. No text, no watermarks.'})
-  .then(function(r){S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image;
+  .then(function(r){
+    if(tgt==='2'){S.mock2=r.image;$('mock2Img').src=r.image}else{S.mock=r.image;$('mockOutImg').src=r.image;$('mockImg').src=r.image}
     var added=mkPrice(marks,imgW,imgH);mkOff();
-    $('markMsg').textContent='Done.'+(added.length?' Added to the price: '+added.join(', ')+'. Adjust under Pricing if needed.':'')+' Edit again if anything is off.';
-    recalc();buildProposal();if(!$('doneBox').classList.contains('hidden'))finishQuote()})
-  .catch(function(e){$('markMsg').textContent='Could not apply the changes: '+e.message})
+    mm.textContent='Done.'+(added.length?' Added to the price: '+added.join(', ')+'. Adjust under Pricing if needed.':'')+' Edit again if anything is off.';
+    recalc();buildProposal();if(!$('doneBox').classList.contains('hidden'))finishQuote();
+    if(S.mock&&S.mock2)mock2Check()})
+  .catch(function(e){mm.textContent='Could not apply the changes: '+e.message})
   .then(function(){b.disabled=false;b.textContent='Apply changes'});
 };
 /* ---------- address suggestions + Flyra name autofill ---------- */
@@ -1453,13 +1460,36 @@ $('mock2Btn').onclick=function(){
   var note=$('mock2Note').value.trim();if(!note){$('mock2Msg').textContent='Describe what the second view should show.';return}
   var v=$('mock2Src').value,img=v==='main'?S.photo:(S.cands[+v]||{}).img;if(!img){$('mock2Msg').textContent='Pick a photo.';return}
   var b=this;b.disabled=true;b.innerHTML='<span class="spin"></span>Making it...';$('mock2Msg').textContent='About a minute.';
-  api({action:'mockup',image:img,fidelity:'high',portrait:false,prompt:$('prompt').value+'\n\nThis is an extra view for the quote. In addition to the lights above, show: '+note+'.'})
-  .then(function(r){S.mock2=r.image;S.mock2Note=note.charAt(0).toUpperCase()+note.slice(1);$('mock2Img').src=r.image;$('mock2Wrap').classList.remove('hidden');$('mock2Del').classList.remove('hidden');
-    $('mock2Msg').textContent='Added to the quote.';buildProposal()})
+  var ref=S.mock&&S.mock!==img?S.mock:null;
+  (ref?shrink(ref,1024):Promise.resolve(null)).then(function(r1){return api({action:'mockup',image:img,ref:r1,fidelity:'high',portrait:false,prompt:$('prompt').value+'\n\nThis is an extra view for the quote.'+
+    (r1?' The SECOND image is the finished main mockup of this same house from another angle. Light exactly the same things it shows lit (the same roof edges, gables, dormers, columns, wraps, bushes, wreaths and walkway) wherever they are visible from this angle, with the same warm-white bulbs and spacing, and leave dark everything that is dark in it. Edit only the FIRST image; keep its camera angle.':'')+
+    ' In addition, show: '+note+'.'})})
+  .then(function(r){S.mock2=r.image;S.mock2Note=note.charAt(0).toUpperCase()+note.slice(1);$('mock2Img').src=r.image;$('mock2Wrap').classList.remove('hidden');$('mock2Del').classList.remove('hidden');$('mock2Tools').classList.remove('hidden');
+    $('mock2Msg').textContent='Added to the quote.';buildProposal();if(S.mock)mock2Check()})
   .catch(function(e){$('mock2Msg').textContent='Could not make it: '+e.message})
   .then(function(){b.disabled=false;b.textContent='Make second view'});
 };
-$('mock2Del').onclick=function(){S.mock2=null;S.mock2Note='';$('mock2Wrap').classList.add('hidden');this.classList.add('hidden');$('mock2Msg').textContent='Removed.';buildProposal()};
+// Cross-check: the second view must light the same things as the main mockup (where visible from its angle)
+var M2={fix:''};
+function mock2Check(){
+  if(!S.mock||!S.mock2)return Promise.resolve();
+  $('mock2Fix').classList.add('hidden');$('mark2Msg').textContent='Checking the lights match the main mockup...';$('mark2Msg').className='note';
+  return Promise.all([shrink(S.mock,768),shrink(S.mock2,768)]).then(function(im){return api({action:'compare',images:im})}).then(function(r){
+    M2.fix=r.fix||'';
+    if(r.match){$('mark2Msg').textContent='\u2713 Lights match the main mockup.';return}
+    $('mark2Msg').textContent='Lights don\'t match the main mockup: '+(r.differences||[]).join('; ')+'.';$('mark2Msg').className='err';$('mock2Fix').classList.remove('hidden');
+  }).catch(function(e){$('mark2Msg').textContent='Could not compare the two mockups ('+e.message+'). Check them by eye.'});
+}
+$('mock2Fix').onclick=function(){
+  if(!S.mock||!S.mock2)return;var b=this;b.disabled=true;b.innerHTML='<span class="spin"></span>Fixing...';$('mark2Msg').textContent='About a minute.';$('mark2Msg').className='note';
+  Promise.all([shrink(S.mock2,1536),shrink(S.mock,1024)]).then(function(im){return api({action:'mockup',image:im[0],ref:im[1],fidelity:'high',portrait:false,prompt:
+    'The FIRST image is a nighttime Christmas-lights mockup of a house. The SECOND image is the main mockup of the same house from another angle. Make the lights in the first image match the second: '+
+    (M2.fix||'light the same features and leave dark the same features')+'. Light exactly what is lit in the second image wherever it is visible from this angle, nothing that is dark there, with the same warm-white bulbs and spacing. Edit only the first image. Change nothing else: same house, same camera angle, same snow and sky. No text.'})})
+  .then(function(r){S.mock2=r.image;$('mock2Img').src=r.image;buildProposal();return mock2Check()})
+  .catch(function(e){$('mark2Msg').textContent='Could not fix it: '+e.message})
+  .then(function(){b.disabled=false;b.textContent='Fix lights to match the main mockup'});
+};
+$('mock2Del').onclick=function(){S.mock2=null;S.mock2Note='';$('mock2Wrap').classList.add('hidden');$('mock2Tools').classList.add('hidden');this.classList.add('hidden');$('mock2Msg').textContent='Removed.';buildProposal()};
 /* ---------- Listing photos (Zillow / Redfin / Realtor.com): 1st choice, then Street View, then 3D/aerial ----------
    These sites block automatic lookups, so Run quote opens the house on Zillow and Garrison pastes photos (Copy Image, then cmd+V), from any site, as many as he likes.
    Each is checked against the Street View / satellite pictures (same house, front shot); then the verified ones and the best Street View
@@ -1475,12 +1505,13 @@ var LPV={yes:'Same house, front view',no:'DIFFERENT house or not a front photo',
 function zwDraw(msg){
   $('zwBox').classList.toggle('hidden',!S.lp.length);if(msg!=null)$('zwMsg').textContent=msg;
   $('zwGrid').innerHTML=S.lp.map(function(p,i){var col=p.v==='yes'?'#1D6B3A':p.v==='no'?'#B3261E':p.v==='unsure'?'#B7791F':'#C9C4B6';
-    return '<div style="border:3px solid '+(p.best?'#1D6B3A':'transparent')+';border-radius:10px;padding:2px"><img src="'+p.img+'" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block" alt="">'+
+    return '<div style="border:3px solid '+(p.best?'#1D6B3A':'transparent')+';border-radius:10px;padding:2px"><img src="'+(p.clean||p.img)+'" style="width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:8px;display:block" alt="">'+
     '<div class="small" style="color:'+col+'">'+esc(p.label)+': '+(p.v?LPV[p.v]:'not checked yet')+(p.score!=null?' · trees/view score '+p.score:'')+(p.best?' · <b>picked</b>':'')+'</div>'+(p.reason?'<div class="small">'+esc(p.reason)+'</div>':'')+
     '<div class="row" style="gap:4px;margin-top:4px">'+(zwRan()?'<button class="alt" data-m="'+i+'" style="padding:4px 8px;font-size:12px">Make the mockup from it</button>':'')+'<button class="alt" data-x="'+i+'" style="padding:4px 8px;font-size:12px">Remove</button></div></div>'}).join('');
   [].forEach.call($('zwGrid').querySelectorAll('button[data-x]'),function(b){b.onclick=function(){S.lp.splice(+b.dataset.x,1);zwDraw('')}});
-  [].forEach.call($('zwGrid').querySelectorAll('button[data-m]'),function(b){b.onclick=function(){var p=S.lp[+b.dataset.m];var i=(S.cands||[]).findIndex(function(c){return c.img===p.img});
-    if(i<0){S.cands=(S.cands||[]).concat([{img:p.img,label:p.label,side:'front'}]);i=S.cands.length-1}$('pickBox').classList.remove('hidden');$('runCard').scrollIntoView({block:'start'});makeMock(i)}});
+  [].forEach.call($('zwGrid').querySelectorAll('button[data-m]'),function(b){b.onclick=function(){var p=S.lp[+b.dataset.m];$('runCard').scrollIntoView({block:'start'});
+    lpClean(p).then(function(im){var i=(S.cands||[]).findIndex(function(c){return c.img===im||c.img===p.img});
+    if(i<0){S.cands=(S.cands||[]).concat([{img:im,label:p.label,side:'front'}]);i=S.cands.length-1}else S.cands[i].img=im;$('pickBox').classList.remove('hidden');makeMock(i)})}});
 }
 function zwStart(){
   if(S.lpFor&&S.lpFor!==zwAddr()){S.lp=[];zwDraw('')}
@@ -1504,10 +1535,18 @@ function zwCheckOne(p,refs){
   if(!all.length){p.v='unsure';p.reason='no Google pictures of this house to compare with';return Promise.resolve(p)}
   return Promise.all([p.img].concat(all.map(function(r){return r.img})).map(function(d){return shrink(d,640)}))
   .then(function(sm){return api({action:'match',images:sm,labels:all.map(function(r){return /^Street View/.test(r.label)?'Google Street View from the road':r.label}),address:S.loc?S.loc.formatted:zwAddr()})})
-  .then(function(m){var ok=m.same==='yes'&&m.front!==false&&st.length>0;
+  .then(function(m){var ok=m.same==='yes'&&m.front!==false&&st.length>0;p.overlay=!!m.overlay;
     p.v=ok?'yes':(m.same==='no'||m.front===false)?'no':'unsure';
     p.reason=(m.same==='yes'&&!st.length)?'roof matches from above, but no street picture to confirm it':(m.reason||'');return p})
   .catch(function(e){p.v='unsure';p.reason='check failed: '+e.message;return p});
+}
+// Website buttons/badges drawn on a grabbed screenshot (Redfin "Street View", "OFF MARKET"...) are removed before the photo is used
+function lpClean(p){
+  if(!p||!p.overlay||p.clean)return Promise.resolve(p?(p.clean||p.img):null);
+  var s=step('Removing the website buttons and labels from '+p.label+'...');
+  return api({action:'mockup',image:p.img,fidelity:'high',portrait:false,prompt:'This is a daytime real-estate listing photo of a house with website buttons, badges, icons or text drawn on top of it (for example "Street View", "Redesign", "OFF MARKET", arrows, heart icons, photo counters, logos). Remove every one of those overlays and fill in what is behind them naturally (lawn, driveway, sky, trees, house). Change nothing else: same house, same colors, same daylight, same camera angle and framing. No text.'})
+  .then(function(r){p.clean=r.image;s.textContent='Removed the website buttons from '+p.label+'.';zwDraw();return p.clean})
+  .catch(function(e){s.textContent='Could not remove the website buttons ('+e.message+'); using the photo as is.';s.className='err';return p.img});
 }
 var LP_HINT='Some are real-estate listing photos of the house, one may be a Google Street View photo from the road; all show the same house. Score each 0-10 mainly by how well it would work as the base for a Christmas-lights mockup: the WHOLE front roofline (eaves and both slopes of each gable) and the front of the house clearly visible, with the LEAST blockage by trees, branches, bushes, cars or poles. Bare-branch winter photos that still show the roofline are fine. A sharp, straight-on or front-corner daytime exterior view scores highest. Heavy tree cover over the roof or front scores at most 4. A low drone shot of the front (a little above the house, like a listing hero photo) is EXCELLENT and can score 10. Interiors, backyards, straight-down overhead shots and close-ups score 0.';
 // After the Street View search: wait for pastes (25 s, longer while he keeps pasting), check each, then pick the least blocked.
@@ -1532,14 +1571,14 @@ function zwGate(refs){
       if(!good.length){s.className='err';zwDraw('');return {ok:false,unsure:uns.length>0,reason:(uns[0]||{}).reason||'',all:all}}
       var street=refs.filter(function(r){return r&&/^Street View/.test(r.label)})[0];
       var pool=good.map(function(p){return {img:p.img,label:p.label,side:'front',lp:p}}).concat(street?[street]:[]);
-      if(pool.length<2){good[0].best=true;zwDraw('');return {ok:true,c:pool[0],all:all}}
+      if(pool.length<2){good[0].best=true;zwDraw('');return lpClean(good[0]).then(function(im){return {ok:true,c:{img:im,label:good[0].label,side:'front'},all:all}})}
       var s2=step('Comparing '+pool.length+' photos for the least tree blockage...');
       return pickFrom(pool,S.loc.formatted,LP_HINT).then(function(pk){
         var sc=pk.scores||[],bi=0;pool.forEach(function(c,i){c.score=sc[i];if(c.lp)c.lp.score=sc[i];if((sc[i]||0)>(sc[bi]||0)||((sc[i]||0)===(sc[bi]||0)&&c.lp&&!pool[bi].lp))bi=i});
         var win=pool[bi];S.lp.forEach(function(p){p.best=win.lp===p});zwDraw('');
         s2.textContent='Clearest view: '+win.label+(sc[bi]!=null?' (score '+sc[bi]+')':'')+(pk.reason?' ('+pk.reason+')':'')+'.';
-        return win.lp?{ok:true,c:{img:win.img,label:win.label,side:'front'},all:all}:{ok:false,unsure:false,streetWins:true,all:all};
-      }).catch(function(){good[0].best=true;zwDraw('');return {ok:true,c:{img:good[0].img,label:good[0].label,side:'front'},all:all}});
+        return win.lp?lpClean(win.lp).then(function(im){return {ok:true,c:{img:im,label:win.label,side:'front'},all:all}}):{ok:false,unsure:false,streetWins:true,all:all};
+      }).catch(function(){good[0].best=true;zwDraw('');return lpClean(good[0]).then(function(im){return {ok:true,c:{img:im,label:good[0].label,side:'front'},all:all}})});
     });
   });
 }
@@ -1662,7 +1701,7 @@ $('runBtn').onclick=runQuote;
 $('address').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runQuote()}},true);
 var QDEF={};qfieldIds().concat(['mock2Note']).forEach(function(id){var e=$(id);if(e)QDEF[id]=e.type==='checkbox'?e.checked:(id==='sumText'||id==='visitText'?'':e.value)});
 listQuotes();
-window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,newQuote:newQuote,saveNow:saveNow,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view,zwSet:zwSet,zwCheckOne:zwCheckOne,autoBox:autoBox,zwGate:zwGate,pickFrom:pickFrom,makeMock:makeMock};
+window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,newQuote:newQuote,saveNow:saveNow,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view,zwSet:zwSet,zwCheckOne:zwCheckOne,lpClean:lpClean,mock2Check:mock2Check,mkStart:mkStart,autoBox:autoBox,zwGate:zwGate,pickFrom:pickFrom,makeMock:makeMock};
 })();
 </script>
 </body>
