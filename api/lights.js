@@ -82,14 +82,14 @@ function pickBuilding(j, lat, lng, street) {
     road: road ? { dir: Math.round((Math.atan2(road.pt[0] - cx, road.pt[1] - cy) * 180 / Math.PI + 360) % 360), dist: Math.round(road.d), named, name: road.name } : null,
     levels: best.tags['building:levels'] || null, kind: best.tags.building };
 }
-async function osmMap(lat, lng) {
+async function osmMap(lat, lng, wide) {
   const UA = { 'User-Agent': 'lights-quote-tool/1.0' };
-  const dy = 0.0008, dx = dy / Math.cos(lat * Math.PI / 180);
+  const dy = wide ? 0.0025 : 0.0008, dx = dy / Math.cos(lat * Math.PI / 180);
   try { // main OpenStreetMap API: everything in a ~100 m box
     const r = await fetch(`https://api.openstreetmap.org/api/0.6/map.json?bbox=${lng - dx},${lat - dy},${lng + dx},${lat + dy}`, { headers: UA, signal: AbortSignal.timeout(8000) });
     if (r.ok) return { j: await r.json(), src: 'OpenStreetMap' };
   } catch (e) { /* try Overpass */ }
-  const q = `[out:json][timeout:8];(way["building"](around:60,${lat},${lng});way["highway"](around:130,${lat},${lng}););out body;>;out skel qt;`;
+  const q = `[out:json][timeout:8];(way["building"](around:60,${lat},${lng});way["highway"](around:${wide ? 300 : 130},${lat},${lng}););out body;>;out skel qt;`;
   const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { ...UA, 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'data=' + encodeURIComponent(q), signal: AbortSignal.timeout(9000) });
   if (!r.ok) throw new Error('map outline service busy (' + r.status + ')');
@@ -323,6 +323,11 @@ export default async function handler(req, res) {
       const { j, src } = await osmMap(lat, lng);
       const F = pickBuilding(j, lat, lng, b.street);
       if (!F) return res.status(404).json({ error: 'No building outline on the map at this address.' });
+      // house far back from its street (long driveway): look for its own street in a bigger area (~280 m)
+      if (b.street && (!F.road || !F.road.named)) {
+        try { const W = await osmMap(lat, lng, true), F2 = pickBuilding(W.j, lat, lng, b.street);
+          if (F2 && F2.road && (F2.road.named || !F.road)) F.road = F2.road; } catch (e) { /* keep what we have */ }
+      }
       return res.status(200).json({ ...F, source: src });
     }
 
