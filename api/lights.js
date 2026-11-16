@@ -46,7 +46,12 @@ function sameStreet(a, b) {
 
 // Building outline from OpenStreetMap (fallback when Google has no roof data). Picks the outline that contains
 // the address point (or the nearest one within 18 m), skips sheds, and finds the direction of the nearest road.
-function pickBuilding(j, lat, lng) {
+function roadKey(x) { // "57 Castlerock Lane" / "Castlerock Ln" -> "castlerock ln"
+  const ab = { lane: 'ln', road: 'rd', street: 'st', drive: 'dr', avenue: 'ave', court: 'ct', circle: 'cir', place: 'pl', terrace: 'ter',
+    boulevard: 'blvd', highway: 'hwy', route: 'rt', turnpike: 'tpke', trail: 'trl', way: 'way', north: 'n', south: 's', east: 'e', west: 'w', extension: 'ext' };
+  return String(x || '').toLowerCase().replace(/^\s*[\d-]+[a-z]?\s+/, '').replace(/[^a-z0-9 ]/g, ' ').split(/\s+/).filter(Boolean).map((w) => ab[w] || w).join(' ');
+}
+function pickBuilding(j, lat, lng, street) {
   const N = new Map(); j.elements.forEach((e) => { if (e.type === 'node') N.set(e.id, e); });
   const mx = 111320 * Math.cos(lat * Math.PI / 180), my = 110540;
   const P = (n) => [(n.lon - lng) * mx, (n.lat - lat) * my];
@@ -65,24 +70,26 @@ function pickBuilding(j, lat, lng) {
       const A = area(s); if (A < 55) return; // sheds
       const d = inside([0, 0], s) ? 0 : Math.min(...s.slice(1).map((q, i) => segd([0, 0], s[i], q)[0]));
       if (!best || d < best.d || (d === best.d && A > best.A)) best = { d, s, A, tags: t };
-    } else if (t.highway && roadT.test(t.highway) && t.service !== 'driveway') roads.push(s);
+    } else if (t.highway && roadT.test(t.highway) && t.service !== 'driveway') roads.push({ s, name: t.name || t.ref || '' });
   });
   if (!best || best.d > 18) return null;
   const s = best.s, cx = s.slice(1).reduce((a, p) => a + p[0], 0) / (s.length - 1), cy = s.slice(1).reduce((a, p) => a + p[1], 0) / (s.length - 1);
-  let road = null;
-  roads.forEach((r) => r.slice(1).forEach((q, i) => { const [d, pt] = segd([cx, cy], r[i], q); if (!road || d < road.d) road = { d, pt }; }));
+  // the house faces ITS OWN street (from the address), not just the nearest road or Street View car
+  const want = roadKey(street), near = (list) => { let r = null; list.forEach((x) => x.s.slice(1).forEach((q, i) => { const [d, pt] = segd([cx, cy], x.s[i], q); if (!r || d < r.d) r = { d, pt, name: x.name }; })); return r; };
+  const own = want ? near(roads.filter((x) => roadKey(x.name) === want || (x.name && roadKey('1 ' + x.name) === want))) : null;
+  let road = own || near(roads); const named = !!own;
   return { poly: s.map((p) => [+(p[0]).toFixed(2), +(p[1]).toFixed(2)]), dist: +best.d.toFixed(1), area: Math.round(best.A),
-    road: road ? { dir: Math.round((Math.atan2(road.pt[0] - cx, road.pt[1] - cy) * 180 / Math.PI + 360) % 360), dist: Math.round(road.d) } : null,
+    road: road ? { dir: Math.round((Math.atan2(road.pt[0] - cx, road.pt[1] - cy) * 180 / Math.PI + 360) % 360), dist: Math.round(road.d), named, name: road.name } : null,
     levels: best.tags['building:levels'] || null, kind: best.tags.building };
 }
 async function osmMap(lat, lng) {
   const UA = { 'User-Agent': 'lights-quote-tool/1.0' };
-  const dy = 0.00045, dx = dy / Math.cos(lat * Math.PI / 180);
+  const dy = 0.0008, dx = dy / Math.cos(lat * Math.PI / 180);
   try { // main OpenStreetMap API: everything in a ~100 m box
     const r = await fetch(`https://api.openstreetmap.org/api/0.6/map.json?bbox=${lng - dx},${lat - dy},${lng + dx},${lat + dy}`, { headers: UA, signal: AbortSignal.timeout(8000) });
     if (r.ok) return { j: await r.json(), src: 'OpenStreetMap' };
   } catch (e) { /* try Overpass */ }
-  const q = `[out:json][timeout:8];(way["building"](around:60,${lat},${lng});way["highway"](around:90,${lat},${lng}););out body;>;out skel qt;`;
+  const q = `[out:json][timeout:8];(way["building"](around:60,${lat},${lng});way["highway"](around:130,${lat},${lng}););out body;>;out skel qt;`;
   const r = await fetch('https://overpass-api.de/api/interpreter', { method: 'POST', headers: { ...UA, 'Content-Type': 'application/x-www-form-urlencoded' },
     body: 'data=' + encodeURIComponent(q), signal: AbortSignal.timeout(9000) });
   if (!r.ok) throw new Error('map outline service busy (' + r.status + ')');
@@ -314,7 +321,7 @@ export default async function handler(req, res) {
       const lat = Number(b.lat), lng = Number(b.lng);
       if (!isFinite(lat) || !isFinite(lng)) return res.status(400).json({ error: 'No location.' });
       const { j, src } = await osmMap(lat, lng);
-      const F = pickBuilding(j, lat, lng);
+      const F = pickBuilding(j, lat, lng, b.street);
       if (!F) return res.status(404).json({ error: 'No building outline on the map at this address.' });
       return res.status(200).json({ ...F, source: src });
     }
