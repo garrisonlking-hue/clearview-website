@@ -212,6 +212,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       </details></div>
     <div id="confirmBox" class="hidden"><img id="confirmImg" alt=""><button id="sameYes"></button><button id="sameNo"></button></div>
     <div id="doneBox" class="hidden" style="margin-top:16px;border-top:1px solid var(--line);padding-top:14px">
+      <div class="row" style="margin-bottom:8px"><button class="alt" id="saveQ">Save quote</button><button id="newQ">Save &amp; start new quote</button><span class="note" style="margin:0">Saved quotes are under "Saved quotes" at the top.</span></div>
       <div class="row"><button id="runPrint">Save quote as PDF</button><button class="alt" id="saveMock">Download mockup image</button><button class="alt" id="copySum">Copy summary</button><span class="note" id="copySumMsg" style="margin:0"></span></div>
       <textarea id="sumText" rows="9" style="width:100%;margin-top:10px"></textarea>
       <div id="flyBox" style="margin-top:12px;border:2px solid var(--accent);border-radius:10px;padding:12px">
@@ -327,7 +328,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
 
   <div class="card" id="proposalCard">
     <h2>Quote</h2>
-    <div class="row" style="margin-bottom:12px"><button id="buildBtn">Rebuild quote</button><button id="printBtn" class="alt">Save as PDF</button>
+    <div class="row" style="margin-bottom:12px"><button id="buildBtn">Rebuild quote</button><button id="printBtn" class="alt">Save as PDF</button><button class="alt" id="saveQ2">Save quote</button><button class="alt" id="newQ2">Save &amp; new quote</button>
       <label><input type="checkbox" id="showBefore" checked> Today's photo next to the lit-up mockup</label>
       <label><input type="checkbox" id="showDiag" checked> Roof diagram with the measured edges</label>
       <span class="note" style="margin:0">Downloads a one-page PDF, ready to text or attach.</span></div>
@@ -1091,6 +1092,30 @@ $('savedTable').onclick=function(e){
   if(d){var r=(S.saved||[]).find(function(x){return x.id===d});if(r&&confirm('Delete the saved quote for '+(r.name||r.street)+'? This cannot be undone.'))qtx('readwrite',function(st){st.delete(d)}).then(listQuotes);return}
   if(o){var rec=(S.saved||[]).find(function(x){return x.id===o});if(rec)openQuote(rec)}
 };
+function toast(t){var d=$('toast');if(!d){d=document.createElement('div');d.id='toast';d.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1D3B2E;color:#fff;padding:10px 18px;border-radius:10px;font-weight:bold;z-index:9999;box-shadow:0 4px 16px rgba(0,0,0,.3)';document.body.appendChild(d)}
+  d.textContent=t;d.style.display='block';clearTimeout(d.__t);d.__t=setTimeout(function(){d.style.display='none'},2600)}
+function saveNow(){if(!S.loc||!(S.mock||+$('roofFt').value)){toast('Nothing to save yet: run a quote first.');return Promise.resolve(false)}
+  if(!S.qid)S.qid='q'+Date.now();clearTimeout(saveT);
+  return saveQuote().then(function(){toast('Saved: '+($('custName').value.trim()||S.loc.street));return true})}
+// Clear everything for the next customer (the current quote is saved first)
+function newQuote(){
+  (S.loc?saveNow():Promise.resolve(true)).then(function(){
+    clearTimeout(saveT);
+    Object.keys(QDEF).forEach(function(id){var e=$(id);if(!e)return;if(e.type==='checkbox')e.checked=QDEF[id];else e.value=QDEF[id]});
+    ['loc','qid','mock','mock2','mock2Note','photo','pinned','pinnedSrc','svPhoto','v3Photo','ftSource','frontFt','ftAuto','footprint','streetDir','estLink','flyWho','satImg','spots','spotsFor','cands','lastPick','manual'].forEach(function(k){S[k]=null});
+    S.ftConf='';S.photoSrc='';S.lines=[[]];S.slope=[false];S.myPhotos=[];if(typeof drawMine==='function')drawMine();
+    ['runCard','doneBox','roofBox','pickBox','mockOut','mockBox','pinnedBox','proposalWrap','mock2Wrap','satCanvas','svwPano','svwStatic'].forEach(function(id){var e=$(id);if(e)e.classList.add('hidden')});
+    $('proposalWrap').innerHTML='';$('runSteps').innerHTML='';$('photo').removeAttribute('src');$('photoMsg').textContent='No photo yet.';
+    ['lookupMsg','flyMsg','flyWho','mockMsg','svwSpot','markMsg','copySumMsg'].forEach(function(id){var e=$(id);if(e)e.textContent=''});
+    var fg=$('flyraGrid');if(fg)fg.innerHTML='';$('measFt').textContent='0';$('handBox').open=false;
+    $('flyBtn').disabled=false;$('flyBtn').textContent='Create draft estimate in Flyra';
+    $('svwMsg').textContent='Run a quote to load every Street View spot around the house.';
+    recalc();buildPrompt();window.scrollTo({top:0,behavior:'smooth'});setTimeout(function(){$('address').focus()},300);
+    toast('Saved. Ready for a new quote.');
+  });
+}
+$('saveQ').onclick=$('saveQ2').onclick=saveNow;
+$('newQ').onclick=$('newQ2').onclick=newQuote;
 function openQuote(rec){
   Object.keys(rec.fields||{}).forEach(function(id){var e=$(id);if(!e)return;if(e.type==='checkbox')e.checked=!!rec.fields[id];else e.value=rec.fields[id]});
   var k=rec.S||{};Object.keys(k).forEach(function(x){S[x]=k[x]});S.qid=rec.id;S.satImg=null;S.cands=[];S.mock2Note=k.mock2Note;
@@ -1466,8 +1491,9 @@ $('saveMock').onclick=function(){if(!S.mock)return;var a=document.createElement(
 $('copySum').onclick=function(){var t=$('sumText');t.select();(navigator.clipboard?navigator.clipboard.writeText(t.value):Promise.reject()).catch(function(){document.execCommand('copy')}).then(function(){$('copySumMsg').textContent='Copied.'})};
 $('runBtn').onclick=runQuote;
 $('address').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runQuote()}},true);
+var QDEF={};qfieldIds().concat(['mock2Note']).forEach(function(id){var e=$(id);if(e)QDEF[id]=e.type==='checkbox'?e.checked:(id==='sumText'||id==='visitText'?'':e.value)});
 listQuotes();
-window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
+window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,newQuote:newQuote,saveNow:saveNow,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
 })();
 </script>
 </body>
