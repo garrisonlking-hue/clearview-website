@@ -408,7 +408,8 @@ export default async function handler(req, res) {
         'Listing photos can be years older or from another season, so ignore trees, cars, paint touch-ups and lighting. A view from above shows only the roof: use it for roof shape and garage side. ' +
         'Answer "yes" only if several specific features match and none clearly conflict; "no" if features clearly conflict (a different house, e.g. a neighbor); "unsure" if the Google pictures do not show enough to tell. ' +
         'Also say whether image 0 is an exterior photo of the FRONT of the house that shows its front roofline (a low drone shot of the front taken a little above the house counts as true; false for interiors, backyards, straight-down overhead shots, maps, floor plans or close-ups). Ignore website buttons or labels drawn over the photo. ' +
-        'Reply as JSON: {"same":"yes"|"no"|"unsure","front":true|false,"reason":"one short sentence naming the features compared"}.' }];
+        'Also say whether website buttons, badges, icons, logos or text are drawn ON TOP of image 0 (e.g. "Street View", "OFF MARKET", arrows, hearts, photo counters). ' +
+        'Reply as JSON: {"same":"yes"|"no"|"unsure","front":true|false,"overlay":true|false,"reason":"one short sentence naming the features compared"}.' }];
       imgs.forEach((u) => content.push({ type: 'image_url', image_url: { url: u, detail: 'high' } }));
       let last = '';
       for (const model of [process.env.OPENAI_VISION_MODEL, 'gpt-4.1-mini', 'gpt-4o-mini'].filter(Boolean)) {
@@ -423,6 +424,32 @@ export default async function handler(req, res) {
         last = (j.error && j.error.message) || `OpenAI error ${r.status}`;
       }
       return res.status(502).json({ error: 'Photo check failed: ' + last });
+    }
+
+    // ---- do two mockups of the same house light the same things? (second view vs main mockup)
+    if (b.action === 'compare') {
+      if (!OKEY) return res.status(503).json({ error: 'OPENAI_API_KEY is not set in Vercel yet.' });
+      const imgs = (Array.isArray(b.images) ? b.images : []).filter((u) => /^data:image\/(jpeg|png|webp);base64,/.test(u)).slice(0, 2);
+      if (imgs.length < 2) return res.status(400).json({ error: 'Need both mockups.' });
+      const content = [{ type: 'text', text: 'Image 0 is the main Christmas-lights mockup of a house. Image 1 is a second mockup of the SAME house, usually from another angle. ' +
+        'Check that image 1 lights the same things as image 0: roof eaves, each gable (both slopes), dormers, the roof ridge, the porch roof, columns, garage roof, tree and bush wraps, wreaths, garland and walkway lights. ' +
+        'Only judge parts visible in BOTH images; a part hidden by the angle is not a difference. Ignore small differences in bulb spacing, brightness, snow and sky. ' +
+        'Reply as JSON: {"match":true|false,"differences":["short item, e.g. dormers are lit in image 0 but dark in image 1"],"fix":"one sentence telling an image editor what to change in image 1 to match image 0"}. ' +
+        'match is true only if no real difference is found.' }];
+      imgs.forEach((u) => content.push({ type: 'image_url', image_url: { url: u, detail: 'high' } }));
+      let last = '';
+      for (const model of [process.env.OPENAI_VISION_MODEL, 'gpt-4.1-mini', 'gpt-4o-mini'].filter(Boolean)) {
+        const r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST',
+          headers: { Authorization: 'Bearer ' + OKEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model, response_format: { type: 'json_object' }, max_tokens: 300, messages: [{ role: 'user', content }] }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.choices && j.choices[0]) {
+          try { const out = JSON.parse(j.choices[0].message.content); out.model = model; return res.status(200).json(out); }
+          catch (e) { last = 'Could not read the answer.'; continue; }
+        }
+        last = (j.error && j.error.message) || `OpenAI error ${r.status}`;
+      }
+      return res.status(502).json({ error: 'Compare failed: ' + last });
     }
 
     // ---- find the main house photo inside a screenshot of a listing page (Zillow, Redfin...)
@@ -487,6 +514,7 @@ export default async function handler(req, res) {
       if (!prompt || !m) return res.status(400).json({ error: 'Need a prompt and a house photo.' });
       const buf = Buffer.from(m[2], 'base64');
       const ext = m[1].split('/')[1].replace('jpeg', 'jpg');
+      const rm = /^data:(image\/(?:jpeg|png|webp));base64,(.+)$/.exec(String(b.ref || '')); // optional 2nd image: the main mockup, so a second view lights the same things
       // Image model names change over time; try the configured one, then known fallbacks.
       const models = [...new Set([MODEL, 'gpt-image-2', 'gpt-image-1.5', 'gpt-image-1', 'gpt-image-1-mini'])];
       let mi = 0;
@@ -497,7 +525,8 @@ export default async function handler(req, res) {
       for (let attempt = 0; attempt < 12; attempt++) {
         const fd = new FormData();
         for (const [k, v] of Object.entries(params)) fd.append(k, v);
-        fd.append('image', new Blob([buf], { type: m[1] }), 'house.' + ext);
+        if (rm) { fd.append('image[]', new Blob([buf], { type: m[1] }), 'house.' + ext); fd.append('image[]', new Blob([Buffer.from(rm[2], 'base64')], { type: rm[1] }), 'reference.' + rm[1].split('/')[1].replace('jpeg', 'jpg')); }
+        else fd.append('image', new Blob([buf], { type: m[1] }), 'house.' + ext);
         const r = await fetch('https://api.openai.com/v1/images/edits',
           { method: 'POST', headers: { Authorization: 'Bearer ' + OKEY }, body: fd });
         const j = await r.json().catch(() => ({}));
