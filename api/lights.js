@@ -407,7 +407,7 @@ export default async function handler(req, res) {
         'garage position (left or right) and number of garage doors, front door, porch and window layout, chimney, siding color. ' +
         'Listing photos can be years older or from another season, so ignore trees, cars, paint touch-ups and lighting. A view from above shows only the roof: use it for roof shape and garage side. ' +
         'Answer "yes" only if several specific features match and none clearly conflict; "no" if features clearly conflict (a different house, e.g. a neighbor); "unsure" if the Google pictures do not show enough to tell. ' +
-        'Also say whether image 0 is an exterior photo of the FRONT of the house that shows its front roofline (false for interiors, backyards, drone or aerial shots, maps, floor plans or close-ups). ' +
+        'Also say whether image 0 is an exterior photo of the FRONT of the house that shows its front roofline (a low drone shot of the front taken a little above the house counts as true; false for interiors, backyards, straight-down overhead shots, maps, floor plans or close-ups). Ignore website buttons or labels drawn over the photo. ' +
         'Reply as JSON: {"same":"yes"|"no"|"unsure","front":true|false,"reason":"one short sentence naming the features compared"}.' }];
       imgs.forEach((u) => content.push({ type: 'image_url', image_url: { url: u, detail: 'high' } }));
       let last = '';
@@ -423,6 +423,30 @@ export default async function handler(req, res) {
         last = (j.error && j.error.message) || `OpenAI error ${r.status}`;
       }
       return res.status(502).json({ error: 'Photo check failed: ' + last });
+    }
+
+    // ---- find the main house photo inside a screenshot of a listing page (Zillow, Redfin...)
+    if (b.action === 'crop') {
+      if (!OKEY) return res.status(503).json({ error: 'OPENAI_API_KEY is not set in Vercel yet.' });
+      const u = String(b.image || '');
+      if (!/^data:image\/(jpeg|png|webp);base64,/.test(u)) return res.status(400).json({ error: 'No screenshot.' });
+      const content = [{ type: 'text', text: 'This is a screenshot of a real-estate listing web page. Find the single largest photo of the OUTSIDE of the house (the main listing photo). ' +
+        'Give its rectangle as fractions of the screenshot width and height (0 = left/top, 1 = right/bottom), hugging the photo edges exactly: exclude the page header, menus, text, prices, side panels and thumbnails. ' +
+        'Reply as JSON: {"found":true|false,"x0":n,"y0":n,"x1":n,"y1":n}.' }, { type: 'image_url', image_url: { url: u, detail: 'high' } }];
+      let last = '';
+      for (const model of [process.env.OPENAI_VISION_MODEL, 'gpt-4.1-mini', 'gpt-4o-mini'].filter(Boolean)) {
+        const r = await fetch('https://api.openai.com/v1/chat/completions', { method: 'POST',
+          headers: { Authorization: 'Bearer ' + OKEY, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ model, response_format: { type: 'json_object' }, max_tokens: 100, messages: [{ role: 'user', content }] }) });
+        const j = await r.json().catch(() => ({}));
+        if (r.ok && j.choices && j.choices[0]) {
+          try { const o = JSON.parse(j.choices[0].message.content), c = (v) => Math.max(0, Math.min(1, +v || 0));
+            return res.status(200).json({ found: o.found !== false, x0: c(o.x0), y0: c(o.y0), x1: c(o.x1), y1: c(o.y1), model }); }
+          catch (e) { last = 'Could not read the answer.'; continue; }
+        }
+        last = (j.error && j.error.message) || `OpenAI error ${r.status}`;
+      }
+      return res.status(502).json({ error: 'Photo crop failed: ' + last });
     }
 
     // ---- pick the photo that shows the front of the house best (small, cheap vision call)
