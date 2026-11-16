@@ -145,6 +145,12 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <label><input type="radio" name="angleMode" id="angleAuto" checked> Find the best angle for me</label>
       <label><input type="radio" name="angleMode" id="angleManual"> I'll pick the angle myself</label>
     </div>
+    <div class="row" style="margin-top:6px"><label><input type="checkbox" id="zwOn" checked> Look on Zillow first: Run quote opens the house on Zillow. Right-click the best front photo, choose <b>Copy Image</b>, come back here and press <b>&#8984;V</b>.</label></div>
+    <div id="zwBox" class="hidden" style="margin-top:10px;display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap">
+      <img id="zwImg" alt="" style="width:200px;border-radius:8px">
+      <div style="flex:1 1 220px"><b>Zillow photo</b><div id="zwMsg" class="note" style="margin:4px 0"></div>
+      <div class="row" style="gap:6px"><button class="alt hidden" id="zwUse">Make the mockup from it</button><button class="alt" id="zwDel">Don't use it</button><button class="alt" id="zwOpen">Open Zillow again</button></div></div>
+    </div>
     <div id="lookupMsg" class="note"></div>
   </div>
 
@@ -888,6 +894,7 @@ function showRoof(e,k,conf,foot){
 function step(t,cls){var li=document.createElement('li');li.textContent=t;if(cls)li.className=cls;$('runSteps').appendChild(li);return li}
 function runQuote(){
   if(!$('address').value.trim()){$('lookupMsg').textContent='Type an address first.';return}
+  zwStart();
   ['roofBox','pickBox','confirmBox','doneBox'].forEach(function(id){$(id).classList.add('hidden')});
   $('runSteps').innerHTML='';$('runCard').classList.remove('hidden');$('runBtn').disabled=true;
   S.qid='q'+Date.now();S.mock=null;S.svPhoto=null;S.v3Photo=null;S.ftSource=null;S.ftConf='';S.frontFt=null;S.ftAuto=null;S.footprint=null;S.streetDir=null;S.estLink=null;
@@ -950,10 +957,19 @@ function runQuote(){
         var bi=R.pk.best||0,cands=R.list.concat(R.first.filter(function(c){return c!==R.list[0]}));
         S.cands=cands;drawCands(bi);$('pickBox').classList.remove('hidden');
         s3.textContent='Best view: '+cands[bi].label+(R.pk.reason?' ('+R.pk.reason+')':'')+'. Not right? Tap another below, or walk around in Street View and pick your own.';
-        return roofP.then(function(){return makeMock(bi)});
+        return roofP.then(function(){return zwGate([cands[bi]])}).then(function(z){
+          if(z&&z.ok){S.cands=[z.c].concat(cands);drawCands(0);return makeMock(0)}
+          if(z){S.cands=cands.concat([z.c]);drawCands(bi)}
+          return makeMock(bi)});
       }
       var st=(R&&R.list)||[];
-      s3.textContent=(st.length?'No Street View spot shows the front clearly'+(R.pk&&R.pk.reason?' ('+R.pk.reason+')':''):'No Street View here')+'. Trying the 3D model...';
+      s3.textContent=(st.length?'No Street View spot shows the front clearly'+(R.pk&&R.pk.reason?' ('+R.pk.reason+')':''):'No Street View here')+'.';
+      var bst0=st.slice().sort(function(x,y){return (y.score||0)-(x.score||0)})[0];
+      return roofP.then(function(){return zwGate(bst0?[bst0]:[])}).then(function(z){
+        if(z&&z.ok){S.cands=[z.c].concat(st);drawCands(0);$('pickBox').classList.remove('hidden');return makeMock(0)}
+        if(z&&z.unsure){S.cands=[z.c].concat(st);drawCands(-1);$('pickBox').classList.remove('hidden');
+          step('Could not confirm the Zillow photo is this house ('+z.reason+'). If it is, tap "Use this" under it below; otherwise use "Walk around in Street View" or the 3D view.','err');return}
+        s3.textContent+=' Trying the 3D model...';
       return roofP.then(function(){return init3D()}).then(function(ok){
         if(!ok)return [];return sleep(2500).then(function(){return searchViews(L.streetView?L.streetView.heading:0,s3,L.formatted)});
       }).then(function(v3){
@@ -969,6 +985,7 @@ function runQuote(){
           s3.textContent='Best view: '+S.cands[pk.best].label+' ('+(pk.reason||'')+')';
           return makeMock(pk.best);
         }).catch(function(e){s3.textContent='Could not compare photos automatically ('+e.message+'). Tap the best one.';drawCands(-1);$('pickBox').classList.remove('hidden')});
+      });
       });
     });
   }).catch(function(e){step('Stopped: '+e.message,'err')}).then(function(){$('runBtn').disabled=false});
@@ -1280,7 +1297,7 @@ function showPhotoAsk(){
 }
 function makeMock(i){
   var c=(S.cands||[])[i];if(!c)return;S.lastPick=i;drawCands(i);
-  var ready=setPhoto(c.img,/^Street View/.test(c.label)?'Street View':'Google Earth 3D view');
+  var ready=setPhoto(c.img,/^Street View/.test(c.label)?'Street View':/3D/.test(c.label)?'Google Earth 3D view':c.label);
   $('mockOut').classList.add('hidden');$('doneBox').classList.add('hidden');
   var s4=step('Making the night mockup from "'+c.label+'" (about a minute)...');
   return ready.then(function(){buildPrompt();return mockup()}).then(function(img){
@@ -1437,6 +1454,72 @@ $('mock2Btn').onclick=function(){
   .then(function(){b.disabled=false;b.textContent='Make second view'});
 };
 $('mock2Del').onclick=function(){S.mock2=null;S.mock2Note='';$('mock2Wrap').classList.add('hidden');this.classList.add('hidden');$('mock2Msg').textContent='Removed.';buildProposal()};
+/* ---------- Zillow listing photo: 1st choice, then Street View, then 3D/aerial ----------
+   Zillow blocks automatic lookups, so Run quote opens the house there and Garrison pastes the photo (Copy Image, then cmd+V).
+   It is only used after a vision check says it is the same house as the Street View / satellite pictures. */
+S.zw=null;var ZW={wait:null};
+function zwAddr(){return $('address').value.trim()}
+function zwUrl(a){return 'https://www.zillow.com/homes/'+encodeURI(a.replace(/\s+/g,'-'))+'_rb/'}
+function zwShow(msg,cls){$('zwBox').classList.toggle('hidden',!S.zw);if(!S.zw)return;$('zwImg').src=S.zw.img;$('zwMsg').textContent=msg;$('zwMsg').className=cls||'note';
+  $('zwUse').classList.toggle('hidden',!(S.loc&&!$('runCard').classList.contains('hidden')))}
+function zwStart(){
+  if(S.zw&&S.zw.for!==zwAddr()){S.zw=null;zwShow('')}
+  if(DEMO||!$('zwOn').checked||S.pinned||S.zw)return;
+  try{window.open(zwUrl(zwAddr()),'cvZillow')}catch(e){}
+}
+function zwSet(d){
+  S.zw={img:d,for:zwAddr()};
+  if(ZW.wait){zwShow('Got it. Checking it is the same house...');ZW.wait(true);return}
+  if(S.loc&&!$('runCard').classList.contains('hidden')){zwShow('Checking it is the same house...');
+    var ref=(S.cands||[]).filter(function(c){return /^Street View/.test(c.label)})[0];
+    zwCheck(ref?[ref]:[]).then(function(v){zwShow(v.msg,v.ok?'note':'err');if(!(S.cands||[]).some(function(c){return c.img===d})){S.cands=(S.cands||[]).concat([{img:d,label:'Zillow listing photo'}]);drawCands(-1)}});
+  }else zwShow('Added. It will be checked against Street View when you click Run quote.');
+}
+function zwSat(){if(!S.satImg)return null;try{return {img:imgToDataURL(S.satImg,640),label:'satellite view from above'}}catch(e){return null}}
+// fail closed: only "same house AND a front exterior shot", checked against a street-level picture, counts as a match
+function zwCheck(refs){
+  var st=refs.filter(Boolean),sat=zwSat(),all=st.concat(sat?[sat]:[]);
+  if(!S.zw)return Promise.resolve({ok:false,msg:'No Zillow photo.'});
+  if(!all.length)return Promise.resolve({ok:false,unsure:true,reason:'no Google pictures of this house to compare with',msg:'Could not check it: no Google pictures of this house to compare with.'});
+  return Promise.all([S.zw.img].concat(all.map(function(r){return r.img})).map(function(d){return shrink(d,640)}))
+  .then(function(sm){return api({action:'match',images:sm,labels:all.map(function(r){return /^Street View/.test(r.label)?'Google Street View from the road':r.label}),address:S.loc?S.loc.formatted:zwAddr()})})
+  .then(function(m){
+    var ok=m.same==='yes'&&m.front!==false&&st.length>0,unsure=!ok&&m.same!=='no'&&m.front!==false;
+    if(m.same==='yes'&&!st.length)m.reason='matches the roof from above, but there is no street picture to confirm it';
+    S.zw.verdict=ok?'yes':unsure?'unsure':'no';
+    return {ok:ok,unsure:unsure,reason:m.reason||'',msg:ok?'Same house, front view: using it for the mockup. ('+m.reason+')':
+      (m.front===false?'Not a usable front photo: ':m.same==='no'?'Looks like a DIFFERENT house: ':'Could not confirm it is this house: ')+(m.reason||'')+'. Not used automatically; click "Make the mockup from it" if you are sure.'};
+  }).catch(function(e){return {ok:false,unsure:true,reason:e.message,msg:'Could not check it ('+e.message+'). Not used automatically.'}});
+}
+// After the Street View search: wait up to 25 s for the paste, then check it. Resolves {ok,unsure,c} or null.
+function zwGate(refs){
+  if(DEMO||!$('zwOn').checked)return Promise.resolve(null);
+  var have=S.zw&&S.zw.for===zwAddr();
+  var w=have?Promise.resolve(true):new Promise(function(ok){
+    var li=step(''),tx=document.createTextNode(''),n=25,t,b=document.createElement('button');b.className='alt';b.textContent='Skip Zillow';b.style.cssText='margin-left:8px;padding:3px 10px;font-size:12px';
+    li.appendChild(tx);li.appendChild(b);
+    var fin=function(v){if(!ZW.wait)return;ZW.wait=null;clearInterval(t);b.remove();tx.nodeValue=v?'Zillow photo received.':'No Zillow photo, so using Google\'s pictures.';ok(v)};
+    var tick=function(){tx.nodeValue='Waiting for the Zillow photo ('+n+' s): on the Zillow tab right-click the best front photo, Copy Image, then press \u2318V here.';if(n--<=0)fin(false)};
+    ZW.wait=fin;b.onclick=function(){fin(false)};tick();t=setInterval(tick,1000);
+  });
+  return w.then(function(got){
+    if(!got||!S.zw)return null;
+    var s=step('Checking the Zillow photo is this house...');
+    return zwCheck(refs).then(function(v){s.textContent='Zillow photo: '+v.msg;if(!v.ok)s.className='err';zwShow(v.msg,v.ok?'note':'err');
+      return {ok:v.ok,unsure:v.unsure,reason:v.reason,c:{img:S.zw.img,label:'Zillow listing photo',side:'front'}}});
+  });
+}
+document.addEventListener('paste',function(e){
+  var it=[].filter.call((e.clipboardData&&e.clipboardData.items)||[],function(x){return /^image\//.test(x.type)})[0];
+  if(!it)return;e.preventDefault();
+  blobToImg(it.getAsFile()).then(function(img){zwSet(imgToDataURL(img,1536))}).catch(function(){$('lookupMsg').textContent='Could not read that picture. Try Copy Image again.'});
+});
+function zwFromUrl(u){if(!/^https:\/\/photos\.zillowstatic\.com\//.test(u))return false;
+  api({action:'imageProxy',url:u},true).then(blobToImg).then(function(img){zwSet(imgToDataURL(img,1536))}).catch(function(e){$('lookupMsg').textContent='Could not get that Zillow photo: '+e.message});return true}
+$('zwDel').onclick=function(){S.zw=null;zwShow('');if(ZW.wait)ZW.wait(false)};
+$('zwOpen').onclick=function(){if(zwAddr())window.open(zwUrl(zwAddr()),'cvZillow')};
+$('zwUse').onclick=function(){if(!S.zw)return;var i=(S.cands||[]).findIndex(function(c){return c.img===S.zw.img});
+  if(i<0){S.cands=(S.cands||[]).concat([{img:S.zw.img,label:'Zillow listing photo'}]);i=S.cands.length-1}$('pickBox').classList.remove('hidden');$('runCard').scrollIntoView({block:'start'});makeMock(i)};
 /* ---------- house photo: upload or pull from Flyra ---------- */
 function pinPhoto(d,src){
   S.pinned=d;S.pinnedSrc=src;$('pinnedImg').src=d;$('pinnedBox').classList.remove('hidden');
@@ -1467,10 +1550,10 @@ function addPhotos(files){
 $('upload2').onchange=function(){addPhotos(this.files);this.value=''};
 ['dragenter','dragover'].forEach(function(ev){$('photoCard').addEventListener(ev,function(e){e.preventDefault();this.classList.add('drop')})});
 ['dragleave','drop'].forEach(function(ev){$('photoCard').addEventListener(ev,function(e){e.preventDefault();this.classList.remove('drop')})});
-$('photoCard').addEventListener('drop',function(e){addPhotos(e.dataTransfer.files)});
+$('photoCard').addEventListener('drop',function(e){if(!e.dataTransfer.files.length&&zwFromUrl(e.dataTransfer.getData('text/uri-list')||''))return;addPhotos(e.dataTransfer.files)});
 // a photo dropped anywhere else on the page goes to the House photo box instead of opening in the browser
 window.addEventListener('dragover',function(e){e.preventDefault()});
-window.addEventListener('drop',function(e){if(!$('photoCard').contains(e.target)){e.preventDefault();if(e.dataTransfer&&e.dataTransfer.files.length){addPhotos(e.dataTransfer.files);$('photoCard').scrollIntoView({block:'start'})}}});
+window.addEventListener('drop',function(e){if(!$('photoCard').contains(e.target)){e.preventDefault();if(e.dataTransfer&&!e.dataTransfer.files.length&&zwFromUrl(e.dataTransfer.getData('text/uri-list')||''))return;if(e.dataTransfer&&e.dataTransfer.files.length){addPhotos(e.dataTransfer.files);$('photoCard').scrollIntoView({block:'start'})}}});
 $('pinnedDel').onclick=function(){S.pinned=null;$('pinnedBox').classList.add('hidden');if(S.myPhotos)drawMine()};
 $('pinnedMock').onclick=function(){if(!S.pinned)return;S.cands=(S.cands||[]).concat([{img:S.pinned,label:'Your photo'}]);$('runCard').scrollIntoView({block:'start'});makeMock(S.cands.length-1)};
 function urlToData(u){
@@ -1499,7 +1582,7 @@ $('runBtn').onclick=runQuote;
 $('address').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();runQuote()}},true);
 var QDEF={};qfieldIds().concat(['mock2Note']).forEach(function(id){var e=$(id);if(e)QDEF[id]=e.type==='checkbox'?e.checked:(id==='sumText'||id==='visitText'?'':e.value)});
 listQuotes();
-window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,newQuote:newQuote,saveNow:saveNow,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view};
+window.__lights={S:S,V:V,roofEstimate:roofEstimate,outlineEstimate:outlineEstimate,showRoof:showRoof,openTrace:openTrace,searchStreet:searchStreet,saveQuote:saveQuote,newQuote:newQuote,saveNow:saveNow,listQuotes:listQuotes,openQuote:openQuote,fitPreview:fitPreview,spotSide:spotSide,svwOpen:svwOpen,getSpots:getSpots,drawDiagram:drawDiagram,estimateBody:estimateBody,prepSat:prepSat,runQuote:runQuote,calc:calc,lookup:lookup,buildProposal:buildProposal,ftPerPx:ftPerPx,draw:draw,init3D:init3D,draw3D:draw3D,v3view:v3view,zwSet:zwSet,zwCheck:zwCheck,zwGate:zwGate,makeMock:makeMock};
 })();
 </script>
 </body>
