@@ -43,6 +43,27 @@ details.sub>summary{cursor:pointer;color:var(--green);font-weight:600}
 .ok{color:#1D6B3A}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
 @media(max-width:820px){.two{grid-template-columns:1fr}}
+/* phones: no iOS zoom-on-focus (needs 16px), bigger tap targets, pricing table as stacked cards */
+@media(max-width:640px){
+  input,select,textarea,.hero input{font-size:16px}
+  button{min-height:42px}
+  input[type=checkbox],input[type=radio]{width:20px;height:20px}
+  label{font-size:14px}
+  #app{padding:14px 10px 60px}.card{padding:16px}
+  #items thead{display:none}
+  #items,#items tbody{display:block;width:100%}
+  #items tr{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;padding:12px 0;border-bottom:1px solid var(--line);align-items:center}
+  #items td{display:block;border:0;padding:0}
+  #items td:first-child{grid-column:1/-1;font-weight:600;color:var(--ink,#1c2a24)}
+  #items td:nth-child(2)::before{content:"Qty ";font-size:12px;color:var(--muted)}
+  #items td:nth-child(3){white-space:nowrap}
+  #items td:nth-child(4)::before{content:"In package ";font-size:12px;color:var(--muted)}
+  #items td:nth-child(5){text-align:right;font-weight:600}
+  #items input[type=number]{width:90px}
+  #cropCv{max-height:70vh}
+}
+.desk{}.phone-only{display:none}
+@media(pointer:coarse){.desk{display:none!important}.phone-only{display:block}}
 .imgbox{background:#14201c;border-radius:10px;overflow:hidden;position:relative;min-height:120px}
 .imgbox img,.imgbox canvas{display:block;width:100%;height:auto}
 #satCanvas{cursor:crosshair;touch-action:none}
@@ -126,6 +147,7 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <input type="password" id="passIn" placeholder="Passcode" style="width:170px" autocomplete="off">
       <button class="alt" id="passBtn">Save passcode</button>
       <button class="alt" id="checkBtn">Check setup</button>
+      <button class="alt" id="shareBtn">Copy login link</button>
       <span class="note" id="passMsg" style="margin:0"></span>
     </div>
     <div id="checkOut" class="hidden" style="margin-top:12px"></div>
@@ -145,12 +167,13 @@ th{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;le
       <label><input type="radio" name="angleMode" id="angleAuto" checked> Find the best angle for me</label>
       <label><input type="radio" name="angleMode" id="angleManual"> I'll pick the angle myself</label>
     </div>
-    <div class="row" style="margin-top:6px"><label><input type="checkbox" id="zwOn" checked> Look at listing photos first (Zillow, Redfin, Realtor.com): Run quote opens the house on Zillow. On any site, right-click a good front photo, choose <b>Copy Image</b>, come back here and press <b>&#8984;V</b>. Paste as many as you like; the tool checks each is this house and uses the one with the least tree blockage.</label></div>
-    <div class="row" style="gap:6px;margin-top:6px"><button class="alt" id="zwOpen">Open Zillow</button><button class="alt" id="zwRedfin">Open Redfin</button><button class="alt" id="zwRealtor">Open Realtor.com</button><button id="zwGrab">&#128247; Grab photo from a tab</button></div>
-    <div class="note" style="margin:4px 0 0">Found a great photo on Zillow/Redfin? Click <b>Grab photo from a tab</b>, pick that tab, click Share: the tool screenshots it and cuts out the house photo. (Or right-click it, Copy Image, &#8984;V.)</div>
+    <div class="row" style="margin-top:6px"><label><input type="checkbox" id="zwOn" checked> Look at listing photos first (Zillow, Redfin, Realtor.com)<span class="desk">: Run quote opens the house on Zillow. On any site, right-click a good front photo, choose <b>Copy Image</b>, come back here and press <b>&#8984;V</b>. Paste as many as you like; the tool checks each is this house and uses the one with the least tree blockage.</span></label>
+    <div class="note phone-only">On a phone: open the house on Zillow or Redfin, screenshot the best front photo, come back and tap <b>Add listing screenshot</b>. The tool cuts out the photo, checks it's this house, and uses the one with the least tree blockage. Do it before tapping Run quote.</div></div>
+    <div class="row" style="gap:6px;margin-top:6px"><button class="alt" id="zwOpen">Open Zillow</button><button class="alt" id="zwRedfin">Open Redfin</button><button class="alt" id="zwRealtor">Open Realtor.com</button><button id="zwGrab" class="desk">&#128247; Grab photo from a tab</button><label class="alt" for="zwShot" style="display:inline-flex;align-items:center;min-height:42px;border:1px solid #C9C4B6;border-radius:8px;padding:0 14px;color:var(--green);font-weight:500;font-size:14px;cursor:pointer;background:#fff">Add listing screenshot</label><input type="file" id="zwShot" accept="image/*" class="hidden"><button class="alt hidden" id="zwPaste">Paste photo</button></div>
+    <div class="note desk" style="margin:4px 0 0">Found a great photo on Zillow/Redfin? Click <b>Grab photo from a tab</b>, pick that tab, click Share: the tool screenshots it and cuts out the house photo. (Or right-click it, Copy Image, &#8984;V.)</div>
     <div id="cropModal" class="hidden" style="position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px">
       <div style="color:#fff;margin-bottom:8px;font-size:15px">Green box = the photo the tool will use. Wrong? Drag a new box around the house photo.</div>
-      <canvas id="cropCv" style="max-width:96vw;max-height:78vh;cursor:crosshair;background:#111"></canvas>
+      <canvas id="cropCv" style="max-width:96vw;max-height:78vh;cursor:crosshair;background:#111;touch-action:none"></canvas>
       <div class="row" style="margin-top:10px;gap:8px"><button id="cropOk">Use this photo</button><button class="alt" id="cropNo">Cancel</button></div>
     </div>
     <div id="zwBox" class="hidden" style="margin-top:10px">
@@ -377,6 +400,9 @@ function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return
 function fmtDate(d){return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
 
 /* ---------- server calls ---------- */
+// One-tap link: lights-quote.html#k=PASSCODE saves the passcode on this device and removes it from the address bar.
+// (After the # it never reaches the server or its logs.)
+(function(){try{var m=/(?:^#|&)k=([^&]+)/.exec(location.hash);if(m){localStorage.setItem('lightsPass',decodeURIComponent(m[1]));history.replaceState(null,'',location.pathname+location.search)}}catch(e){}})();
 function pass(){
   var p='';try{p=localStorage.getItem('lightsPass')||''}catch(e){}
   return p||S.pass||'';
@@ -688,6 +714,10 @@ function passState(){$('passMsg').textContent=pass()?'Passcode saved on this dev
 $('passBtn').onclick=function(){var v=$('passIn').value.trim();if(!v){$('passMsg').textContent='Type the passcode first.';return}
   S.pass=v;try{localStorage.setItem('lightsPass',v)}catch(e){}$('passIn').value='';passState()};
 $('passIn').addEventListener('keydown',function(e){if(e.key==='Enter')$('passBtn').click()});
+$('shareBtn').onclick=function(){var p=pass();if(!p){$('passMsg').textContent='Save the passcode first.';return}
+  var u=location.origin+location.pathname+'#k='+encodeURIComponent(p);
+  (navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(function(){$('passMsg').textContent='Login link copied. Whoever opens it is logged in on that device; text it only to people you trust.'})
+  .catch(function(){prompt('Copy this login link:',u)})};
 $('checkBtn').onclick=function(){
   var o=$('checkOut');o.classList.remove('hidden');o.textContent='Checking...';
   api({action:'check'}).then(function(r){
@@ -1516,6 +1546,7 @@ function zwDraw(msg){
 function zwStart(){
   if(S.lpFor&&S.lpFor!==zwAddr()){S.lp=[];zwDraw('')}
   if(DEMO||!$('zwOn').checked||S.pinned||S.lp.length)return;
+  if(matchMedia('(pointer:coarse)').matches)return; // on a phone, leaving the page pauses the quote: add screenshots before Run quote instead
   zwOpen('zillow');
 }
 function zwSet(d){
@@ -1554,6 +1585,7 @@ var LP_HINT='Some are real-estate listing photos of the house, one may be a Goog
 function zwGate(refs){
   if(DEMO||!$('zwOn').checked)return Promise.resolve(null);
   if(S.lpFor!==zwAddr()){S.lp=[];S.lpFor=zwAddr()}
+  if(!S.lp.length&&matchMedia('(pointer:coarse)').matches)return Promise.resolve(null);
   var w=S.lp.length?Promise.resolve(true):new Promise(function(ok){
     var li=step(''),tx=document.createTextNode(''),n=45,t,mk=function(lbl){var b=document.createElement('button');b.className='alt';b.textContent=lbl;b.style.cssText='margin-left:8px;padding:3px 10px;font-size:12px';li.appendChild(b);return b};
     li.appendChild(tx);var bg=mk('\ud83d\udcf7 Grab photo from a tab');bg.onclick=grabTab;var bd=mk('Done'),bs=mk('Skip');
@@ -1630,14 +1662,21 @@ function cropShow(msg){var cv=$('cropCv'),c=CROP.c;cv.width=c.width;cv.height=c.
   if(msg){x.fillStyle='rgba(0,0,0,.7)';x.fillRect(0,0,c.width,Math.max(40,c.height/18));x.fillStyle='#fff';x.font=Math.max(18,c.height/40)+'px sans-serif';x.fillText(msg,14,Math.max(28,c.height/26))}
   $('cropModal').classList.remove('hidden')}
 (function(){var cv=$('cropCv'),d=null,pt=function(e){var r=cv.getBoundingClientRect();return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
-  cv.addEventListener('mousedown',function(e){d=pt(e)});
-  cv.addEventListener('mousemove',function(e){if(!d)return;var p=pt(e);CROP.box=[Math.min(d[0],p[0]),Math.min(d[1],p[1]),Math.max(d[0],p[0]),Math.max(d[1],p[1])];cropShow()});
-  window.addEventListener('mouseup',function(){d=null})})();
+  cv.addEventListener('pointerdown',function(e){d=pt(e);try{cv.setPointerCapture(e.pointerId)}catch(x){}e.preventDefault()});
+  cv.addEventListener('pointermove',function(e){if(!d)return;var p=pt(e);CROP.box=[Math.min(d[0],p[0]),Math.min(d[1],p[1]),Math.max(d[0],p[0]),Math.max(d[1],p[1])];cropShow()});
+  window.addEventListener('pointerup',function(){d=null})})();
 $('cropNo').onclick=function(){$('cropModal').classList.add('hidden');ZW.hold=false};
 $('cropOk').onclick=function(){var b=CROP.box,c=CROP.c;if(!b||b[2]-b[0]<80||b[3]-b[1]<60){cropShow('Drag a box around the house photo first.');return}
   var o=document.createElement('canvas'),w=b[2]-b[0],h=b[3]-b[1],k=Math.min(1,1536/Math.max(w,h));o.width=Math.round(w*k);o.height=Math.round(h*k);o.getContext('2d').drawImage(c,b[0],b[1],w,h,0,0,o.width,o.height);
   $('cropModal').classList.add('hidden');ZW.hold=false;zwSet(o.toDataURL('image/jpeg',0.9));if(!ZW.wait)$('zwBox').scrollIntoView({block:'nearest'})};
 $('zwGrab').onclick=grabTab;
+function cropFrom(img){var c=document.createElement('canvas');c.width=img.naturalWidth||img.width;c.height=img.naturalHeight||img.height;c.getContext('2d').drawImage(img,0,0);
+  CROP.c=c;CROP.box=autoBox(c)||[0,0,c.width,c.height];if(ZW.wait)ZW.hold=true;cropShow()}
+$('zwShot').onchange=function(){var f=this.files[0];this.value='';if(!f)return;blobToImg(f).then(cropFrom).catch(function(){$('lookupMsg').textContent='Could not read that picture. iPhone HEIC? Take a regular screenshot (PNG).'})};
+if(navigator.clipboard&&navigator.clipboard.read&&matchMedia('(pointer:coarse)').matches)$('zwPaste').classList.remove('hidden');
+$('zwPaste').onclick=function(){navigator.clipboard.read().then(function(items){
+  for(var i=0;i<items.length;i++){var t=items[i].types.filter(function(x){return /^image\//.test(x)})[0];if(t)return items[i].getType(t)}throw new Error('no picture copied')})
+  .then(blobToImg).then(function(img){zwSet(imgToDataURL(img,1536))}).catch(function(e){$('lookupMsg').textContent='Nothing to paste ('+e.message+'). Long-press the photo, Copy, then tap Paste photo.'})};
 $('zwOpen').onclick=function(){zwOpen('zillow')};$('zwRedfin').onclick=function(){zwOpen('redfin')};$('zwRealtor').onclick=function(){zwOpen('realtor')};
 /* ---------- house photo: upload or pull from Flyra ---------- */
 function pinPhoto(d,src){
